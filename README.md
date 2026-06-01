@@ -1,5 +1,32 @@
 # MYLE — My Learning Hub
+> Free study tools · University of Nigeria, Enugu Campus · 100L Law
 
-A minimal, modern personal study platform built for deep focus and structured revision[span_0](start_span)[span_0](end_span). Designed with a refined, monochromatic brown aesthetic (creams, warm sands, muted taupes, and deep espressos)[span_1](start_span)[span_1](end_span), the system runs entirely on a lightweight, local-first client architecture that completely eliminates the need for complex database syncing or external authentication overhead[span_2](start_span)[span_2](end_span)[span_3](start_span)[span_3](end_span).
+## How to add a new study tool
 
-The platform utilizes a dynamic, decoupled configuration registry (`tools.config.js`)[span_4](start_span)[span_4](end_span) that tracks and parses standalone modular study tools from a dedicated directory[span_5](start_span)[span_5](end_span). This allows the dashboard to scale fluidly—rendering updates instantly and streaming clicked cards directly to their target tools without requiring any hardcoded structural modifications to the main dashboard interface[span_6](start_span)[span_6](end_span).
+1. Generate an HTML file with Claude from your lecture notes
+2. Save it to `/tools/your_file.html`
+3. Open `dashboard.html` and find the `tools` array near the bottom in the `<script>` tag
+4. Add one entry:
+```js
+{
+  id: 'unique-id',
+  title: 'Tool Title',
+  subtitle: 'Brief description',
+  course: 'PUL 101',
+  type: 'quiz',           // flashcards | quiz | case-law | notes
+  file: 'tools/your_file.html',
+  count: 20,
+  countLabel: 'questions',
+  added: '2026-06-XX',
+},
+```
+5. Push to Git — Netlify deploys automatically
+
+## Deploy
+- Hosted on Netlify: https://myleapp.netlify.app
+- Auto-deploys on `git push`
+
+## Termux push command
+```bash
+git add . && git commit -m "add: new tool" && git push
+```

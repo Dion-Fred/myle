@@ -1,253 +1,440 @@
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MYLE — My Learning Hub</title>
-  
-  <!-- Fonts: Poppins & Roboto -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Font Awesome CDN -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Roboto', 'sans-serif'],
-            display: ['Poppins', 'sans-serif'],
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MYLE — My Learning Hub</title>
+<meta name="description" content="Free study tools for law students at UNEC — flashcards, quizzes and case law practice.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234F46E5'/><text y='23' x='5' font-size='20' font-family='sans-serif' font-weight='700' fill='white'>M</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Poppins', 'sans-serif'] },
+        colors: {
+          indigo: {
+            50:'#eef2ff', 100:'#e0e7ff', 200:'#c7d2fe',
+            300:'#a5b4fc', 400:'#818cf8', 500:'#6366f1',
+            600:'#4f46e5', 700:'#4338ca', 800:'#3730a3', 900:'#312e81'
           },
-          colors: {
-            brand: {
-              50: '#FDFBF7',  // Cream/Bone White
-              100: '#EFEAE2', // Alabaster Tint
-              200: '#DED5C6', // Soft Sand
-              500: '#A78B71', // Warm Muted Brown
-              600: '#8C6D53', // Deep Taupe
-              800: '#4A3B32', // Espresso Brown
-              900: '#2B221E', // Dark Roasted Coffee
-              950: '#1A1412', // Near-Black Earth
-            }
-          }
+          violet: { 500:'#8b5cf6', 600:'#7c3aed' },
+          emerald:{ 500:'#10b981', 600:'#059669' },
+          amber:  { 400:'#fbbf24', 500:'#f59e0b' },
+          rose:   { 500:'#f43f5e', 600:'#e11d48' },
+        },
+        animation: {
+          'fade-up':   'fadeUp 0.6s ease forwards',
+          'fade-in':   'fadeIn 0.4s ease forwards',
+          'bounce-in': 'bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards',
+          'slide-down':'slideDown 0.4s ease forwards',
+          'pulse-slow':'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite',
+        },
+        keyframes: {
+          fadeUp:    { '0%':{ opacity:'0', transform:'translateY(24px)' }, '100%':{ opacity:'1', transform:'translateY(0)' } },
+          fadeIn:    { '0%':{ opacity:'0' }, '100%':{ opacity:'1' } },
+          bounceIn:  { '0%':{ opacity:'0', transform:'scale(0.8)' }, '100%':{ opacity:'1', transform:'scale(1)' } },
+          slideDown: { '0%':{ opacity:'0', transform:'translateY(-12px)' }, '100%':{ opacity:'1', transform:'translateY(0)' } },
         }
       }
     }
-  </script>
-
-  <style>
-    body { transition: background-color 0.35s ease, color 0.35s ease; }
-    .reveal-item {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .reveal-item.visible { opacity: 1; transform: translateY(0); }
-    @keyframes scrollLine {
-      0%  { transform: scaleY(0); transform-origin: top; }
-      50% { transform: scaleY(1); transform-origin: top; }
-      51% { transform: scaleY(1); transform-origin: bottom; }
-      100%{ transform: scaleY(0); transform-origin: bottom; }
-    }
-    .animate-scroll-line { animation: scrollLine 2s infinite; }
-  </style>
+  }
+</script>
+<style>
+  * { font-family: 'Poppins', sans-serif; }
+  .delay-100 { animation-delay: 0.1s; opacity: 0; }
+  .delay-200 { animation-delay: 0.2s; opacity: 0; }
+  .delay-300 { animation-delay: 0.3s; opacity: 0; }
+  .delay-400 { animation-delay: 0.4s; opacity: 0; }
+  .delay-500 { animation-delay: 0.5s; opacity: 0; }
+  .hero-gradient { background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #f0fdf4 100%); }
+  .card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+  .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(79,70,229,0.12); }
+  .wa-green { background: #25D366; }
+  .wa-green:hover { background: #20ba5a; }
+  .btn-glow { box-shadow: 0 0 0 0 rgba(79,70,229,0.4); }
+  .btn-glow:hover { box-shadow: 0 8px 24px rgba(79,70,229,0.3); }
+  .nav-blur { backdrop-filter: blur(16px); background: rgba(255,255,255,0.92); }
+  .section-reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .section-reveal.visible { opacity: 1; transform: translateY(0); }
+  .feature-icon-bg { background: linear-gradient(135deg, #eef2ff, #f5f3ff); }
+  .mesh-bg {
+    background-color: #f8fafc;
+    background-image: radial-gradient(at 40% 20%, hsla(240,100%,96%,1) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, hsla(270,100%,96%,1) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, hsla(150,100%,96%,1) 0px, transparent 50%);
+  }
+</style>
 </head>
-<body class="bg-brand-50 text-brand-900 dark:bg-brand-950 dark:text-brand-100 font-sans antialiased overflow-x-hidden relative min-h-screen">
+<body class="mesh-bg text-gray-800 overflow-x-hidden">
 
-  <!-- Ambient Organic Vignettes -->
-  <div class="pointer-events-none fixed -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-brand-500/5 dark:bg-brand-800/10 blur-[120px] z-0"></div>
-  <div class="pointer-events-none fixed -bottom-20 -left-20 h-[400px] w-[400px] rounded-full bg-brand-600/5 dark:bg-brand-900/10 blur-[100px] z-0"></div>
+<!-- ════════════════════════════════════════
+     WHATSAPP POPUP
+════════════════════════════════════════ -->
+<div id="waPopup" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40 backdrop-blur-sm" style="display:none!important">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md animate-bounce-in overflow-hidden">
+    <!-- Green header -->
+    <div class="wa-green p-5 text-white text-center relative">
+      <button onclick="closePopup()" class="absolute top-3 right-4 text-white/70 hover:text-white text-xl transition-colors">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+      </div>
+      <h3 class="text-xl font-bold">Join the MYLE Community</h3>
+      <p class="text-white/85 text-sm mt-1">Stay connected with your classmates</p>
+    </div>
+    <!-- Body -->
+    <div class="p-6 space-y-4">
+      <p class="text-gray-500 text-sm text-center leading-relaxed">
+        Get notified when new study tools drop, share notes, and never miss an update from MYLE.
+      </p>
 
-  <div class="relative z-10 flex flex-col min-h-screen">
-    
-    <!-- Navbar -->
-    <nav class="sticky top-0 z-50 backdrop-blur-md bg-brand-50/80 dark:bg-brand-950/80 border-b border-brand-900/5 dark:border-brand-100/5 px-6 md:px-12 py-4 flex items-center justify-between">
-      <a class="font-display font-bold text-2xl tracking-wider text-brand-900 dark:text-white" href="index.html">
-        MY<span class="text-brand-500">LE</span>
+      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank" rel="noopener"
+         class="flex items-center gap-3 w-full wa-green text-white font-semibold rounded-xl px-5 py-3.5 transition-all hover:scale-[1.02] active:scale-95">
+        <i class="fa-brands fa-whatsapp text-xl flex-shrink-0"></i>
+        <div class="text-left">
+          <div class="text-sm font-bold">Join the WhatsApp Group</div>
+          <div class="text-xs text-white/80">Chat with fellow law students</div>
+        </div>
+        <i class="fa-solid fa-arrow-right ml-auto"></i>
       </a>
-      
-      <div class="flex items-center gap-6">
-        <div class="hidden sm:flex items-center gap-8 font-display text-xs font-semibold tracking-widest uppercase">
-          <a href="#features" class="text-brand-900/60 dark:text-brand-100/60 hover:text-brand-500 transition-colors">Features</a>
-          <a href="#how" class="text-brand-900/60 dark:text-brand-100/60 hover:text-brand-500 transition-colors">How it works</a>
-        </div>
-        
-        <button id="themeToggle" aria-label="Toggle theme" class="w-10 h-10 rounded-full border border-brand-900/10 dark:border-brand-100/10 flex items-center justify-center text-brand-900/60 dark:text-brand-100/60 hover:text-brand-500 transition-all duration-200">
-          <i class="fa-solid class-toggle-icon"></i>
-        </button>
-        
-        <a class="font-display text-xs font-semibold tracking-widest uppercase px-5 py-2.5 bg-brand-600 dark:bg-brand-500 text-white dark:text-brand-950 rounded hover:opacity-90 active:scale-[0.98] transition-all" href="dashboard.html">
-          Open Dashboard
-        </a>
-      </div>
-    </nav>
 
-    <!-- Hero Header Component -->
-    <header class="min-h-[calc(100vh-73px)] flex flex-col items-center justify-center text-center px-6 py-20 relative">
-      <div class="max-w-4xl mx-auto flex flex-col items-center">
-        <div class="font-display text-xs font-bold tracking-[0.25em] uppercase text-brand-600 dark:text-brand-500 mb-6 bg-brand-500/10 dark:bg-brand-500/5 px-4 py-1.5 rounded-full">
-          My Learning Hub · Free Access
+      <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank" rel="noopener"
+         class="flex items-center gap-3 w-full border-2 border-[#25D366] text-[#25D366] font-semibold rounded-xl px-5 py-3.5 transition-all hover:bg-[#25D366] hover:text-white hover:scale-[1.02] active:scale-95">
+        <i class="fa-solid fa-bullhorn text-xl flex-shrink-0"></i>
+        <div class="text-left">
+          <div class="text-sm font-bold">Follow the Channel</div>
+          <div class="text-xs opacity-70">Announcements & updates</div>
         </div>
-        
-        <h1 class="font-display font-light text-5xl sm:text-7xl lg:text-8xl text-brand-900 dark:text-white tracking-tight leading-[1.05] mb-6">
-          Study <span class="italic font-normal text-brand-500 block sm:inline">smarter.</span>
-        </h1>
-        
-        <p class="font-sans font-light text-base sm:text-xl text-brand-900/70 dark:text-brand-100/70 max-w-xl leading-relaxed mb-10 mt-2">
-          Flashcards, quizzes, and course practice resources — everything you need to ace your studies, completely free and open.
-        </p>
-        
-        <div class="flex flex-col sm:flex-row gap-4 justify-center w-full sm:w-auto">
-          <a class="font-display text-xs font-bold tracking-widest uppercase px-8 py-4 bg-brand-800 dark:bg-brand-500 text-white dark:text-brand-950 rounded hover:opacity-90 transition-all flex items-center justify-center gap-2" href="dashboard.html">
-            Go To Dashboard <i class="fa-solid fa-arrow-right text-[10px]"></i>
-          </a>
-          <a class="font-display text-xs font-bold tracking-widest uppercase px-8 py-4 bg-transparent border border-brand-900/20 dark:border-brand-100/10 text-brand-900/60 dark:text-brand-100/60 rounded hover:border-brand-500 hover:text-brand-500 transition-all flex items-center justify-center" href="#features">
-            See what's inside
-          </a>
-        </div>
-      </div>
-      
-      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 font-display text-[10px] font-bold tracking-[0.2em] uppercase text-brand-900/40 dark:text-brand-100/40">
-        <div class="w-[2px] h-10 bg-gradient-to-b from-brand-500 to-transparent scale-y-0 origin-top animate-scroll-line"></div>
-        <span>Scroll</span>
-      </div>
-    </header>
+        <i class="fa-solid fa-arrow-right ml-auto"></i>
+      </a>
 
-    <!-- Features -->
-    <section class="py-24 px-6 md:px-12 max-w-6xl mx-auto w-full" id="features">
-      <div class="font-display text-xs font-bold tracking-[0.2em] uppercase text-brand-500 mb-12 flex items-center gap-4">
-        <span class="w-8 h-[1px] bg-brand-500"></span> What MYLE offers
-      </div>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="reveal-item bg-white dark:bg-brand-900/30 border border-brand-200 dark:border-brand-900 rounded-xl p-8 hover:-translate-y-1 transition-all duration-300">
-          <div class="w-12 h-12 rounded-lg bg-brand-500/10 flex items-center justify-center text-brand-500 text-xl mb-6">
-            <i class="fa-solid fa-layer-group"></i>
-          </div>
-          <h3 class="font-display font-semibold text-lg text-brand-900 dark:text-white mb-3">Flashcards</h3>
-          <p class="text-sm leading-relaxed text-brand-900/60 dark:text-brand-100/60">Flip through key definitions and foundational core rules, cataloged logically by subject areas.</p>
-        </div>
-
-        <div class="reveal-item bg-white dark:bg-brand-900/30 border border-brand-200 dark:border-brand-900 rounded-xl p-8 hover:-translate-y-1 transition-all duration-300">
-          <div class="w-12 h-12 rounded-lg bg-brand-500/10 flex items-center justify-center text-brand-500 text-xl mb-6">
-            <i class="fa-solid fa-pen-to-square"></i>
-          </div>
-          <h3 class="font-display font-semibold text-lg text-brand-900 dark:text-white mb-3">Quizzes</h3>
-          <p class="text-sm leading-relaxed text-brand-900/60 dark:text-brand-100/60">Test your retention capabilities with adaptive conceptual quizzes generated directly from the study curriculum.</p>
-        </div>
-
-        <div class="reveal-item bg-white dark:bg-brand-900/30 border border-brand-200 dark:border-brand-900 rounded-xl p-8 hover:-translate-y-1 transition-all duration-300">
-          <div class="w-12 h-12 rounded-lg bg-brand-500/10 flex items-center justify-center text-brand-500 text-xl mb-6">
-            <i class="fa-solid fa-scale-balanced"></i>
-          </div>
-          <h3 class="font-display font-semibold text-lg text-brand-900 dark:text-white mb-3">Analysis</h3>
-          <p class="text-sm leading-relaxed text-brand-900/60 dark:text-brand-100/60">Deconstruct structural concepts, target specific frameworks, and systematically track patterns easily.</p>
-        </div>
-
-        <div class="reveal-item bg-white dark:bg-brand-900/30 border border-brand-200 dark:border-brand-900 rounded-xl p-8 hover:-translate-y-1 transition-all duration-300">
-          <div class="w-12 h-12 rounded-lg bg-brand-500/10 flex items-center justify-center text-brand-500 text-xl mb-6">
-            <i class="fa-solid fa-bolt"></i>
-          </div>
-          <h3 class="font-display font-semibold text-lg text-brand-900 dark:text-white mb-3">Always Live</h3>
-          <p class="text-sm leading-relaxed text-brand-900/60 dark:text-brand-100/60">Refreshed and expanded updates directly stream straight to your central user interface frame pipeline.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- How it Works -->
-    <section class="py-20 px-6 md:px-12 max-w-3xl mx-auto w-full" id="how">
-      <div class="font-display text-xs font-bold tracking-[0.2em] uppercase text-brand-500 mb-8 flex items-center gap-4">
-        <span class="w-8 h-[1px] bg-brand-500"></span> How to get started
-      </div>
-      
-      <div class="flex flex-col divide-y divide-brand-200 dark:divide-brand-900">
-        <div class="reveal-item grid grid-cols-[48px_1fr] gap-6 py-8">
-          <div class="font-display font-light text-3xl text-brand-500/30 pt-1">01</div>
-          <div>
-            <h4 class="font-display font-medium text-lg text-brand-900 dark:text-white mb-2">Click Open Dashboard</h4>
-            <p class="text-sm leading-relaxed text-brand-900/60 dark:text-brand-100/60">Skip account profile setups or credentials data captures. Reach production environments directly.</p>
-          </div>
-        </div>
-
-        <div class="reveal-item grid grid-cols-[48px_1fr] gap-6 py-8">
-          <div class="font-display font-light text-3xl text-brand-500/30 pt-1">02</div>
-          <div>
-            <h4 class="font-display font-medium text-lg text-brand-900 dark:text-white mb-2">Join Communities</h4>
-            <p class="text-sm leading-relaxed text-brand-900/60 dark:text-brand-100/60">Connect into collaborative coordination networks effortlessly when the primary framework initializes.</p>
-          </div>
-        </div>
-
-        <div class="reveal-item grid grid-cols-[48px_1fr] gap-6 py-8">
-          <div class="font-display font-light text-3xl text-brand-500/30 pt-1">03</div>
-          <div>
-            <h4 class="font-display font-medium text-lg text-brand-900 dark:text-white mb-2">Select and Study</h4>
-            <p class="text-sm leading-relaxed text-brand-900/60 dark:text-brand-100/60">Launch targeted components natively directly inside modern rendering engine views instantaneously.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Call To Action -->
-    <section class="py-28 px-6 text-center relative overflow-hidden">
-      <div class="relative z-10 max-w-xl mx-auto">
-        <h2 class="font-display font-light text-3xl sm:text-5xl text-brand-900 dark:text-white mb-4 tracking-tight leading-tight">
-          Ready to start <span class="italic font-normal text-brand-500 block">learning?</span>
-        </h2>
-        <p class="text-xs sm:text-sm tracking-widest text-brand-900/60 dark:text-brand-100/60 uppercase mb-8">Access the fully configured ecosystem below.</p>
-        <a class="font-display text-xs font-bold tracking-widest uppercase px-8 py-4 bg-brand-600 dark:bg-brand-500 text-white dark:text-brand-950 rounded hover:opacity-90 transition-all inline-flex items-center gap-2" href="dashboard.html">
-          Enter Learning Hub <i class="fa-solid fa-arrow-right text-[10px]"></i>
-        </a>
-      </div>
-    </section>
-
-    <!-- Footer Element -->
-    <footer class="mt-auto border-t border-brand-200 dark:border-brand-900 px-6 md:px-12 py-8 text-center text-[11px] font-display font-medium tracking-wider text-brand-900/50 dark:text-brand-100/40">
-      @2026 MYLE
-    </footer>
+      <button onclick="closePopup()" class="w-full text-gray-400 text-xs py-2 hover:text-gray-600 transition-colors">
+        Maybe later — take me to the site
+      </button>
+    </div>
   </div>
+</div>
 
-  <script>
-    const html = document.documentElement;
-    const btn = document.getElementById('themeToggle');
-    const icon = btn.querySelector('.class-toggle-icon');
-    
-    const savedTheme = localStorage.getItem('myle-theme') || 'dark';
-    setTheme(savedTheme);
+<!-- ════════════════════════════════════════
+     NAVBAR
+════════════════════════════════════════ -->
+<nav class="nav-blur border-b border-indigo-50 sticky top-0 z-40">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2.5">
+      <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+        <span class="text-white font-bold text-sm">M</span>
+      </div>
+      <span class="text-xl font-bold text-gray-900">MY<span class="text-indigo-600">LE</span></span>
+    </a>
 
-    btn.addEventListener('click', () => {
-      const nextTheme = html.classList.contains('dark') ? 'light' : 'dark';
-      setTheme(nextTheme);
-      localStorage.setItem('myle-theme', nextTheme);
-    });
+    <div class="hidden md:flex items-center gap-8">
+      <a href="#features" class="text-sm text-gray-500 hover:text-indigo-600 font-medium transition-colors">Features</a>
+      <a href="#how" class="text-sm text-gray-500 hover:text-indigo-600 font-medium transition-colors">How it works</a>
+      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
+         class="flex items-center gap-1.5 text-sm text-[#25D366] hover:text-[#20ba5a] font-medium transition-colors">
+        <i class="fa-brands fa-whatsapp"></i> Community
+      </a>
+    </div>
 
-    function setTheme(theme) {
-      if (theme === 'dark') {
-        html.classList.add('dark');
-        icon.className = 'fa-solid fa-sun class-toggle-icon';
-      } else {
-        html.classList.remove('dark');
-        icon.className = 'fa-solid fa-moon class-toggle-icon';
-      }
+    <a href="dashboard.html"
+       class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all btn-glow flex items-center gap-2">
+      <i class="fa-solid fa-graduation-cap text-xs"></i>
+      Start Studying
+    </a>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<section class="hero-gradient min-h-[88vh] flex items-center relative overflow-hidden">
+  <!-- Decorative circles -->
+  <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-100 rounded-full opacity-60 blur-3xl pointer-events-none"></div>
+  <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-violet-100 rounded-full opacity-50 blur-3xl pointer-events-none"></div>
+  <div class="absolute top-1/3 left-1/3 w-64 h-64 bg-emerald-50 rounded-full opacity-60 blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-20 text-center relative z-10 w-full">
+    <!-- Badge -->
+    <div class="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold px-4 py-1.5 rounded-full mb-6 animate-fade-up">
+      <i class="fa-solid fa-bolt text-amber-500"></i>
+      Free for UNEC Law Students · No Login Required
+    </div>
+
+    <h1 class="text-5xl sm:text-6xl md:text-7xl font-extrabold text-gray-900 leading-tight mb-6 animate-fade-up delay-100">
+      Study <span class="text-indigo-600">Smarter,</span><br>
+      Score <span class="bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">Higher.</span>
+    </h1>
+
+    <p class="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed animate-fade-up delay-200">
+      Flashcards, quizzes and case law practice built for <strong class="text-gray-700">100L Law at UNEC</strong> — open to every student, completely free.
+    </p>
+
+    <div class="flex flex-col sm:flex-row gap-4 justify-center items-center animate-fade-up delay-300">
+      <a href="dashboard.html"
+         class="w-full sm:w-auto flex items-center justify-center gap-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base px-8 py-4 rounded-xl transition-all btn-glow shadow-lg">
+        <i class="fa-solid fa-books"></i>
+        Open Study Dashboard
+        <i class="fa-solid fa-arrow-right text-sm"></i>
+      </a>
+      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
+         class="w-full sm:w-auto flex items-center justify-center gap-2.5 wa-green text-white font-bold text-base px-8 py-4 rounded-xl transition-all shadow-lg hover:scale-[1.02]">
+        <i class="fa-brands fa-whatsapp text-lg"></i>
+        Join the Group
+      </a>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="flex flex-wrap justify-center gap-8 mt-16 animate-fade-up delay-400">
+      <div class="text-center">
+        <div class="text-3xl font-extrabold text-indigo-600">100%</div>
+        <div class="text-xs text-gray-400 font-medium mt-1">Free Access</div>
+      </div>
+      <div class="w-px bg-gray-200 hidden sm:block"></div>
+      <div class="text-center">
+        <div class="text-3xl font-extrabold text-indigo-600">24+</div>
+        <div class="text-xs text-gray-400 font-medium mt-1">Flashcards</div>
+      </div>
+      <div class="w-px bg-gray-200 hidden sm:block"></div>
+      <div class="text-center">
+        <div class="text-3xl font-extrabold text-indigo-600">12+</div>
+        <div class="text-xs text-gray-400 font-medium mt-1">Case Studies</div>
+      </div>
+      <div class="w-px bg-gray-200 hidden sm:block"></div>
+      <div class="text-center">
+        <div class="text-3xl font-extrabold text-indigo-600">UNEC</div>
+        <div class="text-xs text-gray-400 font-medium mt-1">100L Law</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     FEATURES
+════════════════════════════════════════ -->
+<section id="features" class="py-24 bg-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-16 section-reveal">
+      <span class="text-xs font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-4 py-1.5 rounded-full">
+        What MYLE Offers
+      </span>
+      <h2 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mt-4 mb-4">
+        Everything you need to <span class="text-indigo-600">ace law school</span>
+      </h2>
+      <p class="text-gray-500 text-lg max-w-xl mx-auto">Study tools built specifically around your course materials — not generic content.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <!-- Card 1 -->
+      <div class="group bg-white border border-gray-100 rounded-2xl p-6 card-hover shadow-sm section-reveal">
+        <div class="w-12 h-12 feature-icon-bg rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <i class="fa-solid fa-cards-blank text-indigo-600 text-xl"></i>
+        </div>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">Flashcards</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Flip through legal definitions and principles organised by course topic.</p>
+      </div>
+      <!-- Card 2 -->
+      <div class="group bg-white border border-gray-100 rounded-2xl p-6 card-hover shadow-sm section-reveal">
+        <div class="w-12 h-12 bg-gradient-to-br from-violet-50 to-purple-100 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <i class="fa-solid fa-circle-question text-violet-600 text-xl"></i>
+        </div>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">Quizzes</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Test your understanding with MCQs built from real course content and past questions.</p>
+      </div>
+      <!-- Card 3 -->
+      <div class="group bg-white border border-gray-100 rounded-2xl p-6 card-hover shadow-sm section-reveal">
+        <div class="w-12 h-12 bg-gradient-to-br from-emerald-50 to-teal-100 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <i class="fa-solid fa-scale-balanced text-emerald-600 text-xl"></i>
+        </div>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">Case Law</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">Practice citing cases, understanding rationes decidendi, and tracking precedents by topic.</p>
+      </div>
+      <!-- Card 4 -->
+      <div class="group bg-white border border-gray-100 rounded-2xl p-6 card-hover shadow-sm section-reveal">
+        <div class="w-12 h-12 bg-gradient-to-br from-amber-50 to-orange-100 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform">
+          <i class="fa-solid fa-rocket text-amber-500 text-xl"></i>
+        </div>
+        <h3 class="font-bold text-gray-900 text-lg mb-2">Always Growing</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">New tools are added as new topics are covered. Check back and find fresh material waiting.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     HOW IT WORKS
+════════════════════════════════════════ -->
+<section id="how" class="py-24 mesh-bg">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-16 section-reveal">
+      <span class="text-xs font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-4 py-1.5 rounded-full">
+        Get Started in Seconds
+      </span>
+      <h2 class="text-4xl sm:text-5xl font-extrabold text-gray-900 mt-4">
+        Three steps, <span class="text-indigo-600">zero barriers</span>
+      </h2>
+    </div>
+
+    <div class="space-y-6">
+      <div class="flex gap-5 items-start bg-white rounded-2xl p-6 shadow-sm border border-gray-100 card-hover section-reveal">
+        <div class="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+          <span class="text-white font-extrabold text-lg">1</span>
+        </div>
+        <div>
+          <h4 class="font-bold text-gray-900 text-lg">Visit the dashboard</h4>
+          <p class="text-gray-500 text-sm mt-1 leading-relaxed">No sign-up, no login. Just click "Open Study Dashboard" and you're in. All tools are free and open to every student.</p>
+        </div>
+      </div>
+
+      <div class="flex gap-5 items-start bg-white rounded-2xl p-6 shadow-sm border border-gray-100 card-hover section-reveal">
+        <div class="w-12 h-12 bg-violet-600 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+          <span class="text-white font-extrabold text-lg">2</span>
+        </div>
+        <div>
+          <h4 class="font-bold text-gray-900 text-lg">Pick a study tool</h4>
+          <p class="text-gray-500 text-sm mt-1 leading-relaxed">Browse flashcard decks, quizzes, and case law sets. Filter by course or type to find exactly what you need.</p>
+        </div>
+      </div>
+
+      <div class="flex gap-5 items-start bg-white rounded-2xl p-6 shadow-sm border border-gray-100 card-hover section-reveal">
+        <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+          <span class="text-white font-extrabold text-lg">3</span>
+        </div>
+        <div>
+          <h4 class="font-bold text-gray-900 text-lg">Study and come back</h4>
+          <p class="text-gray-500 text-sm mt-1 leading-relaxed">Use any tool right in your browser — no downloads or installs. Join the WhatsApp group to know when new tools are added.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     WHATSAPP COMMUNITY BANNER
+════════════════════════════════════════ -->
+<section class="py-16 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <div class="bg-gradient-to-br from-[#25D366] to-[#128C7E] rounded-3xl p-8 sm:p-12 text-white text-center shadow-xl section-reveal overflow-hidden relative">
+      <div class="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full pointer-events-none"></div>
+      <div class="absolute -bottom-8 -left-8 w-32 h-32 bg-white/10 rounded-full pointer-events-none"></div>
+      <i class="fa-brands fa-whatsapp text-6xl mb-4 relative z-10 block"></i>
+      <h2 class="text-3xl sm:text-4xl font-extrabold mb-3 relative z-10">Join the MYLE Community</h2>
+      <p class="text-white/85 text-base max-w-lg mx-auto mb-8 relative z-10">
+        Be the first to know when new tools drop. Ask questions, share notes and study together with your classmates.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+        <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
+           class="flex items-center justify-center gap-2.5 bg-white text-[#25D366] font-bold px-8 py-3.5 rounded-xl hover:scale-105 transition-all shadow-md">
+          <i class="fa-brands fa-whatsapp text-xl"></i>
+          Join the Group
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank"
+           class="flex items-center justify-center gap-2.5 border-2 border-white text-white font-bold px-8 py-3.5 rounded-xl hover:bg-white hover:text-[#25D366] transition-all">
+          <i class="fa-solid fa-bullhorn text-xl"></i>
+          Follow the Channel
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     CTA
+════════════════════════════════════════ -->
+<section class="py-24 bg-indigo-600 relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 to-violet-700 pointer-events-none"></div>
+  <div class="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/4 pointer-events-none"></div>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center relative z-10 section-reveal">
+    <h2 class="text-4xl sm:text-5xl font-extrabold text-white mb-4">Ready to start learning?</h2>
+    <p class="text-indigo-200 text-lg mb-10">Jump in right now — no account needed. Your dashboard is one click away.</p>
+    <a href="dashboard.html"
+       class="inline-flex items-center gap-3 bg-white text-indigo-600 font-extrabold text-lg px-10 py-4 rounded-xl shadow-2xl hover:shadow-white/20 hover:scale-105 transition-all">
+      <i class="fa-solid fa-books"></i>
+      Open Study Dashboard
+      <i class="fa-solid fa-arrow-right"></i>
+    </a>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer class="bg-gray-900 text-gray-400 py-12">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-10">
+      <!-- Brand -->
+      <div>
+        <div class="flex items-center gap-2.5 mb-3">
+          <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">M</span>
+          </div>
+          <span class="text-lg font-bold text-white">MY<span class="text-indigo-400">LE</span></span>
+        </div>
+        <p class="text-sm leading-relaxed">My Learning Hub — free study tools for law students at the University of Nigeria, Enugu Campus.</p>
+      </div>
+      <!-- Links -->
+      <div>
+        <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Study</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="dashboard.html" class="hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-gauge-high text-xs"></i> Dashboard</a></li>
+          <li><a href="dashboard.html#flashcards" class="hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-cards-blank text-xs"></i> Flashcards</a></li>
+          <li><a href="dashboard.html#quizzes" class="hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-circle-question text-xs"></i> Quizzes</a></li>
+          <li><a href="dashboard.html#caselaw" class="hover:text-indigo-400 transition-colors flex items-center gap-2"><i class="fa-solid fa-scale-balanced text-xs"></i> Case Law</a></li>
+        </ul>
+      </div>
+      <!-- Community -->
+      <div>
+        <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wider">Community</h4>
+        <ul class="space-y-3 text-sm">
+          <li>
+            <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
+               class="flex items-center gap-2.5 text-[#25D366] hover:text-[#20ba5a] transition-colors font-medium">
+              <i class="fa-brands fa-whatsapp text-base"></i>
+              WhatsApp Group
+            </a>
+          </li>
+          <li>
+            <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank"
+               class="flex items-center gap-2.5 text-[#25D366] hover:text-[#20ba5a] transition-colors font-medium">
+              <i class="fa-solid fa-bullhorn text-base"></i>
+              MYLE Channel
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500">
+      <p>© 2026 MYLE · University of Nigeria, Enugu Campus · 100L Law</p>
+      <p class="flex items-center gap-1.5">Built with <i class="fa-solid fa-heart text-rose-500"></i> and Claude</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── WhatsApp popup ──
+  function closePopup() {
+    document.getElementById('waPopup').style.display = 'none';
+    sessionStorage.setItem('myle-wa-seen', '1');
+  }
+  window.addEventListener('load', () => {
+    if (!sessionStorage.getItem('myle-wa-seen')) {
+      setTimeout(() => {
+        const el = document.getElementById('waPopup');
+        el.style.removeProperty('display');
+        el.style.display = 'flex';
+      }, 1800);
     }
+  });
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, idx) => {
-        if (entry.isIntersecting) {
-          entry.target.style.transitionDelay = `${idx * 0.04}s`;
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-
-    document.querySelectorAll('.reveal-item').forEach(el => observer.observe(el));
-  </script>
+  // ── Scroll reveal ──
+  const sr = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); sr.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.section-reveal').forEach(el => sr.observe(el));
+</script>
 </body>
 </html>

@@ -1,279 +1,416 @@
 <!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard — MYLE</title>
-  
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
-  
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Font Awesome CDN -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Roboto', 'sans-serif'],
-            display: ['Poppins', 'sans-serif'],
-          },
-          colors: {
-            brand: {
-              50: '#FDFBF7',  // Cream/Bone White
-              100: '#EFEAE2', // Alabaster Tint
-              200: '#DED5C6', // Soft Sand
-              500: '#A78B71', // Warm Muted Brown
-              600: '#8C6D53', // Deep Taupe
-              800: '#4A3B32', // Espresso Brown
-              900: '#2B221E', // Dark Roasted Coffee
-              950: '#1A1412', // Near-Black Earth
-            }
-          }
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — MYLE</title>
+<meta name="description" content="Your MYLE study dashboard — flashcards, quizzes and case law for UNEC 100L Law.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234F46E5'/><text y='23' x='5' font-size='20' font-family='sans-serif' font-weight='700' fill='white'>M</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Poppins','sans-serif'] },
+      animation: {
+        'fade-up':  'fadeUp 0.5s ease forwards',
+        'fade-in':  'fadeIn 0.4s ease forwards',
+        'bounce-in':'bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards',
+      },
+      keyframes: {
+        fadeUp:   {'0%':{opacity:'0',transform:'translateY(20px)'},'100%':{opacity:'1',transform:'translateY(0)'}},
+        fadeIn:   {'0%':{opacity:'0'},'100%':{opacity:'1'}},
+        bounceIn: {'0%':{opacity:'0',transform:'scale(0.85)'},'100%':{opacity:'1',transform:'scale(1)'}},
       }
     }
-  </script>
-  <style>
-    body { transition: background-color 0.35s, color 0.35s; }
-    .tool-card-anim { opacity: 0; transform: translateY(12px); animation: fadeUp 0.4s forwards ease-out; }
-    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-  </style>
+  }
+}
+</script>
+<style>
+  * { font-family: 'Poppins', sans-serif; }
+  .nav-blur { backdrop-filter: blur(16px); background: rgba(255,255,255,0.92); }
+  .mesh-bg {
+    background-color: #f8fafc;
+    background-image: radial-gradient(at 40% 20%, hsla(240,100%,97%,1) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, hsla(270,100%,97%,1) 0px, transparent 50%),
+      radial-gradient(at 0% 50%, hsla(150,100%,97%,1) 0px, transparent 50%);
+  }
+  .card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+  .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(79,70,229,0.13); }
+  .wa-green { background:#25D366; }
+  .wa-green:hover { background:#20ba5a; }
+  .type-badge { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+  .filter-active { background:#4f46e5; color:white; border-color:#4f46e5; }
+  .tool-card-enter { opacity:0; transform:translateY(16px); animation: fadeUp 0.45s ease forwards; }
+  .popup-overlay { background: rgba(0,0,0,0.45); backdrop-filter: blur(4px); }
+</style>
 </head>
-<body class="bg-brand-50 text-brand-900 dark:bg-brand-950 dark:text-brand-100 font-sans antialiased relative min-h-screen">
+<body class="mesh-bg text-gray-800 min-h-screen">
 
-  <div class="relative z-10 flex flex-col min-h-screen">
-    
-    <!-- Navbar -->
-    <nav class="sticky top-0 z-40 backdrop-blur-md bg-brand-50/80 dark:bg-brand-950/80 border-b border-brand-200 dark:border-brand-900 px-6 md:px-12 py-4 flex items-center justify-between">
-      <a class="font-display font-bold text-2xl tracking-wider text-brand-900 dark:text-white" href="index.html">
-        MY<span class="text-brand-500">LE</span>
+<!-- ════ WHATSAPP POPUP ════ -->
+<div id="waPopup" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 popup-overlay" style="display:none!important">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-bounce-in">
+    <div class="wa-green p-5 text-white text-center relative">
+      <button onclick="closePopup()" class="absolute top-3 right-4 text-white/70 hover:text-white text-xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+      <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+      </div>
+      <h3 class="text-xl font-bold">Join the MYLE Community</h3>
+      <p class="text-white/85 text-sm mt-1">Connect with your fellow classmates</p>
+    </div>
+    <div class="p-6 space-y-3">
+      <p class="text-gray-500 text-sm text-center leading-relaxed">Get notified when new study tools drop and never miss an update.</p>
+      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
+         class="flex items-center gap-3 w-full wa-green text-white font-semibold rounded-xl px-5 py-3.5 transition-all hover:scale-[1.02]">
+        <i class="fa-brands fa-whatsapp text-xl"></i>
+        <div class="text-left"><div class="text-sm font-bold">Join the WhatsApp Group</div><div class="text-xs text-white/80">Chat with fellow law students</div></div>
+        <i class="fa-solid fa-arrow-right ml-auto"></i>
       </a>
-      
-      <div class="flex items-center gap-4">
-        <span class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold font-display uppercase tracking-wider rounded-full bg-amber-500/10 text-amber-700 dark:text-brand-200 border border-brand-500/20">
-          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span> Ecosystem Active
-        </span>
+      <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank"
+         class="flex items-center gap-3 w-full border-2 border-[#25D366] text-[#25D366] font-semibold rounded-xl px-5 py-3.5 transition-all hover:bg-[#25D366] hover:text-white hover:scale-[1.02]">
+        <i class="fa-solid fa-bullhorn text-xl"></i>
+        <div class="text-left"><div class="text-sm font-bold">Follow the Channel</div><div class="text-xs opacity-70">Announcements & updates</div></div>
+        <i class="fa-solid fa-arrow-right ml-auto"></i>
+      </a>
+      <button onclick="closePopup()" class="w-full text-gray-400 text-xs py-2 hover:text-gray-600 transition-colors">Maybe later — continue studying</button>
+    </div>
+  </div>
+</div>
 
-        <button id="themeToggle" aria-label="Toggle theme" class="w-10 h-10 rounded-full border border-brand-200 dark:border-brand-900 flex items-center justify-center text-brand-900/60 dark:text-brand-100/60 hover:text-brand-500 transition-all duration-200">
-          <i class="fa-solid class-toggle-icon"></i>
-        </button>
+<!-- ════ NAV ════ -->
+<nav class="nav-blur border-b border-gray-100 sticky top-0 z-40">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2.5">
+      <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+        <span class="text-white font-bold text-sm">M</span>
       </div>
-    </nav>
+      <span class="text-xl font-bold text-gray-900">MY<span class="text-indigo-600">LE</span></span>
+    </a>
+    <div class="hidden md:flex items-center gap-6">
+      <span class="flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+        <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> Free Access
+      </span>
+      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
+         class="flex items-center gap-1.5 text-sm text-[#25D366] hover:text-[#20ba5a] font-semibold transition-colors">
+        <i class="fa-brands fa-whatsapp text-base"></i> Community
+      </a>
+    </div>
+    <a href="index.html" class="flex items-center gap-2 text-sm text-gray-500 hover:text-indigo-600 font-medium transition-colors">
+      <i class="fa-solid fa-house text-xs"></i>
+      <span class="hidden sm:inline">Home</span>
+    </a>
+  </div>
+</nav>
 
-    <!-- Main Workspace Frame -->
-    <main class="flex-grow w-full max-w-6xl mx-auto px-6 py-12">
-      
-      <!-- Loader State -->
-      <div id="loadingScreen" class="flex flex-col items-center justify-center min-h-[50vh] gap-4">
-        <div class="w-6 h-6 border-2 border-brand-200 dark:border-brand-900 border-t-brand-500 rounded-full animate-spin"></div>
+<!-- ════ PAGE HEADER ════ -->
+<div class="bg-gradient-to-br from-indigo-600 to-violet-700 text-white py-10 px-4 sm:px-6 relative overflow-hidden">
+  <div class="absolute -top-10 -right-10 w-48 h-48 bg-white/5 rounded-full pointer-events-none"></div>
+  <div class="absolute bottom-0 left-1/4 w-32 h-32 bg-white/5 rounded-full pointer-events-none"></div>
+  <div class="max-w-6xl mx-auto relative z-10">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <p class="text-indigo-200 text-xs font-semibold uppercase tracking-widest mb-1">
+          <i class="fa-solid fa-graduation-cap mr-1"></i> UNEC · 100L Law · 2026
+        </p>
+        <h1 class="text-3xl sm:text-4xl font-extrabold">Study Dashboard</h1>
+        <p class="text-indigo-200 text-sm mt-1">Pick a tool below and start studying — no account needed.</p>
       </div>
-
-      <!-- Dashboard Panel Workspace -->
-      <div id="mainContent" class="hidden">
-        
-        <!-- Header area -->
-        <div class="mb-12">
-          <div class="font-display text-xs font-bold tracking-widest text-brand-500 uppercase mb-2" id="greetingTime">Welcome</div>
-          <h1 class="font-display font-light text-3xl sm:text-4xl text-brand-900 dark:text-white leading-tight">
-            Select a <span class="italic font-normal text-brand-500">Study Tool</span>
-          </h1>
+      <div class="flex items-center gap-3 bg-white/10 rounded-2xl p-4 backdrop-blur-sm border border-white/20">
+        <div class="text-center px-3">
+          <div class="text-2xl font-extrabold" id="toolCount">—</div>
+          <div class="text-indigo-200 text-xs">Tools</div>
         </div>
-
-        <!-- Filter Selectors -->
-        <div class="flex gap-2 flex-wrap mb-8" id="filterBar"></div>
-
-        <!-- Tracker Line Headers -->
-        <div class="flex items-center justify-between mb-6 border-b border-brand-200 dark:border-brand-900 pb-2">
-          <div class="font-display text-[11px] font-bold uppercase tracking-widest text-brand-900/40 dark:text-brand-100/40">Available Registries</div>
-          <div class="font-display text-[11px] font-medium tracking-wide text-brand-900/40 dark:text-brand-100/40" id="countBadge"></div>
+        <div class="w-px h-10 bg-white/20"></div>
+        <div class="text-center px-3">
+          <div class="text-2xl font-extrabold">100%</div>
+          <div class="text-indigo-200 text-xs">Free</div>
         </div>
-
-        <!-- Dynamic Grid Matrix -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-16" id="toolsGrid"></div>
+        <div class="w-px h-10 bg-white/20"></div>
+        <div class="text-center px-3">
+          <div class="text-2xl font-extrabold">PUL</div>
+          <div class="text-indigo-200 text-xs">101</div>
+        </div>
       </div>
-    </main>
+    </div>
+  </div>
+</div>
 
-    <!-- Footer Component -->
-    <footer class="border-t border-brand-200 dark:border-brand-900 px-6 md:px-12 py-6 text-center text-[11px] font-display font-medium tracking-wider text-brand-900/50 dark:text-brand-100/40">
-      @2026 MYLE
-    </footer>
+<!-- ════ MAIN CONTENT ════ -->
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+
+  <!-- Search + Filters -->
+  <div class="flex flex-col sm:flex-row gap-3 mb-8">
+    <div class="relative flex-1">
+      <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+      <input id="searchInput" type="text" placeholder="Search tools..." oninput="renderTools()"
+        class="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all shadow-sm">
+    </div>
+    <div class="flex gap-2 flex-wrap" id="filterBar"></div>
   </div>
 
-  <!-- Action Notification Popup Modal Area -->
-  <div id="communityModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
-    <div class="bg-white dark:bg-brand-900 border border-brand-200 dark:border-brand-800 rounded-xl w-full max-w-md p-6 shadow-xl transform scale-95 transition-transform duration-300 relative z-10" id="modalBox">
-      
-      <div class="text-center mb-6">
-        <div class="w-12 h-12 bg-brand-500/10 text-brand-500 rounded-full flex items-center justify-center text-xl mx-auto mb-3">
-          <i class="fa-solid fa-hashtag"></i>
-        </div>
-        <h3 class="font-display font-semibold text-lg text-brand-900 dark:text-white mb-1">Join Our Communities</h3>
-        <p class="text-xs text-brand-900/60 dark:text-brand-100/60 max-w-xs mx-auto">Stay synchronized with upcoming platform tools updates and material notifications instantly.</p>
-      </div>
-
-      <div class="space-y-2 mb-6">
-        <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank" rel="noopener" class="flex items-center justify-between p-3.5 bg-brand-50/50 dark:bg-brand-950/40 hover:bg-brand-100 dark:hover:bg-brand-950 border border-brand-200 dark:border-brand-800 rounded-lg group transition-all">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-users text-brand-500 text-sm"></i>
-            <div class="text-left">
-              <div class="font-display text-[11px] font-bold text-brand-900 dark:text-white uppercase tracking-wider">Community Chat</div>
-            </div>
-          </div>
-          <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-brand-900/30 group-hover:text-brand-500 transition-all"></i>
-        </a>
-
-        <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank" rel="noopener" class="flex items-center justify-between p-3.5 bg-brand-50/50 dark:bg-brand-950/40 hover:bg-brand-100 dark:hover:bg-brand-950 border border-brand-200 dark:border-brand-800 rounded-lg group transition-all">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-bullhorn text-brand-500 text-sm"></i>
-            <div class="text-left">
-              <div class="font-display text-[11px] font-bold text-brand-900 dark:text-white uppercase tracking-wider">Updates Channel</div>
-            </div>
-          </div>
-          <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-brand-900/30 group-hover:text-brand-500 transition-all"></i>
-        </a>
-      </div>
-
-      <button id="closeModalBtn" class="w-full py-2.5 text-[10px] font-display font-semibold tracking-widest text-center uppercase text-brand-900/40 dark:text-brand-100/40 hover:text-brand-500 bg-brand-100/40 dark:bg-brand-950 rounded-lg transition-colors">
-        Proceed to dashboard
+  <!-- Results count -->
+  <div class="flex items-center justify-between mb-5">
+    <p class="text-sm text-gray-500" id="resultsLabel">Loading tools…</p>
+    <div class="flex items-center gap-2">
+      <button onclick="setView('grid')" id="viewGrid" class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-indigo-400 hover:text-indigo-600 transition-all bg-white">
+        <i class="fa-solid fa-grid-2 text-sm"></i>
+      </button>
+      <button onclick="setView('list')" id="viewList" class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-indigo-400 hover:text-indigo-600 transition-all bg-white">
+        <i class="fa-solid fa-list text-sm"></i>
       </button>
     </div>
   </div>
 
-  <!-- Dynamic Controller Execution Module Code Structure -->
-  <script type="module">
-    // Dynamically importing external module configuration variables
-    import { tools, typeConfig } from './tools.config.js';
+  <!-- Tools Grid -->
+  <div id="toolsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16"></div>
 
-    function init() {
-      // Clear Loader Status Panels immediately
-      document.getElementById('loadingScreen').classList.add('hidden');
-      document.getElementById('mainContent').classList.remove('hidden');
+  <!-- Empty state -->
+  <div id="emptyState" class="hidden text-center py-20">
+    <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+      <i class="fa-solid fa-magnifying-glass text-indigo-400 text-2xl"></i>
+    </div>
+    <h3 class="text-lg font-bold text-gray-800 mb-2">No tools found</h3>
+    <p class="text-gray-500 text-sm">Try a different search or filter.</p>
+  </div>
 
-      // Initialize temporal contextual greetings text details
-      const hour = new Date().getHours();
-      document.getElementById('greetingTime').textContent = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  <!-- WhatsApp strip -->
+  <div class="rounded-2xl overflow-hidden shadow-md border border-green-100">
+    <div class="bg-gradient-to-r from-[#25D366] to-[#128C7E] p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6">
+      <div class="flex-shrink-0 w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
+        <i class="fa-brands fa-whatsapp text-white text-3xl"></i>
+      </div>
+      <div class="text-white text-center sm:text-left flex-1">
+        <h3 class="font-bold text-lg">Don't miss new study tools</h3>
+        <p class="text-white/80 text-sm mt-0.5">Join the MYLE community to get notified when new flashcards and quizzes are added.</p>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+        <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
+           class="flex items-center gap-2 bg-white text-[#25D366] font-bold text-sm px-5 py-2.5 rounded-xl hover:scale-105 transition-all shadow-md">
+          <i class="fa-brands fa-whatsapp"></i> Join Group
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank"
+           class="flex items-center gap-2 border-2 border-white text-white font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-white hover:text-[#25D366] transition-all">
+          <i class="fa-solid fa-bullhorn"></i> Channel
+        </a>
+      </div>
+    </div>
+  </div>
+</main>
 
-      // Build out structural sorting pipelines automatically 
-      const uniqueTypes = ['all', ...new Set(tools.map(t => t.type))];
-      const filterBar = document.getElementById('filterBar');
+<!-- ════ FOOTER ════ -->
+<footer class="bg-gray-900 text-gray-400 py-10">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6">
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-6 mb-6">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+          <span class="text-white font-bold text-sm">M</span>
+        </div>
+        <span class="text-lg font-bold text-white">MY<span class="text-indigo-400">LE</span></span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
+           class="flex items-center gap-2 text-[#25D366] hover:text-[#20ba5a] text-sm font-semibold transition-colors">
+          <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp Group
+        </a>
+        <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank"
+           class="flex items-center gap-2 text-[#25D366] hover:text-[#20ba5a] text-sm font-semibold transition-colors">
+          <i class="fa-solid fa-bullhorn text-base"></i> Channel
+        </a>
+      </div>
+    </div>
+    <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+      <p>© 2026 MYLE · University of Nigeria, Enugu Campus · 100L Law</p>
+      <p class="flex items-center gap-1.5">Built with <i class="fa-solid fa-heart text-rose-500"></i> and Claude</p>
+    </div>
+  </div>
+</footer>
 
-      uniqueTypes.forEach(type => {
-        const btn = document.createElement('button');
-        btn.className = 'font-display text-[10px] font-bold tracking-widest uppercase border rounded single-filter-btn px-4 py-2 transition-all ' + 
-                        (type === 'all' 
-                          ? 'bg-brand-800 dark:bg-brand-500 border-brand-800 dark:border-brand-500 text-white dark:text-brand-950' 
-                          : 'border-brand-200 dark:border-brand-900 text-brand-900/60 dark:text-brand-100/60 hover:border-brand-500 hover:text-brand-500');
-        btn.textContent = type === 'all' ? 'All tools' : (typeConfig[type]?.label || type);
-        
-        btn.onclick = () => {
-          document.querySelectorAll('.single-filter-btn').forEach(b => {
-            b.className = 'font-display text-[10px] font-bold tracking-widest uppercase border rounded single-filter-btn px-4 py-2 transition-all border-brand-200 dark:border-brand-900 text-brand-900/60 dark:text-brand-100/60 hover:border-brand-500 hover:text-brand-500';
-          });
-          btn.className = 'font-display text-[10px] font-bold tracking-widest uppercase border rounded single-filter-btn px-4 py-2 transition-all bg-brand-800 dark:bg-brand-500 border-brand-800 dark:border-brand-500 text-white dark:text-brand-950';
-          renderTools(type);
-        };
-        filterBar.appendChild(btn);
-      });
+<script>
+// ════════════════════════════════════════
+//  TOOLS REGISTRY — add new tools here
+//  Just add a new object to this array
+// ════════════════════════════════════════
+const tools = [
+  {
+    id: 'pul101-flashcards',
+    title: 'PUL 101 Flashcards',
+    subtitle: 'Key legal concepts and definitions',
+    course: 'PUL 101',
+    type: 'flashcards',
+    file: 'tools/pul101_flashcards.html',
+    count: 24,
+    countLabel: 'cards',
+    added: '2026-06-01',
+  },
+  {
+    id: 'case-law-chieftaincy',
+    title: 'Case Law Practice',
+    subtitle: 'Chieftaincy law — rationes decidendi',
+    course: 'PUL 101',
+    type: 'case-law',
+    file: 'tools/case_law_practice.html',
+    count: 12,
+    countLabel: 'cases',
+    added: '2026-06-01',
+  },
+  // ── ADD NEW TOOLS BELOW ──────────────────
+  // {
+  //   id: 'unique-id',
+  //   title: 'Tool Title',
+  //   subtitle: 'Short description',
+  //   course: 'PUL 101',
+  //   type: 'quiz',          // flashcards | quiz | case-law | notes
+  //   file: 'tools/filename.html',
+  //   count: 20,
+  //   countLabel: 'questions',
+  //   added: '2026-06-XX',
+  // },
+];
 
-      renderTools('all');
-      triggerCommunityModal();
-    }
+const typeConfig = {
+  'flashcards': { icon: 'fa-solid fa-cards-blank',      label: 'Flashcards', bg: 'bg-indigo-50',  text: 'text-indigo-600',  border: 'border-indigo-200',  badge: 'bg-indigo-100 text-indigo-700' },
+  'quiz':       { icon: 'fa-solid fa-circle-question',  label: 'Quiz',       bg: 'bg-violet-50',  text: 'text-violet-600',  border: 'border-violet-200',  badge: 'bg-violet-100 text-violet-700' },
+  'case-law':   { icon: 'fa-solid fa-scale-balanced',   label: 'Case Law',   bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200', badge: 'bg-emerald-100 text-emerald-700' },
+  'notes':      { icon: 'fa-solid fa-file-lines',       label: 'Notes',      bg: 'bg-amber-50',   text: 'text-amber-600',   border: 'border-amber-200',   badge: 'bg-amber-100 text-amber-700' },
+};
 
-    function renderTools(filter) {
-      const grid = document.getElementById('toolsGrid');
-      const badge = document.getElementById('countBadge');
-      const filtered = filter === 'all' ? tools : tools.filter(t => t.type === filter);
+// ── State ──
+let activeFilter = 'all';
+let currentView  = 'grid';
 
-      badge.textContent = `${filtered.length} resource${filtered.length !== 1 ? 's' : ''}`;
-      grid.innerHTML = '';
+// ── Init ──
+document.getElementById('toolCount').textContent = tools.length;
+buildFilterBar();
+renderTools();
 
-      filtered.forEach((tool, i) => {
-        const cfg = typeConfig[tool.type] || { icon: 'fa-cube', label: tool.type, color: '#A78B71' };
-        const card = document.createElement('a');
-        
-        card.className = 'tool-card-anim bg-white dark:bg-brand-900/20 border border-brand-200 dark:border-brand-900 rounded-xl p-6 hover:-translate-y-1 transition-all duration-300 block relative overflow-hidden group';
-        // When clicked, leads directly to the extracted target file URL path 
-        card.href = tool.file;
-        card.style.animationDelay = `${i * 0.03}s`;
+// ── WhatsApp popup ──
+function closePopup() {
+  document.getElementById('waPopup').style.display = 'none';
+  sessionStorage.setItem('myle-wa-seen', '1');
+}
+window.addEventListener('load', () => {
+  if (!sessionStorage.getItem('myle-wa-seen')) {
+    setTimeout(() => {
+      const el = document.getElementById('waPopup');
+      el.style.removeProperty('display');
+      el.style.display = 'flex';
+    }, 2000);
+  }
+});
 
-        const topBar = document.createElement('div');
-        topBar.className = 'absolute top-0 left-0 right-0 h-[2px] scale-x-0 group-hover:scale-x-100 transition-transform origin-left';
-        topBar.style.backgroundColor = cfg.color;
-        card.appendChild(topBar);
+// ── View toggle ──
+function setView(v) {
+  currentView = v;
+  document.getElementById('viewGrid').classList.toggle('border-indigo-400', v === 'grid');
+  document.getElementById('viewGrid').classList.toggle('text-indigo-600', v === 'grid');
+  document.getElementById('viewList').classList.toggle('border-indigo-400', v === 'list');
+  document.getElementById('viewList').classList.toggle('text-indigo-600', v === 'list');
+  renderTools();
+}
 
-        let metricLabel = '';
-        if (tool.cards) metricLabel = `${tool.cards} items`;
-        else if (tool.cases) metricLabel = `${tool.cases} items`;
+// ── Filter bar ──
+function buildFilterBar() {
+  const bar = document.getElementById('filterBar');
+  const types = ['all', ...new Set(tools.map(t => t.type))];
+  bar.innerHTML = '';
+  types.forEach(type => {
+    const btn = document.createElement('button');
+    const cfg = typeConfig[type];
+    const label = type === 'all' ? 'All Tools' : cfg?.label || type;
+    btn.textContent = label;
+    btn.dataset.type = type;
+    btn.className = `px-4 py-2.5 text-xs font-semibold rounded-xl border transition-all whitespace-nowrap ${
+      type === activeFilter ? 'filter-active border-indigo-600' : 'bg-white border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600'
+    }`;
+    btn.onclick = () => { activeFilter = type; buildFilterBar(); renderTools(); };
+    bar.appendChild(btn);
+  });
+}
 
-        card.innerHTML += `
-          <div class="flex items-center gap-2 text-[10px] font-bold font-display uppercase tracking-wider mb-4" style="color: ${cfg.color}">
-            <i class="fa-solid ${cfg.icon}"></i> ${cfg.label}
+// ── Render tools ──
+function renderTools() {
+  const query = document.getElementById('searchInput').value.toLowerCase().trim();
+  const filtered = tools.filter(t => {
+    const matchType   = activeFilter === 'all' || t.type === activeFilter;
+    const matchSearch = !query || t.title.toLowerCase().includes(query) ||
+      t.subtitle.toLowerCase().includes(query) || t.course.toLowerCase().includes(query);
+    return matchType && matchSearch;
+  });
+
+  const grid  = document.getElementById('toolsGrid');
+  const empty = document.getElementById('emptyState');
+  const label = document.getElementById('resultsLabel');
+
+  label.textContent = `${filtered.length} tool${filtered.length !== 1 ? 's' : ''} available`;
+  grid.className = currentView === 'grid'
+    ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16'
+    : 'flex flex-col gap-3 mb-16';
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  grid.innerHTML = '';
+
+  filtered.forEach((tool, i) => {
+    const cfg = typeConfig[tool.type] || typeConfig['notes'];
+    const el  = document.createElement('a');
+    el.href   = tool.file;
+    el.target = '_blank';
+    el.rel    = 'noopener noreferrer';
+    el.style.animationDelay = (i * 0.07) + 's';
+
+    if (currentView === 'grid') {
+      el.className = 'tool-card-enter bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-4 card-hover shadow-sm cursor-pointer no-underline group';
+      el.innerHTML = `
+        <div class="flex items-start justify-between">
+          <div class="w-12 h-12 ${cfg.bg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+            <i class="${cfg.icon} ${cfg.text} text-xl"></i>
           </div>
-          <h3 class="font-display font-semibold text-base text-brand-900 dark:text-white mb-1 leading-snug">${tool.title}</h3>
-          <p class="text-xs text-brand-900/60 dark:text-brand-100/60 leading-relaxed mb-6">${tool.subtitle}</p>
-          <div class="flex items-center justify-between text-[11px] font-medium tracking-wide">
-            <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/10">${tool.course}</span>
-            <span class="flex items-center gap-2 text-brand-900/40 dark:text-brand-100/40">
-              ${metricLabel ? `<span>${metricLabel}</span>` : ''}
-              <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform" style="color: ${cfg.color}"></i>
-            </span>
+          <span class="type-badge ${cfg.badge} px-2.5 py-1 rounded-lg">${cfg.label}</span>
+        </div>
+        <div class="flex-1">
+          <h3 class="font-bold text-gray-900 text-base leading-snug mb-1">${tool.title}</h3>
+          <p class="text-gray-500 text-sm leading-relaxed">${tool.subtitle}</p>
+        </div>
+        <div class="flex items-center justify-between pt-2 border-t border-gray-50">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">${tool.course}</span>
+            ${tool.count ? `<span class="text-xs text-gray-400"><i class="fa-solid fa-layer-group mr-1"></i>${tool.count} ${tool.countLabel}</span>` : ''}
           </div>
-        `;
-        grid.appendChild(card);
-      });
+          <span class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white group-hover:bg-indigo-700 transition-colors shadow-sm">
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </span>
+        </div>
+      `;
+    } else {
+      el.className = 'tool-card-enter bg-white rounded-xl border border-gray-100 px-5 py-4 flex items-center gap-5 card-hover shadow-sm cursor-pointer no-underline group';
+      el.innerHTML = `
+        <div class="w-10 h-10 ${cfg.bg} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+          <i class="${cfg.icon} ${cfg.text} text-lg"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-0.5">
+            <h3 class="font-bold text-gray-900 text-sm truncate">${tool.title}</h3>
+            <span class="type-badge ${cfg.badge} px-2 py-0.5 rounded-md flex-shrink-0">${cfg.label}</span>
+          </div>
+          <p class="text-gray-500 text-xs truncate">${tool.subtitle}</p>
+        </div>
+        <div class="flex items-center gap-3 flex-shrink-0">
+          <span class="hidden sm:inline text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">${tool.course}</span>
+          <span class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white group-hover:bg-indigo-700 transition-colors">
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </span>
+        </div>
+      `;
     }
-
-    function triggerCommunityModal() {
-      if (!sessionStorage.getItem('myle-community-alerted')) {
-        setTimeout(() => {
-          const modal = document.getElementById('communityModal');
-          const box = document.getElementById('modalBox');
-          modal.classList.remove('opacity-0', 'pointer-events-none');
-          box.classList.remove('scale-95');
-        }, 600);
-      }
-    }
-
-    document.getElementById('closeModalBtn').addEventListener('click', () => {
-      const modal = document.getElementById('communityModal');
-      const box = document.getElementById('modalBox');
-      modal.classList.add('opacity-0', 'pointer-events-none');
-      box.classList.add('scale-95');
-      sessionStorage.setItem('myle-community-alerted', 'true');
-    });
-
-    init();
-
-    // Theme logic Core Rules Block Setup Configuration Mappings 
-    const html = document.documentElement;
-    const themeBtn = document.getElementById('themeToggle');
-    const themeIcon = themeBtn.querySelector('.class-toggle-icon');
-    const savedTheme = localStorage.getItem('myle-theme') || 'dark';
-    
-    setTheme(savedTheme);
-    themeBtn.addEventListener('click', () => {
-      const activeTheme = html.classList.contains('dark') ? 'light' : 'dark';
-      setTheme(activeTheme);
-      localStorage.setItem('myle-theme', activeTheme);
-    });
-
-    function setTheme(t) {
-      if (t === 'dark') {
-        html.classList.add('dark');
-        themeIcon.className = 'fa-solid fa-sun class-toggle-icon';
-      } else {
-        html.classList.remove('dark');
-        themeIcon.className = 'fa-solid fa-moon class-toggle-icon';
-      }
-    }
-  </script>
+    grid.appendChild(el);
+  });
+}
+</script>
 </body>
 </html>
