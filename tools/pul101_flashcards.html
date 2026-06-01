@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PUL 101 — Legal Concepts Flashcards</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF6F0;
+    --dark: #1C1208;
+    --amber: #C07722;
+    --brown: #5C3D1E;
+    --light-brown: #8B6340;
+    --parchment: #F0E8D8;
+    --shadow: rgba(28,18,8,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--dark);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(192,119,34,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(92,61,30,0.2) 0%, transparent 50%);
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+    animation: fadeDown 0.6s ease both;
+  }
+
+  header .tag {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 5vw, 32px);
+    color: var(--cream);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  header p {
+    color: var(--light-brown);
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  /* Progress */
+  .progress-bar-wrap {
+    width: 100%;
+    max-width: 560px;
+    margin-bottom: 20px;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  .progress-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--light-brown);
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--amber), #E8A040);
+    border-radius: 99px;
+    transition: width 0.4s ease;
+  }
+
+  /* Card scene */
+  .card-scene {
+    width: 100%;
+    max-width: 560px;
+    perspective: 1200px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .card-inner {
+    position: relative;
+    width: 100%;
+    min-height: 280px;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .card-inner.flipped {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    min-height: 280px;
+    backface-visibility: hidden;
+    border-radius: 16px;
+    padding: 36px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .card-front {
+    background: var(--parchment);
+    border: 1.5px solid rgba(192,119,34,0.25);
+    box-shadow: 0 8px 40px var(--shadow), 0 1px 0 rgba(255,255,255,0.5) inset;
+  }
+
+  .card-back {
+    background: var(--brown);
+    border: 1.5px solid rgba(192,119,34,0.3);
+    box-shadow: 0 8px 40px var(--shadow);
+    transform: rotateY(180deg);
+  }
+
+  .card-label {
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    font-weight: 500;
+    margin-bottom: 16px;
+    opacity: 0.55;
+  }
+
+  .card-front .card-label { color: var(--brown); }
+  .card-back .card-label { color: var(--parchment); }
+
+  .card-category {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .card-question {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(17px, 3.5vw, 22px);
+    color: var(--dark);
+    line-height: 1.45;
+    font-weight: 700;
+  }
+
+  .card-answer {
+    font-size: clamp(13px, 2.5vw, 15px);
+    color: var(--cream);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  .card-answer strong {
+    color: #E8C080;
+    font-weight: 500;
+  }
+
+  .tap-hint {
+    font-size: 11px;
+    color: var(--light-brown);
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    opacity: 0.7;
+  }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    max-width: 560px;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 13px 16px;
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .btn-prev {
+    background: rgba(255,255,255,0.06);
+    color: var(--cream);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .btn-prev:hover { background: rgba(255,255,255,0.1); }
+
+  .btn-next {
+    background: var(--amber);
+    color: var(--dark);
+    font-weight: 600;
+  }
+
+  .btn-next:hover { background: #D48830; transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.3; cursor: default; transform: none; }
+
+  /* Category filter */
+  .category-filter {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 560px;
+    margin-bottom: 20px;
+    animation: fadeDown 0.65s ease both;
+  }
+
+  .filter-btn {
+    padding: 5px 13px;
+    border-radius: 99px;
+    border: 1px solid rgba(192,119,34,0.3);
+    background: transparent;
+    color: var(--light-brown);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--amber);
+    color: var(--dark);
+    border-color: var(--amber);
+    font-weight: 600;
+  }
+
+  /* Score */
+  .score-row {
+    display: flex;
+    gap: 16px;
+    max-width: 560px;
+    width: 100%;
+    margin-top: 20px;
+    animation: fadeUp 0.9s ease both;
+  }
+
+  .score-card {
+    flex: 1;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .score-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: var(--cream);
+    font-weight: 700;
+  }
+
+  .score-num.green { color: #7EC87E; }
+  .score-num.red { color: #E07070; }
+
+  .score-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--light-brown);
+    margin-top: 2px;
+  }
+
+  .mark-btns {
+    display: flex;
+    gap: 10px;
+    max-width: 560px;
+    width: 100%;
+    margin-top: 10px;
+    animation: fadeUp 0.85s ease both;
+  }
+
+  .mark-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .mark-got { background: rgba(126,200,126,0.15); color: #7EC87E; border: 1px solid rgba(126,200,126,0.3); }
+  .mark-got:hover { background: rgba(126,200,126,0.25); }
+  .mark-missed { background: rgba(224,112,112,0.15); color: #E07070; border: 1px solid rgba(224,112,112,0.3); }
+  .mark-missed:hover { background: rgba(224,112,112,0.25); }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .shuffle-btn {
+    background: transparent;
+    border: 1px solid rgba(192,119,34,0.3);
+    color: var(--amber);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    padding: 5px 13px;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+
+  .shuffle-btn:hover { background: rgba(192,119,34,0.1); }
+
+  .complete-msg {
+    font-family: 'Playfair Display', serif;
+    color: var(--amber);
+    font-size: 18px;
+    text-align: center;
+    margin-top: 10px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">PUL 101 · Legal Methods</div>
+  <h1>Legal Concepts Flashcards</h1>
+  <p>Tap card to reveal · Mark yourself · Track progress</p>
+</header>
+
+<div class="category-filter" id="filterRow"></div>
+
+<div class="progress-bar-wrap">
+  <div class="progress-info">
+    <span id="cardCount">Card 1 of 30</span>
+    <span id="pctText">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+</div>
+
+<div class="card-scene">
+  <div class="card-inner" id="cardInner" onclick="flipCard()">
+    <div class="card-face card-front" id="cardFront">
+      <div class="card-category" id="cardCategory"></div>
+      <div class="card-label">Question</div>
+      <div class="card-question" id="cardQuestion"></div>
+      <div class="tap-hint">👆 Tap to reveal answer</div>
+    </div>
+    <div class="card-face card-back" id="cardBack">
+      <div class="card-label">Answer</div>
+      <div class="card-answer" id="cardAnswer"></div>
+    </div>
+  </div>
+</div>
+
+<div class="mark-btns" id="markBtns" style="display:none">
+  <button class="mark-btn mark-got" onclick="markCard(true)">✓ Got it</button>
+  <button class="mark-btn mark-missed" onclick="markCard(false)">✗ Missed</button>
+</div>
+
+<div class="controls">
+  <button class="btn btn-prev" id="prevBtn" onclick="prevCard()">← Prev</button>
+  <button class="btn btn-next" id="nextBtn" onclick="nextCard()">Next →</button>
+</div>
+
+<div class="score-row">
+  <div class="score-card">
+    <div class="score-num" id="totalSeen">0</div>
+    <div class="score-label">Seen</div>
+  </div>
+  <div class="score-card">
+    <div class="score-num green" id="gotScore">0</div>
+    <div class="score-label">Got It</div>
+  </div>
+  <div class="score-card">
+    <div class="score-num red" id="missedScore">0</div>
+    <div class="score-label">Missed</div>
+  </div>
+</div>
+
+<button class="shuffle-btn" onclick="shuffleDeck()">🔀 Shuffle Deck</button>
+<div class="complete-msg" id="completeMsg">🎓 Deck complete! Well done, Freedom.</div>
+
+<script>
+const ALL_CARDS = [
+  // Law & Order
+  { cat: "Law & Order", q: "What does 'order' mean in legal context?", a: "Putting people and things in <strong>proper and correct places</strong> so they work harmoniously in accordance with law, for the benefit of society." },
+  { cat: "Law & Order", q: "What does S.14(2)(b) CFRN 1999 state?", a: "<strong>'The security and welfare of the people shall be the primary purpose of government.'</strong> — making protection of life and property government's primary duty." },
+  { cat: "Law & Order", q: "What is jus ad bellum?", a: "Latin: the <strong>law on the right to use force</strong>. Internationally, use of force is prohibited except in self-defence or UN enforcement actions." },
+  { cat: "Law & Order", q: "What is jus in bello?", a: "Latin: the <strong>law that regulates warfare</strong> once war has commenced — covering the type of instruments used and persons to be respected." },
+  { cat: "Law & Order", q: "What court convicted Jean Bemba Gombo for crimes against humanity?", a: "The <strong>International Criminal Court (ICC)</strong>." },
+
+  // Law & Justice
+  { cat: "Law & Justice", q: "What is the maxim 'clean hands' associated with?", a: "Equity — <strong>'He who comes to equity must come with clean hands.'</strong> Justice requires the party seeking it to have acted fairly." },
+  { cat: "Law & Justice", q: "Who are the three parties in the 'three-way traffic' of justice?", a: "1. <strong>Complainant</strong> (brings the case)<br>2. <strong>Defendant/Plaintiff</strong><br>3. <strong>The Court</strong>" },
+  { cat: "Law & Justice", q: "What is Formal Justice?", a: "A <strong>mechanical, literal application</strong> of justice — strict adherence to the letters of the law as written. Judges cannot think outside the box. Also called <strong>judicial passivity</strong>. Latin: <em>Quod Scriptum, Quid Scriptum</em>." },
+  { cat: "Law & Justice", q: "What did Lord Eldon say in Sheddon v Goodrich?", a: "<em>'It is better that law should be <strong>certain</strong> than that every judge should speculate upon improvements in it.'</em> — supporting formal justice." },
+  { cat: "Law & Justice", q: "What is Substantive Justice?", a: "Advocates a <strong>deviation from strict adherence</strong> to the letter of law where it may cause injustice, absurdity, hardship, or miscarriage of justice. Uses the <strong>Golden Rule</strong>. It is the origin of equity." },
+  { cat: "Law & Justice", q: "What is the difference between the Literal Rule and the Golden Rule of interpretation?", a: "<strong>Literal Rule</strong> = ordinary/natural meaning of words (formal justice; <em>jus dicere, non jus dare</em>).<br><strong>Golden Rule</strong> = departs from literal meaning to achieve substantive justice." },
+
+  // Law & Freedom
+  { cat: "Law & Freedom", q: "Who said 'Man is born free but always in chains' and where?", a: "<strong>Jean-Jacques Rousseau</strong>, in <em>The Social Contract</em> (1762). He argued that while humans have natural freedom, social institutions and inequalities enslave them." },
+  { cat: "Law & Freedom", q: "What are the three classifications of freedom?", a: "1. <strong>Civil & Political Rights</strong><br>2. <strong>Social & Economic Rights</strong><br>3. <strong>Solidarity Rights</strong>" },
+  { cat: "Law & Freedom", q: "Which chapter and sections of CFRN 1999 cover fundamental human rights?", a: "<strong>Chapter IV, Sections 33–44</strong> of the 1999 Constitution (as amended)." },
+  { cat: "Law & Freedom", q: "What does S.45 CFRN 1999 state about fundamental rights?", a: "Rights may be <strong>restricted or limited</strong> by any law that is reasonably justifiable in a democratic state." },
+  { cat: "Law & Freedom", q: "What did Lord Denning say in Lee and Son v Railway Executive?", a: "<em>'There is a vigilance of the common law which, while allowing freedom of contract, <strong>watches to see that it is not abused</strong>.'</em>" },
+  { cat: "Law & Freedom", q: "What are the limitations to political freedom?", a: "1. Disqualification from voting (age, mental state, being a convict)<br>2. Rules and guidelines limiting <strong>registration of political parties</strong><br>3. Restrictions on franchise participation." },
+
+  // Law & State
+  { cat: "Law & State", q: "What are the four criteria for statehood under International Law?", a: "1. <strong>Territory</strong><br>2. <strong>Population</strong> (human beings)<br>3. <strong>Government</strong><br>4. <strong>Capacity to enter into relations</strong> with other states" },
+  { cat: "Law & State", q: "What does sovereignty mean in Latin, and what does it mean?", a: "Latin: <em><strong>Summa Potestas</strong></em> — supreme and independent authority over a territory, free from external interference." },
+  { cat: "Law & State", q: "What does S.14(2)(a) CFRN 1999 say about sovereignty?", a: "Sovereignty <strong>belongs to the people of Nigeria</strong>, from whom government derives all its powers and authority through the Constitution." },
+
+  // Law & Legalism
+  { cat: "Law & Legalism", q: "What is legalism?", a: "<strong>Strict adherence to the letters of the law</strong>, focusing on literal wording — sometimes at the expense of fairness and moral implication. Excessive conformity to legal rules." },
+  { cat: "Law & Legalism", q: "What Latin maxim supports equity's role against legalism?", a: "<em><strong>Ubi jus, ibi remedium</strong></em> — Where there is a wrong, there is a remedy. Equity does not suffer a wrong without a remedy." },
+  { cat: "Law & Legalism", q: "Why was equity introduced?", a: "To <strong>ameliorate (reduce) the harshness</strong> of common law and ensure substantive justice where strict legal rules caused unfairness." },
+
+  // Types of Law
+  { cat: "Types of Law", q: "What are the four basic types of law?", a: "1. <strong>Eternal Law</strong> (everlasting, e.g. gravity)<br>2. <strong>Natural Law</strong><br>3. <strong>Divine Law</strong> (God-given, e.g. Ten Commandments)<br>4. <strong>Human/Positive Law</strong> (man-made)" },
+  { cat: "Types of Law", q: "What is Public Law?", a: "Regulates the relationship <strong>between the state and its citizens</strong>, and between states." },
+  { cat: "Types of Law", q: "What is Private Law?", a: "Regulates the relationship <strong>between citizens</strong> — defines rights, duties owed to neighbours, and remedies for breach. Examples: Contract, Torts, Family Law, Trusts." },
+  { cat: "Types of Law", q: "What is the difference between Civil Law and Criminal Law?", a: "<strong>Civil Law</strong>: deals with rights, interests, duties between citizens.<br><strong>Criminal Law</strong>: defines crimes, prohibits harmful conduct, prescribes penalties (fine, imprisonment, forfeiture)." },
+  { cat: "Types of Law", q: "What is Substantive vs Procedural (Adjectival) Law?", a: "<strong>Substantive</strong> = defines legal rights and duties.<br><strong>Procedural/Adjectival</strong> = how rights are enforced in court (how cases start, are conducted, and decided). Examples: Evidence Act, CPA, CPC." },
+  { cat: "Types of Law", q: "What is the difference between Public and Private International Law?", a: "<strong>Public International Law</strong>: regulates relations between states and international organisations.<br><strong>Private International Law</strong> (Conflict of Laws): governs cross-border disputes between private individuals." },
+
+  // Common Law & Equity
+  { cat: "Common Law & Equity", q: "How did Common Law originate?", a: "It grew from the <strong>customs of the people</strong> before and after the Norman Conquest in England. It was administered by judges and was strict, formal, and full of legalism." },
+  { cat: "Common Law & Equity", q: "How did Equity develop?", a: "Because common law was harsh, people petitioned the King. The King delegated to the <strong>Chancellor</strong>, who formulated and administered <strong>Equity</strong> to supplement common law and provide justice." },
+];
+
+let deck = [...ALL_CARDS];
+let currentIndex = 0;
+let isFlipped = false;
+let scores = { got: 0, missed: 0, seen: new Set() };
+let activeFilter = "All";
+
+function getCategories() {
+  const cats = ["All", ...new Set(ALL_CARDS.map(c => c.cat))];
+  return cats;
+}
+
+function buildFilter() {
+  const row = document.getElementById('filterRow');
+  getCategories().forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (cat === 'All' ? ' active' : '');
+    btn.textContent = cat;
+    btn.onclick = () => setFilter(cat);
+    row.appendChild(btn);
+  });
+}
+
+function setFilter(cat) {
+  activeFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent === cat);
+  });
+  deck = cat === 'All' ? [...ALL_CARDS] : ALL_CARDS.filter(c => c.cat === cat);
+  currentIndex = 0;
+  scores = { got: 0, missed: 0, seen: new Set() };
+  updateScores();
+  showCard();
+}
+
+function showCard() {
+  if (currentIndex >= deck.length) {
+    document.getElementById('completeMsg').style.display = 'block';
+    document.getElementById('nextBtn').disabled = true;
+    return;
+  }
+  document.getElementById('completeMsg').style.display = 'none';
+  document.getElementById('nextBtn').disabled = false;
+
+  const card = deck[currentIndex];
+  document.getElementById('cardCategory').textContent = card.cat;
+  document.getElementById('cardQuestion').textContent = card.q;
+  document.getElementById('cardAnswer').innerHTML = card.a;
+
+  // Reset flip
+  const inner = document.getElementById('cardInner');
+  inner.classList.remove('flipped');
+  isFlipped = false;
+  document.getElementById('markBtns').style.display = 'none';
+
+  // Progress
+  const total = deck.length;
+  const pct = Math.round((currentIndex / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('cardCount').textContent = `Card ${currentIndex + 1} of ${total}`;
+  document.getElementById('pctText').textContent = pct + '%';
+
+  // Prev button
+  document.getElementById('prevBtn').disabled = currentIndex === 0;
+}
+
+function flipCard() {
+  const inner = document.getElementById('cardInner');
+  isFlipped = !isFlipped;
+  inner.classList.toggle('flipped', isFlipped);
+  if (isFlipped) {
+    document.getElementById('markBtns').style.display = 'flex';
+    scores.seen.add(currentIndex);
+    document.getElementById('totalSeen').textContent = scores.seen.size;
+  } else {
+    document.getElementById('markBtns').style.display = 'none';
+  }
+}
+
+function markCard(got) {
+  if (got) scores.got++;
+  else scores.missed++;
+  updateScores();
+  nextCard();
+}
+
+function updateScores() {
+  document.getElementById('gotScore').textContent = scores.got;
+  document.getElementById('missedScore').textContent = scores.missed;
+}
+
+function nextCard() {
+  if (currentIndex < deck.length - 1) {
+    currentIndex++;
+    showCard();
+  } else {
+    currentIndex++;
+    showCard();
+  }
+}
+
+function prevCard() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    showCard();
+  }
+}
+
+function shuffleDeck() {
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  currentIndex = 0;
+  scores = { got: 0, missed: 0, seen: new Set() };
+  updateScores();
+  showCard();
+}
+
+buildFilter();
+showCard();
+</script>
+</body>
+</html>

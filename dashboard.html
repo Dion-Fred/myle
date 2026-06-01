@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — MYLE</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Roboto', 'sans-serif'],
+            display: ['Poppins', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#FDFBF7',  // Cream/Bone White
+              100: '#EFEAE2', // Alabaster Tint
+              200: '#DED5C6', // Soft Sand
+              500: '#A78B71', // Warm Muted Brown
+              600: '#8C6D53', // Deep Taupe
+              800: '#4A3B32', // Espresso Brown
+              900: '#2B221E', // Dark Roasted Coffee
+              950: '#1A1412', // Near-Black Earth
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { transition: background-color 0.35s, color 0.35s; }
+    .tool-card-anim { opacity: 0; transform: translateY(12px); animation: fadeUp 0.4s forwards ease-out; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="bg-brand-50 text-brand-900 dark:bg-brand-950 dark:text-brand-100 font-sans antialiased relative min-h-screen">
+
+  <div class="relative z-10 flex flex-col min-h-screen">
+    
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-40 backdrop-blur-md bg-brand-50/80 dark:bg-brand-950/80 border-b border-brand-200 dark:border-brand-900 px-6 md:px-12 py-4 flex items-center justify-between">
+      <a class="font-display font-bold text-2xl tracking-wider text-brand-900 dark:text-white" href="index.html">
+        MY<span class="text-brand-500">LE</span>
+      </a>
+      
+      <div class="flex items-center gap-4">
+        <span class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 text-[10px] font-bold font-display uppercase tracking-wider rounded-full bg-amber-500/10 text-amber-700 dark:text-brand-200 border border-brand-500/20">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span> Ecosystem Active
+        </span>
+
+        <button id="themeToggle" aria-label="Toggle theme" class="w-10 h-10 rounded-full border border-brand-200 dark:border-brand-900 flex items-center justify-center text-brand-900/60 dark:text-brand-100/60 hover:text-brand-500 transition-all duration-200">
+          <i class="fa-solid class-toggle-icon"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Main Workspace Frame -->
+    <main class="flex-grow w-full max-w-6xl mx-auto px-6 py-12">
+      
+      <!-- Loader State -->
+      <div id="loadingScreen" class="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+        <div class="w-6 h-6 border-2 border-brand-200 dark:border-brand-900 border-t-brand-500 rounded-full animate-spin"></div>
+      </div>
+
+      <!-- Dashboard Panel Workspace -->
+      <div id="mainContent" class="hidden">
+        
+        <!-- Header area -->
+        <div class="mb-12">
+          <div class="font-display text-xs font-bold tracking-widest text-brand-500 uppercase mb-2" id="greetingTime">Welcome</div>
+          <h1 class="font-display font-light text-3xl sm:text-4xl text-brand-900 dark:text-white leading-tight">
+            Select a <span class="italic font-normal text-brand-500">Study Tool</span>
+          </h1>
+        </div>
+
+        <!-- Filter Selectors -->
+        <div class="flex gap-2 flex-wrap mb-8" id="filterBar"></div>
+
+        <!-- Tracker Line Headers -->
+        <div class="flex items-center justify-between mb-6 border-b border-brand-200 dark:border-brand-900 pb-2">
+          <div class="font-display text-[11px] font-bold uppercase tracking-widest text-brand-900/40 dark:text-brand-100/40">Available Registries</div>
+          <div class="font-display text-[11px] font-medium tracking-wide text-brand-900/40 dark:text-brand-100/40" id="countBadge"></div>
+        </div>
+
+        <!-- Dynamic Grid Matrix -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-16" id="toolsGrid"></div>
+      </div>
+    </main>
+
+    <!-- Footer Component -->
+    <footer class="border-t border-brand-200 dark:border-brand-900 px-6 md:px-12 py-6 text-center text-[11px] font-display font-medium tracking-wider text-brand-900/50 dark:text-brand-100/40">
+      @2026 MYLE
+    </footer>
+  </div>
+
+  <!-- Action Notification Popup Modal Area -->
+  <div id="communityModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-950/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-white dark:bg-brand-900 border border-brand-200 dark:border-brand-800 rounded-xl w-full max-w-md p-6 shadow-xl transform scale-95 transition-transform duration-300 relative z-10" id="modalBox">
+      
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 bg-brand-500/10 text-brand-500 rounded-full flex items-center justify-center text-xl mx-auto mb-3">
+          <i class="fa-solid fa-hashtag"></i>
+        </div>
+        <h3 class="font-display font-semibold text-lg text-brand-900 dark:text-white mb-1">Join Our Communities</h3>
+        <p class="text-xs text-brand-900/60 dark:text-brand-100/60 max-w-xs mx-auto">Stay synchronized with upcoming platform tools updates and material notifications instantly.</p>
+      </div>
+
+      <div class="space-y-2 mb-6">
+        <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank" rel="noopener" class="flex items-center justify-between p-3.5 bg-brand-50/50 dark:bg-brand-950/40 hover:bg-brand-100 dark:hover:bg-brand-950 border border-brand-200 dark:border-brand-800 rounded-lg group transition-all">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-users text-brand-500 text-sm"></i>
+            <div class="text-left">
+              <div class="font-display text-[11px] font-bold text-brand-900 dark:text-white uppercase tracking-wider">Community Chat</div>
+            </div>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-brand-900/30 group-hover:text-brand-500 transition-all"></i>
+        </a>
+
+        <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank" rel="noopener" class="flex items-center justify-between p-3.5 bg-brand-50/50 dark:bg-brand-950/40 hover:bg-brand-100 dark:hover:bg-brand-950 border border-brand-200 dark:border-brand-800 rounded-lg group transition-all">
+          <div class="flex items-center gap-3">
+            <i class="fa-solid fa-bullhorn text-brand-500 text-sm"></i>
+            <div class="text-left">
+              <div class="font-display text-[11px] font-bold text-brand-900 dark:text-white uppercase tracking-wider">Updates Channel</div>
+            </div>
+          </div>
+          <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-brand-900/30 group-hover:text-brand-500 transition-all"></i>
+        </a>
+      </div>
+
+      <button id="closeModalBtn" class="w-full py-2.5 text-[10px] font-display font-semibold tracking-widest text-center uppercase text-brand-900/40 dark:text-brand-100/40 hover:text-brand-500 bg-brand-100/40 dark:bg-brand-950 rounded-lg transition-colors">
+        Proceed to dashboard
+      </button>
+    </div>
+  </div>
+
+  <!-- Dynamic Controller Execution Module Code Structure -->
+  <script type="module">
+    // Dynamically importing external module configuration variables
+    import { tools, typeConfig } from './tools.config.js';
+
+    function init() {
+      // Clear Loader Status Panels immediately
+      document.getElementById('loadingScreen').classList.add('hidden');
+      document.getElementById('mainContent').classList.remove('hidden');
+
+      // Initialize temporal contextual greetings text details
+      const hour = new Date().getHours();
+      document.getElementById('greetingTime').textContent = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+
+      // Build out structural sorting pipelines automatically 
+      const uniqueTypes = ['all', ...new Set(tools.map(t => t.type))];
+      const filterBar = document.getElementById('filterBar');
+
+      uniqueTypes.forEach(type => {
+        const btn = document.createElement('button');
+        btn.className = 'font-display text-[10px] font-bold tracking-widest uppercase border rounded single-filter-btn px-4 py-2 transition-all ' + 
+                        (type === 'all' 
+                          ? 'bg-brand-800 dark:bg-brand-500 border-brand-800 dark:border-brand-500 text-white dark:text-brand-950' 
+                          : 'border-brand-200 dark:border-brand-900 text-brand-900/60 dark:text-brand-100/60 hover:border-brand-500 hover:text-brand-500');
+        btn.textContent = type === 'all' ? 'All tools' : (typeConfig[type]?.label || type);
+        
+        btn.onclick = () => {
+          document.querySelectorAll('.single-filter-btn').forEach(b => {
+            b.className = 'font-display text-[10px] font-bold tracking-widest uppercase border rounded single-filter-btn px-4 py-2 transition-all border-brand-200 dark:border-brand-900 text-brand-900/60 dark:text-brand-100/60 hover:border-brand-500 hover:text-brand-500';
+          });
+          btn.className = 'font-display text-[10px] font-bold tracking-widest uppercase border rounded single-filter-btn px-4 py-2 transition-all bg-brand-800 dark:bg-brand-500 border-brand-800 dark:border-brand-500 text-white dark:text-brand-950';
+          renderTools(type);
+        };
+        filterBar.appendChild(btn);
+      });
+
+      renderTools('all');
+      triggerCommunityModal();
+    }
+
+    function renderTools(filter) {
+      const grid = document.getElementById('toolsGrid');
+      const badge = document.getElementById('countBadge');
+      const filtered = filter === 'all' ? tools : tools.filter(t => t.type === filter);
+
+      badge.textContent = `${filtered.length} resource${filtered.length !== 1 ? 's' : ''}`;
+      grid.innerHTML = '';
+
+      filtered.forEach((tool, i) => {
+        const cfg = typeConfig[tool.type] || { icon: 'fa-cube', label: tool.type, color: '#A78B71' };
+        const card = document.createElement('a');
+        
+        card.className = 'tool-card-anim bg-white dark:bg-brand-900/20 border border-brand-200 dark:border-brand-900 rounded-xl p-6 hover:-translate-y-1 transition-all duration-300 block relative overflow-hidden group';
+        // When clicked, leads directly to the extracted target file URL path 
+        card.href = tool.file;
+        card.style.animationDelay = `${i * 0.03}s`;
+
+        const topBar = document.createElement('div');
+        topBar.className = 'absolute top-0 left-0 right-0 h-[2px] scale-x-0 group-hover:scale-x-100 transition-transform origin-left';
+        topBar.style.backgroundColor = cfg.color;
+        card.appendChild(topBar);
+
+        let metricLabel = '';
+        if (tool.cards) metricLabel = `${tool.cards} items`;
+        else if (tool.cases) metricLabel = `${tool.cases} items`;
+
+        card.innerHTML += `
+          <div class="flex items-center gap-2 text-[10px] font-bold font-display uppercase tracking-wider mb-4" style="color: ${cfg.color}">
+            <i class="fa-solid ${cfg.icon}"></i> ${cfg.label}
+          </div>
+          <h3 class="font-display font-semibold text-base text-brand-900 dark:text-white mb-1 leading-snug">${tool.title}</h3>
+          <p class="text-xs text-brand-900/60 dark:text-brand-100/60 leading-relaxed mb-6">${tool.subtitle}</p>
+          <div class="flex items-center justify-between text-[11px] font-medium tracking-wide">
+            <span class="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/10">${tool.course}</span>
+            <span class="flex items-center gap-2 text-brand-900/40 dark:text-brand-100/40">
+              ${metricLabel ? `<span>${metricLabel}</span>` : ''}
+              <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform" style="color: ${cfg.color}"></i>
+            </span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function triggerCommunityModal() {
+      if (!sessionStorage.getItem('myle-community-alerted')) {
+        setTimeout(() => {
+          const modal = document.getElementById('communityModal');
+          const box = document.getElementById('modalBox');
+          modal.classList.remove('opacity-0', 'pointer-events-none');
+          box.classList.remove('scale-95');
+        }, 600);
+      }
+    }
+
+    document.getElementById('closeModalBtn').addEventListener('click', () => {
+      const modal = document.getElementById('communityModal');
+      const box = document.getElementById('modalBox');
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      box.classList.add('scale-95');
+      sessionStorage.setItem('myle-community-alerted', 'true');
+    });
+
+    init();
+
+    // Theme logic Core Rules Block Setup Configuration Mappings 
+    const html = document.documentElement;
+    const themeBtn = document.getElementById('themeToggle');
+    const themeIcon = themeBtn.querySelector('.class-toggle-icon');
+    const savedTheme = localStorage.getItem('myle-theme') || 'dark';
+    
+    setTheme(savedTheme);
+    themeBtn.addEventListener('click', () => {
+      const activeTheme = html.classList.contains('dark') ? 'light' : 'dark';
+      setTheme(activeTheme);
+      localStorage.setItem('myle-theme', activeTheme);
+    });
+
+    function setTheme(t) {
+      if (t === 'dark') {
+        html.classList.add('dark');
+        themeIcon.className = 'fa-solid fa-sun class-toggle-icon';
+      } else {
+        html.classList.remove('dark');
+        themeIcon.className = 'fa-solid fa-moon class-toggle-icon';
+      }
+    }
+  </script>
+</body>
+</html>
