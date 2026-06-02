@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — MYLE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Dashboard — MYLE | Law Study Tools</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -19,44 +19,91 @@ tailwind.config = {
 <style>
   * { font-family: 'Poppins', sans-serif; }
   .filter-active { background-color: #4f46e5 !important; color: white !important; border-color: #4f46e5 !important; }
+  .popup-transition { transition: opacity 0.2s ease, transform 0.2s ease; }
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-<!-- ════ WHATSAPP POPUP (Safe Modal Architecture) ════ -->
-<div id="waPopup" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transition-all">
-    <div class="bg-[#25D366] p-5 text-white text-center relative">
-      <button id="closePopupTop" class="absolute top-3 right-4 text-white/80 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
-      <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
-        <i class="fa-brands fa-whatsapp text-2xl"></i>
+<!-- ════ FIXED COMMUNITY POPUP — matches screenshots (Group + Channel + “Maybe later”) ════ -->
+<div id="waPopup" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all popup-transition">
+    <!-- header with close + title -->
+    <div class="relative px-5 pt-6 pb-2 text-center">
+      <button id="closePopupTop" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-xl w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-sm">
+        <i class="fa-regular fa-message text-indigo-600 text-2xl"></i>
       </div>
-      <h3 class="text-lg font-bold">Join the MYLE Community</h3>
+      <h2 class="text-xl font-extrabold text-slate-800">Join the MYLE Community</h2>
+      <p class="text-slate-500 text-sm mt-1 max-w-[250px] mx-auto">Connect with your fellow classmates</p>
     </div>
-    <div class="p-6 space-y-3 bg-white">
-      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank" class="flex items-center gap-3 w-full bg-[#25D366] text-white font-semibold rounded-xl px-4 py-3 hover:opacity-90">
-        <i class="fa-brands fa-whatsapp text-xl"></i>
-        <span class="text-sm">Join the WhatsApp Group</span>
+
+    <!-- announcement text (extra from screenshot) -->
+    <div class="px-5 pb-2 text-center">
+      <p class="text-xs text-slate-500 bg-slate-50 inline-block px-3 py-1 rounded-full">
+        <i class="fa-regular fa-bell mr-1 text-indigo-400"></i> Get notified when new study tools drop
+      </p>
+    </div>
+
+    <!-- Two CTA cards: WhatsApp Group + Channel (exactly as design) -->
+    <div class="px-5 space-y-3 mt-2">
+      <!-- WhatsApp Group card -->
+      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-3 hover:border-emerald-300 hover:shadow-md transition-all group">
+        <div class="w-11 h-11 bg-emerald-50 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i class="fa-brands fa-whatsapp text-emerald-600 text-xl"></i>
+        </div>
+        <div class="flex-1">
+          <h4 class="font-bold text-slate-800 text-sm group-hover:text-emerald-700">Join the WhatsApp Group</h4>
+          <p class="text-xs text-slate-500">Chat with fellow law students</p>
+        </div>
+        <i class="fa-solid fa-arrow-right text-slate-300 group-hover:text-emerald-500 text-sm"></i>
       </a>
-      <button id="closePopupBtn" class="w-full text-slate-400 text-xs py-2 hover:text-slate-600">Maybe later</button>
+
+      <!-- Channel card (WhatsApp channel) -->
+      <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-3 hover:border-indigo-300 hover:shadow-md transition-all group">
+        <div class="w-11 h-11 bg-indigo-50 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i class="fa-solid fa-broadcast-tower text-indigo-500 text-xl"></i>
+        </div>
+        <div class="flex-1">
+          <h4 class="font-bold text-slate-800 text-sm group-hover:text-indigo-600">Follow the Channel</h4>
+          <p class="text-xs text-slate-500">Announcements & updates</p>
+        </div>
+        <i class="fa-solid fa-arrow-right text-slate-300 group-hover:text-indigo-500 text-sm"></i>
+      </a>
+    </div>
+
+    <!-- Maybe later action (dismiss popup) -->
+    <div class="px-5 pb-6 pt-3 text-center">
+      <button id="closePopupBtn" class="text-slate-400 text-xs font-medium py-2 px-4 rounded-lg hover:bg-slate-100 hover:text-slate-600 transition w-full">
+        Maybe later — continue studying
+      </button>
     </div>
   </div>
 </div>
 
-<!-- ════ NAV ════ -->
+<!-- ════ NAVIGATION ════ -->
 <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
   <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-2">
+    <a href="./index.html" class="flex items-center gap-2">
       <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
         <span class="text-white font-bold text-sm">M</span>
       </div>
       <span class="text-xl font-bold text-slate-900">MY<span class="text-indigo-600">LE</span></span>
     </a>
-    <a href="index.html" class="text-sm text-slate-500 hover:text-indigo-600"><i class="fa-solid fa-house mr-1"></i>Home</a>
+    <div class="flex items-center gap-4">
+      <a href="./index.html" class="text-sm text-slate-500 hover:text-indigo-600"><i class="fa-solid fa-house mr-1"></i>Home</a>
+    </div>
   </div>
 </nav>
 
-<!-- ════ HEADER ════ -->
+<!-- ════ HERO HEADER ════ -->
 <div class="bg-gradient-to-r from-indigo-600 to-violet-700 text-white py-10 px-4">
   <div class="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
     <div>
@@ -77,10 +124,10 @@ tailwind.config = {
   </div>
 </div>
 
-<!-- ════ MAIN CONTENT ════ -->
+<!-- ════ MAIN CONTENT (search + filters + cards) ════ -->
 <main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
 
-  <!-- Search & Filter Layout Container -->
+  <!-- Search & Filter Layout -->
   <div class="flex flex-col md:flex-row gap-4 mb-6">
     <div class="relative flex-1">
       <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
@@ -89,7 +136,7 @@ tailwind.config = {
     <div class="flex gap-2 flex-wrap items-center" id="filterBar"></div>
   </div>
 
-  <!-- Stats Header Row -->
+  <!-- Stats + view toggle -->
   <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
     <p class="text-sm font-medium text-slate-500" id="resultsLabel">Initializing framework...</p>
     <div class="flex items-center gap-1.5 bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
@@ -98,22 +145,29 @@ tailwind.config = {
     </div>
   </div>
 
-  <!-- Main Rendering target area -->
+  <!-- Tools rendering container -->
   <div id="toolsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 min-h-[100px]"></div>
 
-  <!-- Empty fallback state notice container -->
+  <!-- Empty state fallback -->
   <div id="emptyState" class="hidden text-center py-12 bg-white rounded-2xl border border-slate-200 p-6 mb-10 shadow-sm">
     <i class="fa-solid fa-folder-open text-slate-300 text-3xl mb-2"></i>
     <h3 class="text-base font-bold text-slate-700">No matching tools found</h3>
   </div>
 
-  <!-- Bottom Inline Marketing Strip -->
-  <div class="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
+  <!-- ════ UPDATED BOTTOM STRIP (group + channel double CTA) ════ -->
+  <div class="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-700 p-5 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
     <div>
-      <h3 class="font-bold text-base">Don't miss updates!</h3>
-      <p class="text-emerald-100 text-xs mt-0.5">Get instant resource alerts direct inside our law community group chat.</p>
+      <h3 class="font-bold text-base flex items-center gap-2"><i class="fa-regular fa-bell"></i> Don't miss new study tools!</h3>
+      <p class="text-emerald-100 text-xs mt-0.5">Get instant alerts & resources inside our law community.</p>
     </div>
-    <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank" class="bg-white text-emerald-600 font-bold text-xs px-4 py-2.5 rounded-lg shadow hover:bg-emerald-50 whitespace-nowrap"><i class="fa-brands fa-whatsapp mr-1"></i>Join Channel Chat</a>
+    <div class="flex gap-3 flex-wrap">
+      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank" class="bg-white text-emerald-700 font-semibold text-xs px-4 py-2 rounded-lg shadow hover:bg-emerald-50 flex items-center gap-2 transition">
+        <i class="fa-brands fa-whatsapp text-emerald-600"></i> Join Group
+      </a>
+      <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank" class="bg-white/20 backdrop-blur-sm border border-white/40 text-white font-semibold text-xs px-4 py-2 rounded-lg shadow hover:bg-white/30 flex items-center gap-2 transition">
+        <i class="fa-solid fa-bullhorn"></i> Follow Channel
+      </a>
+    </div>
   </div>
 </main>
 
@@ -121,17 +175,17 @@ tailwind.config = {
 <footer class="bg-slate-900 text-slate-400 py-6 mt-auto text-xs border-t border-slate-800">
   <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
     <p>© 2026 MYLE · University of Nigeria, Enugu Campus · 100L Law</p>
-    <p>System Online</p>
+    <p> Built with ❤️</p>
   </div>
 </footer>
 
-<!-- ════ CORE LOGIC CONTROLLER ════ -->
+<!-- ════ CORE DASHBOARD LOGIC (tools, filters, cards, popup controller) ════ -->
 <script>
-  // Complete failproof offline static layout structure array
+  // ---------- STUDY TOOLS DATABASE ----------
   let tools = [
     { id: 'literary-concepts', title: 'Literary Concepts', subtitle: 'Units 1–3 · Concept of Literature, Oral Forms & Genres', course: 'LIT 100L', type: 'flashcards', file: 'tools/literary_concepts.html', count: 40, countLabel: 'cards' },
-    { id: 'pul101-flashcards', title: 'PUL 101 Flashcards', subtitle: 'Legal Concepts', course: 'PUL 101', type: 'flashcards', file: 'tools/pul101_flashcards.html', count: 24, countLabel: 'cards' },
-    { id: 'case-law-chieftaincy', title: 'Case Law Practice', subtitle: 'Chieftaincy Law', course: 'PUL 101', type: 'case-law', file: 'tools/case_law_practice.html', count: 12, countLabel: 'cases' }
+    { id: 'pul101-flashcards', title: 'PUL 101 Flashcards', subtitle: 'Legal Concepts · Sources of Law & Nigerian Legal System', course: 'PUL 101', type: 'flashcards', file: 'tools/pul101_flashcards.html', count: 24, countLabel: 'cards' },
+    { id: 'case-law-chieftaincy', title: 'Case Law Practice', subtitle: 'Chieftaincy Law · Leading judicial authorities', course: 'PUL 101', type: 'case-law', file: 'tools/case_law_practice.html', count: 12, countLabel: 'cases' }
   ];
 
   const typeConfig = {
@@ -145,6 +199,7 @@ tailwind.config = {
   let currentView  = 'grid';
   let isLoading    = true;
 
+  // render filter pills
   function renderFilters() {
     const bar = document.getElementById('filterBar');
     if (!bar) return;
@@ -168,6 +223,7 @@ tailwind.config = {
     });
   }
 
+  // dynamic card rendering (grid / list)
   function renderCards() {
     const grid = document.getElementById('toolsGrid');
     const label = document.getElementById('resultsLabel');
@@ -243,7 +299,43 @@ tailwind.config = {
     });
   }
 
+  // POPUP HANDLER (improved community popup)
+  function initPopup() {
+    const popup = document.getElementById('waPopup');
+    if (!popup) return;
+
+    const closeTop = document.getElementById('closePopupTop');
+    const closeBtn = document.getElementById('closePopupBtn');
+    
+    function closePopupAndRemember() {
+      if (popup) {
+        popup.classList.remove('flex');
+        popup.classList.add('hidden');
+      }
+      sessionStorage.setItem('myle-popup-seen', '1');
+    }
+
+    if (closeTop) closeTop.onclick = closePopupAndRemember;
+    if (closeBtn) closeBtn.onclick = closePopupAndRemember;
+
+    // Show popup after 2 seconds only if not seen in this session
+    if (!sessionStorage.getItem('myle-popup-seen')) {
+      setTimeout(() => {
+        if (popup) {
+          popup.classList.remove('hidden');
+          popup.classList.add('flex');
+        }
+      }, 2000);
+    }
+  }
+
+  // MAIN INIT
   document.addEventListener('DOMContentLoaded', () => {
+    // set tool counter
+    const counterSpan = document.getElementById('toolCount');
+    if (counterSpan) counterSpan.textContent = tools.length;
+
+    // view toggle
     const viewGrid = document.getElementById('viewGrid');
     const viewList = document.getElementById('viewList');
     const search = document.getElementById('searchInput');
@@ -265,34 +357,23 @@ tailwind.config = {
 
     if (search) search.oninput = () => renderCards();
 
-    // Safely update fallback counters
-    const counter = document.getElementById('toolCount');
-    if (counter) counter.textContent = tools.length;
-
     renderFilters();
     renderCards();
 
-    // Simulated skeleton load window wrapper
+    // simulate loading skeleton for smoothness
     setTimeout(() => {
       isLoading = false;
       renderCards();
-    }, 800);
+    }, 700);
 
-    // ── WhatsApp Popup Modal Rules ──
-    const popup = document.getElementById('waPopup');
-    function closePopup() {
-      if (popup) { popup.classList.replace('flex', 'hidden'); }
-      sessionStorage.setItem('myle-popup-seen', '1');
-    }
-    
-    if (document.getElementById('closePopupTop')) document.getElementById('closePopupTop').onclick = closePopup;
-    if (document.getElementById('closePopupBtn')) document.getElementById('closePopupBtn').onclick = closePopup;
+    // launch popup (screenshot fixed)
+    initPopup();
 
-    if (!sessionStorage.getItem('myle-popup-seen')) {
-      setTimeout(() => {
-        if (popup) { popup.classList.replace('hidden', 'flex'); }
-      }, 2000);
-    }
+    // extra: ensure any external link inside popup doesn't interfere with session
+    const groupLinkInsidePopup = document.querySelector('#waPopup a[href*="chat.whatsapp.com"]');
+    const channelLinkInsidePopup = document.querySelector('#waPopup a[href*="whatsapp.com/channel"]');
+    if (groupLinkInsidePopup) groupLinkInsidePopup.setAttribute('target', '_blank');
+    if (channelLinkInsidePopup) channelLinkInsidePopup.setAttribute('target', '_blank');
   });
 </script>
 </body>
