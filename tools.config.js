@@ -10,6 +10,17 @@
 
 export const tools = [
   {
+  id: 'literary-concepts',
+  title: 'Literary Concepts',
+  subtitle: 'Units 1–3 · Concept of Literature, Oral Forms & Genres',
+  course: 'LIT 100L',
+  type: 'flashcards',
+  file: 'tools/literary_concepts.html',
+  count: 40,
+  countLabel: 'cards',
+  added: '2026-06-02',
+},
+  {
     id: 'pul101-flashcards',
     title: 'PUL 101 Flashcards',
     subtitle: 'Legal Concepts',

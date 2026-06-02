@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Literary Concepts — MYLE Study Tool</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234F46E5'/><text y='23' x='5' font-size='20' font-family='sans-serif' font-weight='700' fill='white'>M</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Poppins','sans-serif'], display: ['Playfair Display','serif'] },
+      colors: {
+        brand: { 50:'#eef2ff',100:'#e0e7ff',200:'#c7d2fe',300:'#a5b4fc',400:'#818cf8',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3',900:'#312e81' }
+      }
+    }
+  }
+}
+</script>
+<style>
+* { font-family: 'Poppins', sans-serif; }
+.font-display { font-family: 'Playfair Display', serif; }
+
+/* Card flip */
+.flip-card { perspective: 1200px; cursor: pointer; }
+.flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.65s cubic-bezier(0.4,0.2,0.2,1); transform-style: preserve-3d; }
+.flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 1rem; }
+.flip-back { transform: rotateY(180deg); }
+
+/* Progress bar */
+.progress-fill { transition: width 0.4s ease; }
+
+/* Smooth tab */
+.tab-btn { transition: all 0.2s ease; }
+.tab-btn.active { background: #4f46e5; color: white; box-shadow: 0 4px 14px rgba(79,70,229,0.35); }
+
+/* Quiz option */
+.quiz-opt { transition: all 0.2s ease; cursor: pointer; }
+.quiz-opt:hover:not(.disabled) { border-color: #4f46e5; background: #eef2ff; }
+.quiz-opt.correct { background: #dcfce7; border-color: #16a34a; color: #15803d; }
+.quiz-opt.wrong { background: #fee2e2; border-color: #dc2626; color: #dc2626; }
+.quiz-opt.disabled { cursor: default; }
+
+/* Animations */
+@keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes popIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+@keyframes bounceIn { 0% { opacity:0; transform:scale(0.7); } 60% { transform:scale(1.05); } 100% { opacity:1; transform:scale(1); } }
+.anim-slide { animation: slideUp 0.4s ease forwards; }
+.anim-pop { animation: popIn 0.35s ease forwards; }
+.anim-bounce { animation: bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+/* Nav blur */
+.nav-blur { backdrop-filter: blur(16px); background: rgba(255,255,255,0.93); }
+
+/* Mesh bg */
+.mesh-bg {
+  background-color: #f8fafc;
+  background-image: radial-gradient(at 20% 10%, hsla(240,100%,96%,1) 0px, transparent 50%),
+    radial-gradient(at 80% 5%, hsla(270,100%,96%,1) 0px, transparent 40%),
+    radial-gradient(at 5% 60%, hsla(150,60%,96%,1) 0px, transparent 50%);
+  min-height: 100vh;
+}
+
+/* Popup */
+.popup-overlay { background: rgba(0,0,0,0.45); backdrop-filter: blur(4px); }
+.wa-green { background: #25D366; }
+
+/* Result ring */
+.score-ring { stroke-dasharray: 283; stroke-dashoffset: 283; transition: stroke-dashoffset 1.2s ease; }
+
+/* Concept card border accent */
+.concept-card { border-left: 4px solid transparent; transition: all 0.2s; }
+.concept-card:hover { border-left-color: #4f46e5; transform: translateX(4px); }
+</style>
+</head>
+<body class="mesh-bg text-gray-800">
+
+<!-- ═══════════════════════════════════════
+     WHATSAPP POPUP
+═══════════════════════════════════════ -->
+<div id="waPopup" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 popup-overlay" style="display:none!important">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" style="animation: bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards">
+    <div class="wa-green p-5 text-white text-center relative">
+      <button onclick="closeWaPopup()" class="absolute top-3 right-4 text-white/70 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+      <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+      </div>
+      <h3 class="text-xl font-bold">Join the MYLE Community</h3>
+      <p class="text-white/85 text-sm mt-1">Connect with fellow UNEC Law students</p>
+    </div>
+    <div class="p-6 space-y-3">
+      <p class="text-gray-500 text-sm text-center">Get notified when new study tools are added. Don't miss an update!</p>
+      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
+         class="flex items-center gap-3 w-full wa-green text-white font-semibold rounded-xl px-5 py-3.5 hover:opacity-90 transition-all hover:scale-[1.02]">
+        <i class="fa-brands fa-whatsapp text-xl"></i>
+        <div class="text-left"><div class="text-sm font-bold">Join the WhatsApp Group</div><div class="text-xs text-white/80">Chat with fellow law students</div></div>
+        <i class="fa-solid fa-arrow-right ml-auto"></i>
+      </a>
+      <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank"
+         class="flex items-center gap-3 w-full border-2 border-[#25D366] text-[#25D366] font-semibold rounded-xl px-5 py-3.5 hover:bg-[#25D366] hover:text-white transition-all hover:scale-[1.02]">
+        <i class="fa-solid fa-bullhorn text-xl"></i>
+        <div class="text-left"><div class="text-sm font-bold">Follow the Channel</div><div class="text-xs opacity-70">Announcements & updates</div></div>
+        <i class="fa-solid fa-arrow-right ml-auto"></i>
+      </a>
+      <button onclick="closeWaPopup()" class="w-full text-gray-400 text-xs py-2 hover:text-gray-600 transition-colors">
+        Maybe later — continue studying
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NAV
+═══════════════════════════════════════ -->
+<nav class="nav-blur border-b border-gray-100 sticky top-0 z-40">
+  <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="../dashboard.html" class="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center shadow-md flex-shrink-0 hover:bg-brand-700 transition-colors" title="Back to Dashboard">
+        <span class="text-white font-bold text-xs">M</span>
+      </a>
+      <div>
+        <span class="text-sm font-bold text-gray-900">Literary Concepts</span>
+        <span class="hidden sm:inline text-xs text-gray-400 ml-2">· Units 1–3</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="hidden sm:flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+        <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> ENG / LIT 100L
+      </span>
+      <button onclick="openWaPopup()" class="flex items-center gap-1.5 text-xs text-[#25D366] font-semibold border border-[#25D366] px-3 py-1.5 rounded-full hover:bg-[#25D366] hover:text-white transition-all">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span class="hidden sm:inline">Community</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     HERO HEADER
+═══════════════════════════════════════ -->
+<div class="bg-gradient-to-br from-brand-600 via-brand-700 to-violet-700 text-white relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute -top-12 -right-12 w-64 h-64 bg-white/5 rounded-full"></div>
+    <div class="absolute bottom-0 left-1/4 w-40 h-40 bg-white/5 rounded-full"></div>
+    <div class="absolute top-1/2 right-1/3 w-24 h-24 bg-white/5 rounded-full"></div>
+  </div>
+  <div class="max-w-5xl mx-auto px-4 py-8 relative z-10">
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-semibold text-brand-200 uppercase tracking-widest bg-white/10 px-3 py-1 rounded-full">
+            <i class="fa-solid fa-book-open mr-1"></i>Literature · Units 1–3
+          </span>
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl font-bold leading-tight mb-1">The Concept of Literature</h1>
+        <p class="text-brand-200 text-sm">Flashcards · Quiz · Concept Explorer · All from your lecture notes</p>
+      </div>
+      <!-- Stats pills -->
+      <div class="flex gap-3 flex-shrink-0">
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 text-center border border-white/20">
+          <div class="text-xl font-extrabold">40</div><div class="text-brand-200 text-xs">Flashcards</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 text-center border border-white/20">
+          <div class="text-xl font-extrabold">20</div><div class="text-brand-200 text-xs">Quiz Qs</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 text-center border border-white/20">
+          <div class="text-xl font-extrabold">3</div><div class="text-brand-200 text-xs">Units</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode tabs -->
+    <div class="flex gap-2 mt-6 bg-white/10 p-1 rounded-xl w-fit backdrop-blur-sm border border-white/20">
+      <button onclick="setMode('flashcards')" id="tab-flashcards" class="tab-btn active flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold">
+        <i class="fa-solid fa-cards-blank"></i> Flashcards
+      </button>
+      <button onclick="setMode('quiz')" id="tab-quiz" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white/70 hover:text-white">
+        <i class="fa-solid fa-circle-question"></i> Quiz
+      </button>
+      <button onclick="setMode('concepts')" id="tab-concepts" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white/70 hover:text-white">
+        <i class="fa-solid fa-layer-group"></i> Concepts
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════ -->
+<main class="max-w-5xl mx-auto px-4 py-8">
+
+  <!-- ════ FLASHCARDS MODE ════ -->
+  <div id="mode-flashcards" class="anim-slide">
+
+    <!-- Controls bar -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Filter by Unit:</span>
+        <div class="flex gap-1.5" id="unitFilter">
+          <button onclick="filterCards('all')" class="unit-btn active text-xs font-semibold px-3 py-1.5 rounded-lg bg-brand-600 text-white">All</button>
+          <button onclick="filterCards('1')" class="unit-btn text-xs font-semibold px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-gray-600 hover:border-brand-400">Unit 1</button>
+          <button onclick="filterCards('2')" class="unit-btn text-xs font-semibold px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-gray-600 hover:border-brand-400">Unit 2</button>
+          <button onclick="filterCards('3')" class="unit-btn text-xs font-semibold px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-gray-600 hover:border-brand-400">Unit 3</button>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="shuffleCards()" class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 border border-gray-200 px-3 py-1.5 rounded-lg bg-white hover:border-brand-400 hover:text-brand-600 transition-all">
+          <i class="fa-solid fa-shuffle"></i> Shuffle
+        </button>
+        <span class="text-xs text-gray-400" id="cardCounter">Card 1 of 40</span>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="w-full bg-gray-100 rounded-full h-1.5 mb-6">
+      <div class="progress-fill bg-brand-500 h-1.5 rounded-full" id="progressBar" style="width:2.5%"></div>
+    </div>
+
+    <!-- Flip card -->
+    <div class="flip-card w-full mb-6" style="height: 320px;" id="flipCard" onclick="flipCard()">
+      <div class="flip-card-inner w-full h-full">
+        <!-- Front -->
+        <div class="flip-front bg-white border-2 border-brand-100 shadow-xl flex flex-col items-center justify-center p-8 gap-4">
+          <div class="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center mb-2" id="cardUnitBadge">
+            <i class="fa-solid fa-book text-brand-600 text-lg"></i>
+          </div>
+          <span class="text-xs font-bold text-brand-400 uppercase tracking-widest" id="cardUnitLabel">Unit 1</span>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900 text-center leading-snug" id="cardFront">What is the broad definition of literature?</p>
+          <p class="text-xs text-gray-400 mt-4 flex items-center gap-1.5">
+            <i class="fa-solid fa-hand-pointer"></i> Tap to reveal answer
+          </p>
+        </div>
+        <!-- Back -->
+        <div class="flip-back bg-brand-600 flex flex-col items-center justify-center p-8 gap-4">
+          <i class="fa-solid fa-lightbulb text-yellow-300 text-2xl mb-2"></i>
+          <p class="text-lg sm:text-xl font-semibold text-white text-center leading-relaxed" id="cardBack">In the broad sense, literature encompasses everything that has been written — all written manifestations of a culture, including research, history, and creative works.</p>
+          <p class="text-xs text-brand-200 mt-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-hand-pointer"></i> Tap to flip back
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="flex items-center justify-center gap-4">
+      <button onclick="prevCard()" class="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 font-semibold px-5 py-3 rounded-xl hover:border-brand-400 hover:text-brand-600 transition-all shadow-sm">
+        <i class="fa-solid fa-arrow-left"></i> Previous
+      </button>
+      <button onclick="flipCard()" class="flex items-center gap-2 bg-brand-50 border border-brand-200 text-brand-700 font-semibold px-5 py-3 rounded-xl hover:bg-brand-100 transition-all">
+        <i class="fa-solid fa-rotate"></i> Flip
+      </button>
+      <button onclick="nextCard()" class="flex items-center gap-2 bg-brand-600 text-white font-semibold px-5 py-3 rounded-xl hover:bg-brand-700 transition-all shadow-sm">
+        Next <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <!-- Card deck preview dots -->
+    <div class="flex justify-center mt-6 gap-1 flex-wrap max-w-sm mx-auto" id="dotContainer"></div>
+  </div>
+
+  <!-- ════ QUIZ MODE ════ -->
+  <div id="mode-quiz" class="hidden anim-slide">
+
+    <!-- Quiz intro -->
+    <div id="quizIntro" class="text-center py-12">
+      <div class="w-20 h-20 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+        <i class="fa-solid fa-circle-question text-brand-600 text-4xl"></i>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-3">Test Your Knowledge</h2>
+      <p class="text-gray-500 mb-8 max-w-md mx-auto">20 multiple-choice questions across all three units. Take your time and choose carefully.</p>
+      <div class="flex flex-wrap justify-center gap-4 mb-8">
+        <div class="bg-white border border-gray-100 rounded-xl px-5 py-3 shadow-sm text-center">
+          <div class="text-2xl font-extrabold text-brand-600">20</div><div class="text-xs text-gray-500">Questions</div>
+        </div>
+        <div class="bg-white border border-gray-100 rounded-xl px-5 py-3 shadow-sm text-center">
+          <div class="text-2xl font-extrabold text-violet-600">3</div><div class="text-xs text-gray-500">Units</div>
+        </div>
+        <div class="bg-white border border-gray-100 rounded-xl px-5 py-3 shadow-sm text-center">
+          <div class="text-2xl font-extrabold text-emerald-600">MCQ</div><div class="text-xs text-gray-500">Format</div>
+        </div>
+      </div>
+      <button onclick="startQuiz()" class="inline-flex items-center gap-3 bg-brand-600 hover:bg-brand-700 text-white font-bold text-base px-10 py-4 rounded-xl transition-all shadow-lg hover:scale-105">
+        <i class="fa-solid fa-play"></i> Start Quiz
+      </button>
+    </div>
+
+    <!-- Quiz in progress -->
+    <div id="quizInProgress" class="hidden">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-sm font-semibold text-gray-500" id="quizCounter">Question 1 of 20</span>
+        <span class="text-sm font-semibold text-brand-600 bg-brand-50 px-3 py-1 rounded-full" id="quizScore">Score: 0</span>
+      </div>
+      <div class="w-full bg-gray-100 rounded-full h-2 mb-6">
+        <div class="progress-fill bg-brand-500 h-2 rounded-full" id="quizProgressBar" style="width: 5%"></div>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-md p-6 sm:p-8 mb-5 anim-pop">
+        <div class="flex items-start gap-3 mb-6">
+          <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-circle-question text-white text-sm"></i>
+          </div>
+          <p class="text-lg font-semibold text-gray-900 leading-snug" id="quizQuestion">Loading question...</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="quizOptions"></div>
+      </div>
+      <div id="quizExplanation" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4 mb-5 text-sm text-amber-800 leading-relaxed">
+        <i class="fa-solid fa-circle-info mr-2 text-amber-500"></i><span id="explanationText"></span>
+      </div>
+      <button onclick="nextQuestion()" id="nextQBtn" class="hidden w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
+        Next Question <i class="fa-solid fa-arrow-right"></i>
+      </button>
+    </div>
+
+    <!-- Quiz results -->
+    <div id="quizResult" class="hidden text-center py-8 anim-bounce">
+      <div class="relative w-36 h-36 mx-auto mb-6">
+        <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#e0e7ff" stroke-width="8"/>
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#4f46e5" stroke-width="8" stroke-linecap="round" class="score-ring" id="scoreRing"/>
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <span class="text-3xl font-extrabold text-brand-600" id="finalScore">0/20</span>
+          <span class="text-xs text-gray-400">Score</span>
+        </div>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2" id="resultTitle">Well done!</h2>
+      <p class="text-gray-500 mb-8 max-w-sm mx-auto" id="resultMsg">Keep studying to improve your score.</p>
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <button onclick="retryQuiz()" class="flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white font-bold px-8 py-3.5 rounded-xl transition-all shadow-md">
+          <i class="fa-solid fa-rotate-right"></i> Try Again
+        </button>
+        <button onclick="setMode('flashcards')" class="flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-700 font-bold px-8 py-3.5 rounded-xl hover:border-brand-400 hover:text-brand-600 transition-all">
+          <i class="fa-solid fa-cards-blank"></i> Review Flashcards
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ CONCEPTS MODE ════ -->
+  <div id="mode-concepts" class="hidden anim-slide">
+    <div class="mb-6 flex items-center gap-3">
+      <input type="text" id="conceptSearch" placeholder="Search concepts..." oninput="filterConcepts()"
+        class="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 shadow-sm">
+      <div class="flex gap-2" id="conceptFilterBtns"></div>
+    </div>
+    <div id="conceptsGrid" class="space-y-3"></div>
+  </div>
+
+</main>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════ -->
+<footer class="bg-gray-900 text-gray-400 py-8 mt-12">
+  <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center"><span class="text-white font-bold text-xs">M</span></div>
+      <span class="text-sm font-bold text-white">MY<span class="text-brand-400">LE</span></span>
+      <span class="text-gray-600 text-xs ml-2">· Literary Concepts Tool</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
+         class="flex items-center gap-2 text-[#25D366] hover:text-[#20ba5a] text-sm font-semibold transition-colors">
+        <i class="fa-brands fa-whatsapp"></i> WhatsApp Group
+      </a>
+      <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank"
+         class="flex items-center gap-2 text-[#25D366] hover:text-[#20ba5a] text-sm font-semibold transition-colors">
+        <i class="fa-solid fa-bullhorn"></i> Channel
+      </a>
+    </div>
+    <p class="text-xs">© 2026 MYLE · Built with <i class="fa-solid fa-heart text-rose-500"></i> and Claude</p>
+  </div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════
+
+const flashcards = [
+  // UNIT 1 — The Concept of Literature
+  { unit:'1', q:'What is the broad definition of literature?', a:'In the broad sense, literature encompasses everything written — all written manifestations of a culture, including research, history, and creative works.' },
+  { unit:'1', q:'What is the narrow definition of literature?', a:'Literature in the narrow sense refers to imaginative or creative writing — texts distinguished by fictionality, specialised language, ambiguity, and lack of a purely pragmatic function.' },
+  { unit:'1', q:'What does the word "literature" derive from?', a:'From the Latin word "littera," meaning letter of the alphabet — implying that literature\'s derivation is tied to writing.' },
+  { unit:'1', q:'Distinguish between informative and imaginative literature.', a:'Informative literature presents facts, history, and real-life figures (e.g. biographies). Imaginative literature aims to arouse thoughts and feelings through creative expression.' },
+  { unit:'1', q:'What is "defamiliarisation"?', a:'A term coined by Russian Formalists — the process by which literary texts use language in strange, unfamiliar ways to draw attention to the language itself, as opposed to everyday speech.' },
+  { unit:'1', q:'What is the "poetic function" of literary texts according to Roman Jakobson?', a:'Literary texts draw attention to the language they employ — they make the reader focus on how something is said, not just what is said.' },
+  { unit:'1', q:'What are the four criteria scholars use to distinguish literary from non-literary texts?', a:'Fictionality, specialised language, lack of pragmatic function, and ambiguity.' },
+  { unit:'1', q:'What is fictionality in literature?', a:'Literary texts, even when representing reality, are ultimately products of the writer\'s imagination — characters and their conversations are fictitious, even in historical novels.' },
+  { unit:'1', q:'What is the pragmatic function, and why do literary texts differ from non-literary texts in this regard?', a:'Non-literary texts (cookbooks, timetables) serve a specific purpose. Literary texts need not serve any immediate purpose — they gain their function through the act of reading.' },
+  { unit:'1', q:'Why are literary texts more ambiguous than non-literary texts?', a:'Literary texts express meaning on multiple levels. Unlike a recipe (fixed meaning), a novel invites varied interpretations based on the reader\'s expectations and experiences.' },
+  { unit:'1', q:'What are the three key qualities of literature?', a:'1) Artistic quality — reveals hidden truth and beauty. 2) Suggestiveness — appeals to emotion and imagination. 3) Originality — presents familiar material in a new, fascinating light.' },
+  { unit:'1', q:'What does it mean for literature to "hold the mirror up to nature"?', a:'As Hamlet\'s phrase implies, literature reflects thoughts and feelings we recognise as "true to life" — it should be life-enhancing and a criticism of life (Matthew Arnold).' },
+  { unit:'1', q:'Why do we study literature, according to the text?', a:'To know men — to understand the ideals, thoughts, and feelings of people across time and cultures; to broaden knowledge of human affairs; and to develop wisdom and empathy.' },
+  { unit:'1', q:'How does Aristotle distinguish poetry from history?', a:'Aristotle argues poetry is "more serious and philosophical than history" because history records deeds while literature records the dreams and ideals that made those deeds possible.' },
+
+  // UNIT 2 — Forms of Literature (Oral)
+  { unit:'2', q:'What is oral literature (orature)?', a:'Spoken imaginative communication not written but transmitted orally for entertainment and education of an audience — preserved and passed from generation to generation through word of mouth.' },
+  { unit:'2', q:'What is the primary distinguishing feature of oral literature?', a:'It is performance-based — its creation and transmission are inseparable from its actual enactment, relying on dance, song, mime, and gesture in addition to verbal content.' },
+  { unit:'2', q:'What does it mean that oral literature is "extemporaneous"?', a:'No two performances are ever the same — it is perpetually subject to modification, with plot and theme adapted to prevailing circumstances by each performer.' },
+  { unit:'2', q:'What are the three broad genres into which oral literature is classified?', a:'1) The spoken form — Prose (myths, fables, legends, folktales, riddles, proverbs). 2) The sung form — Poetry (dirges, epics, lyrics). 3) The performance — Drama (ritual, masquerades).' },
+  { unit:'2', q:'Define a fable.', a:'A short narrative in prose or verse that exemplifies an abstract moral principle. Non-human creatures or inanimate things are normally the characters — the beast fable is the most common form.' },
+  { unit:'2', q:'What is a folktale?', a:'The most popular form of oral literature — narrative stories constructed from collective imagination over time. They may feature humans or animals and depict the cultural background of the people. Unlike myths, they are not set in primordial times.' },
+  { unit:'2', q:'Distinguish a legend from a myth.', a:'A legend portrays a human hero and lies between myth and historical fact, associated with a specific figure at a specific time and place. A myth is set in primordial times, explaining the origins of the world, customs, and the divine–human relationship.' },
+  { unit:'2', q:'What is the function of a tongue twister?', a:'To promote fluency in speech by confronting the child with patterns of speech error — through repeated practice, the child learns to overcome slips of the tongue.' },
+  { unit:'2', q:'What are proverbs used for?', a:'To emphasise the words of the wise — used to convey precise moral lessons, warnings, and advice in a way that makes a greater impact than ordinary discourse. Judicious use of proverbs is a sign of wit.' },
+  { unit:'2', q:'What is a dirge/elegy?', a:'A type of elegy performed at funeral/burial ceremonies — usually musical, containing philosophical statements about the inevitability of death and its effects on the living.' },
+  { unit:'2', q:'What is an epic in oral poetry?', a:'A long heroic narrative poem that tells the story of a hero\'s marvellous deeds, encounters with severe obstacles, and ultimate triumph — always rendered seriously and carefully planned.' },
+  { unit:'2', q:'How does oral literature differ from written literature?', a:'Written literature depends on print and has individual authorship. Oral literature relies on the spoken word, is communal (often without a single author), and comes alive through the performer\'s personality, gesture, and audience interaction.' },
+
+  // UNIT 3 — Genres of Literature
+  { unit:'3', q:'Define fiction.', a:'Fiction is any imaginative re-creation of life in prose narrative form — it relates events that never happened to characters that never existed, aiming to demonstrate meaningful insights into the human condition.' },
+  { unit:'3', q:'What is nonfiction?', a:'Writing about real events and facts — intended to give true accounts of real things and events. It encompasses history, biography, politics, science, etc. Unlike fiction, its characters, settings, and plot are real.' },
+  { unit:'3', q:'Distinguish between realism and romance as modes of fiction.', a:'Realism is a matter of perception — the writer reflects life as it is experienced, seeking objectivity. Romance is a matter of vision — writers go beyond reality, depending more on imagination to create beauty they cannot find in reality.' },
+  { unit:'3', q:'What is the essential distinction between the novel, novella, and short story?', a:'Length/volume. The novel is the longest, the novella is intermediate (17,500–40,000 words), and the short story is the shortest — typically readable in one sitting, under 20,000 words.' },
+  { unit:'3', q:'What is the origin of the novel?', a:'Traced to European oral culture of storytelling — fairy tales, jokes, and exempla that were later collected and written. Critics cite Daniel Defoe\'s Robinson Crusoe (1719) as the world\'s first novel.' },
+  { unit:'3', q:'What is prose fiction?', a:'Fictional work presented in narrative form. It is distinguished from drama (which uses dialogue) and includes the short story, the novella, and the novel.' },
+  { unit:'3', q:'What is lyric poetry?', a:'The most common form of poetry — short and musical, recording emotions rather than narrating events. Originally sung with musical accompaniment, it conveys personal experiences, emotions, moods, and thoughts.' },
+  { unit:'3', q:'What distinguishes an Italian sonnet from an English sonnet?', a:'The Italian (Petrarchan) sonnet has an octave (abbaabba) and a sestet with flexible rhyme. The English (Shakespearean) sonnet has three quatrains (ababcdcdefef) and a closing couplet (gg). Both feature a volta — a turn in thought.' },
+  { unit:'3', q:'What is a volta in a sonnet?', a:'A turn or shift in the poem — a change of subject, tone, or perspective. In Italian sonnets it typically occurs at line 9; in English sonnets it can occur at line 9 or at the couplet.' },
+  { unit:'3', q:'Define tragedy in drama (using Aristotle\'s definition).', a:'"An imitation of an action that is serious, complete, and of a certain magnitude… through pity and fear effecting a proper purgation of these emotions." The tragic hero is noble but makes an error of judgment that leads to his fall.' },
+  { unit:'3', q:'What is the difference between comedy and tragedy?', a:'Tragedy shows people "better than they are," ends in suffering and catastrophe for the hero, and evokes pity and fear. Comedy shows people "worse than they are" in ludicrous ways, typically ending in harmony and happiness.' },
+  { unit:'3', q:'What is melodrama?', a:'A play that combines serious action with extensive use of music. The protagonist suffers but triumphs; the antagonist (villain) is destroyed. Characters are clearly identified as good or evil — the hero always overcomes danger at the last moment.' },
+  { unit:'3', q:'What is tragi-comedy?', a:'A play that mixes tragic and comic elements in equal proportion, eliciting both tragic and comic emotions — as opposed to pure tragedy (entirely serious) or pure comedy (entirely comic).' },
+  { unit:'3', q:'What is alliteration and why is it used in poetry?', a:'The patterned repetition of identical consonantal sounds at the beginning of words (e.g. "Peter Piper picked a piece of pickled pepper"). It adds musical quality, beauty, conveys strong emotions, and makes the poem harmonious.' },
+];
+
+const quizData = [
+  { q:'Which of the following best describes the BROAD definition of literature?', opts:['Only works of fiction and poetry','All written manifestations of a culture','Texts with a clear pragmatic function','Only imaginative works by celebrated authors'], ans:1, exp:'The broad definition incorporates everything that has been written — all written manifestations of a culture (research literature, civil rights literature, etc.).' },
+  { q:'The Latin word from which "literature" is derived means:', opts:['Writing implements','Story or narrative','Letter of the alphabet','Book or document'], ans:2, exp:'"Literature" derives from the Latin "littera," meaning letter of the alphabet — implying writing.' },
+  { q:'According to Roman Jakobson, the "poetic function" of literary texts means:', opts:['Texts must rhyme to be literary','Literary texts draw attention to the language they employ','Literary texts must be written in verse','All literary texts must convey a moral'], ans:1, exp:'Jakobson\'s "poetic function" means literary texts foreground the language itself — how something is said is as important as what is said.' },
+  { q:'"Defamiliarisation" is a concept associated with which group of critics?', opts:['The New Critics','The Russian Formalists','The Frankfurt School','The French Symbolists'], ans:1, exp:'Defamiliarisation was a key concept of the Russian Formalists — literary language makes things strange and unfamiliar.' },
+  { q:'Which criterion of literariness suggests that literary texts do NOT need a specific purpose?', opts:['Fictionality','Specialised language','Lack of pragmatic function','Ambiguity'], ans:2, exp:'Non-literary texts (timetables, cookbooks) have definite pragmatic functions. Literary texts need not have been intended for any specific purpose — they gain their function through reading.' },
+  { q:'The primary distinction between a LEGEND and a MYTH is:', opts:['A legend is fictional; a myth is historical','A legend features a human hero; a myth features gods or divine forces','A legend is written; a myth is oral','A legend is prose; a myth is always poetry'], ans:1, exp:'A legend portrays a human hero set at a specific time and place. A myth is set in primordial times and typically features gods or divine beings.' },
+  { q:'Which characteristic of oral literature means that no two performances are ever the same?', opts:['Performer-based','Socially determined','Extemporaneous','Ephemeral'], ans:2, exp:'Extemporaneity means oral literature is perpetually subject to modification — each performance adapts to the occasion, the audience, and the performer.' },
+  { q:'A FABLE is best described as:', opts:['A long narrative about the life of a saint','A short narrative using non-human characters to illustrate a moral principle','A poem celebrating a hero\'s deeds','An oral story about primordial creation'], ans:1, exp:'A fable is a short narrative (in prose or verse) that exemplifies an abstract moral principle through non-human characters — the beast fable is the most common type.' },
+  { q:'Daniel Defoe\'s Robinson Crusoe is significant because critics cite it as:', opts:['The first English sonnet collection','The world\'s first novel','The origin of the short story','The first work of non-fiction'], ans:1, exp:'Critics have cited Daniel Defoe\'s Robinson Crusoe (1719) as the world\'s first novel, marking the beginning of the novel as a literary form.' },
+  { q:'What is the word count range for a novella, according to the Science Fiction and Fantasy Writers of America?', opts:['1,000–10,000 words','10,000–17,500 words','17,500–40,000 words','40,000–80,000 words'], ans:2, exp:'The Nebula Awards define the novella as having a word count between 17,500 and 40,000 words.' },
+  { q:'Which mode of fiction is described as "a matter of vision" — going beyond reality to create beauty?', opts:['Realism','Naturalism','Romance','Expressionism'], ans:2, exp:'Romance is a matter of vision — romantic writers go beyond observable reality, depending on imagination to create beauty they cannot find in the world as it is.' },
+  { q:'In the Italian (Petrarchan) sonnet, the octave follows which rhyme scheme?', opts:['ababcdcd','abbaabba','abcabc','aabbcc'], ans:1, exp:'The Italian sonnet\'s octave follows an "abbaabba" rhyme scheme. The sestet has more flexibility.' },
+  { q:'A "volta" in a sonnet refers to:', opts:['The final couplet of an English sonnet','A type of Italian rhyme scheme','A turn or shift in subject or perspective within the poem','The opening statement of the poem'], ans:2, exp:'The volta is the turn or shift in the sonnet — a change of subject, tone, or enlightenment. In Italian sonnets it typically occurs at line 9.' },
+  { q:'Aristotle argued that tragedy achieves its effect through:', opts:['Laughter and delight','Pity and fear, effecting catharsis','Moral instruction and didacticism','Suspense and surprise'], ans:1, exp:'According to Aristotle\'s Poetics, tragedy achieves "a proper purgation of emotions" through pity and fear — this purging is called catharsis.' },
+  { q:'What is the key difference between high comedy and low comedy?', opts:['High comedy uses music; low comedy does not','High comedy evokes intellectual laughter; low comedy relies on physical gags and slapstick','High comedy always ends in marriage; low comedy ends in disaster','High comedy is written; low comedy is oral'], ans:1, exp:'George Meredith described high comedy as evoking "intellectual laughter" from emotionally detached spectators at human folly. Low comedy arouses laughter through jokes and slapstick — it has little intellectual appeal.' },
+  { q:'Which of the following is the PRIMARY characteristic of oral literature?', opts:['It is always performed by professional griots','It is performance-based and depends on performance for its existence','It is always preserved in written form','It has no connection to cultural values'], ans:1, exp:'The primary distinctive feature of orature is that it is performance-based — its creation, transmission, and existence are inseparable from its actual enactment.' },
+  { q:'Proverbs are described in the text as:', opts:['Children\'s riddles used for entertainment','Short narratives about animals','The stock in trade of old people used to convey moral lessons and advice','Long historical narratives'], ans:2, exp:'Proverbs deal with all aspects of life and are used to convey precise moral lessons, warnings, and advice — making a greater impact than ordinary discourse. Judicious use is a sign of wit.' },
+  { q:'What type of oral literature is described as "not art for art\'s sake" but tied to festivals and social occasions?', opts:['Ephemeral literature','Socially determined literature','Extemporaneous literature','Performance-based literature'], ans:1, exp:'Oral literature that is socially determined is closely tied to social activities, festivals, and ceremonies — it is rarely staged merely for aesthetic appeal.' },
+  { q:'In melodrama, what always happens to the antagonist by the end of the play?', opts:['The antagonist is reformed and forgiven','The antagonist escapes unpunished','The antagonist suffers and is destroyed','The antagonist becomes the tragic hero'], ans:2, exp:'In melodrama, the villain (antagonist) is always destroyed — this destruction brings about the happy resolution. The protagonist suffers greatly but ultimately triumphs.' },
+  { q:'A short story, according to Edgar Allan Poe\'s classic definition, should:', opts:['Be at least 10,000 words long','Be readable in one sitting','Include multiple subplots','Always have a tragic ending'], ans:1, exp:'Poe\'s famous definition states a short story should be readable in one sitting — creating a single unified effect. Contemporary usage defines it as not longer than 20,000 words.' },
+];
+
+const concepts = [
+  { unit:'1', tag:'Definition', icon:'fa-book', color:'bg-brand-50 text-brand-600 border-brand-200', title:'What is Literature?', body:'No single, all-embracing definition exists. In the broad sense it includes everything written. In the narrow (specific) sense it refers to imaginative writing that appeals to emotion and imagination rather than the intellect alone.' },
+  { unit:'1', tag:'Criterion', icon:'fa-ghost', color:'bg-violet-50 text-violet-600 border-violet-200', title:'Fictionality', body:'Literary texts are ultimately products of the writer\'s imagination. Even historical novels that depict real events contain fictitious characters or conversations — yet non-fiction reportage can read like fiction.' },
+  { unit:'1', tag:'Criterion', icon:'fa-language', color:'bg-indigo-50 text-indigo-600 border-indigo-200', title:'Specialised Language', body:'Literary language is "special" — it differs from everyday speech. The Russian Formalists called this defamiliarisation: words are taken out of their usual context, making them strange and new (see Dickens\'s Bleak House description of London fog).' },
+  { unit:'1', tag:'Criterion', icon:'fa-circle-half-stroke', color:'bg-amber-50 text-amber-600 border-amber-200', title:'Ambiguity', body:'Literary texts express meaning on different levels — they say something beyond their literal meaning. Unlike a recipe (fixed meaning), a poem like "Goblin Market" can support radically different interpretations simultaneously.' },
+  { unit:'1', tag:'Quality', icon:'fa-star', color:'bg-emerald-50 text-emerald-600 border-emerald-200', title:'Three Qualities of Literature', body:'1. Artistic quality — reveals hidden truth and beauty in ordinary experience. 2. Suggestiveness — appeals to emotion and imagination (Milton\'s "Myself am Hell"). 3. Originality — presents old stories in a new and fascinating light (Shakespeare\'s plays had pre-existing sources).' },
+  { unit:'2', tag:'Form', icon:'fa-microphone', color:'bg-rose-50 text-rose-600 border-rose-200', title:'Oral Literature (Orature)', body:'Spoken imaginative communication transmitted orally — not written. It is communal, performance-based, extemporaneous, ephemeral, and socially determined. Exists in prose (myths, fables, folktales), poetry (dirges, epics), and drama (ritual, masquerades).' },
+  { unit:'2', tag:'Prose', icon:'fa-scroll', color:'bg-orange-50 text-orange-600 border-orange-200', title:'Types of Oral Prose', body:'Myth (primordial, explains origins), Legend (human hero, specific time and place), Folktale (fictitious, cultural, not historical), Fable (non-human characters, moral lesson), Riddle (enigmatic questions), Proverb (moral wisdom), Tongue Twister (speech fluency).' },
+  { unit:'2', tag:'Poetry', icon:'fa-music', color:'bg-teal-50 text-teal-600 border-teal-200', title:'Types of Oral Poetry', body:'Musical poetry (chant + music), Lyric (short, emotional), Dirge/Elegy (funeral, philosophical), Invocative poetry (praise), Didactic (moral instruction), Narrative (epics — heroic), Ritual (prayers, incantations), Satirical, War, Casual (greetings, hawker\'s song).' },
+  { unit:'3', tag:'Genre', icon:'fa-book-open', color:'bg-brand-50 text-brand-600 border-brand-200', title:'Fiction vs Nonfiction', body:'Fiction is imaginative re-creation of life — events never happened, characters never existed, yet they reveal meaningful truths about the human condition. Nonfiction presents real events and facts: biography, history, science, essays, newspaper articles, textbooks.' },
+  { unit:'3', tag:'Genre', icon:'fa-feather-pointed', color:'bg-violet-50 text-violet-600 border-violet-200', title:'Prose Fiction', body:'Fictional work in narrative form: the Novel (longest, complex plot), the Novella (intermediate, 17,500–40,000 words), the Short Story (shortest, one sitting, single effect). Modes: Realism (life as it is — perception) vs Romance (life as it should be — vision/imagination).' },
+  { unit:'3', tag:'Genre', icon:'fa-pen-nib', color:'bg-pink-50 text-pink-600 border-pink-200', title:'Poetry', body:'Written in verse (rhythmic lines). Requires creativity, emotion, artistic quality, and logic. Key elements: Stanza (group of lines), Rhythm/Metre (stress patterns), Rhyme (sound repetition at line-end), Alliteration (consonant repetition), Assonance (vowel repetition). Types: Lyric, Narrative (Ballad, Epic), Sonnet (Italian/English).' },
+  { unit:'3', tag:'Genre', icon:'fa-masks-theater', color:'bg-amber-50 text-amber-600 border-amber-200', title:'Drama', body:'Literature designed for performance — characters act out roles on stage. Originated in Greek religious festivals honouring Dionysus. Thespis was the first actor (6th c. BC). Dramatic genres: Tragedy (serious, catastrophic end), Comedy (happy end), Melodrama (protagonist triumphs, villain destroyed), Tragi-comedy (mixed elements), Farce (physical comedy).' },
+];
+
+// ═══════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════
+let currentMode = 'flashcards';
+let activeCards = [...flashcards];
+let cardIndex = 0;
+let isFlipped = false;
+let quizIndex = 0;
+let quizScore = 0;
+let quizAnswered = false;
+let shuffledQuiz = [];
+
+// ═══════════════════════════════════════════════════
+//  POPUP
+// ═══════════════════════════════════════════════════
+function closeWaPopup() {
+  document.getElementById('waPopup').style.display = 'none';
+  sessionStorage.setItem('myle-wa-seen','1');
+}
+function openWaPopup() {
+  const el = document.getElementById('waPopup');
+  el.style.removeProperty('display');
+  el.style.display = 'flex';
+}
+window.addEventListener('load', () => {
+  if (!sessionStorage.getItem('myle-wa-seen')) {
+    setTimeout(openWaPopup, 2200);
+  }
+  buildDots();
+  buildConceptsGrid();
+  buildConceptFilters();
+});
+
+// ═══════════════════════════════════════════════════
+//  MODE SWITCHING
+// ═══════════════════════════════════════════════════
+function setMode(mode) {
+  ['flashcards','quiz','concepts'].forEach(m => {
+    document.getElementById('mode-'+m).classList.add('hidden');
+    const tab = document.getElementById('tab-'+m);
+    tab.classList.remove('active');
+    tab.classList.add('text-white/70');
+    tab.classList.remove('text-white');
+  });
+  document.getElementById('mode-'+mode).classList.remove('hidden');
+  const activeTab = document.getElementById('tab-'+mode);
+  activeTab.classList.add('active');
+  activeTab.classList.remove('text-white/70');
+  currentMode = mode;
+}
+
+// ═══════════════════════════════════════════════════
+//  FLASHCARDS
+// ═══════════════════════════════════════════════════
+function renderCard() {
+  const card = activeCards[cardIndex];
+  document.getElementById('cardFront').textContent = card.q;
+  document.getElementById('cardBack').textContent = card.a;
+  document.getElementById('cardUnitLabel').textContent = 'Unit ' + card.unit;
+  document.getElementById('cardCounter').textContent = `Card ${cardIndex+1} of ${activeCards.length}`;
+  const pct = ((cardIndex+1) / activeCards.length * 100).toFixed(1);
+  document.getElementById('progressBar').style.width = pct + '%';
+
+  // Remove flipped state
+  if (isFlipped) { document.getElementById('flipCard').classList.remove('flipped'); isFlipped = false; }
+  updateDots();
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('flipCard').classList.toggle('flipped', isFlipped);
+}
+function nextCard() {
+  cardIndex = (cardIndex + 1) % activeCards.length;
+  renderCard();
+}
+function prevCard() {
+  cardIndex = (cardIndex - 1 + activeCards.length) % activeCards.length;
+  renderCard();
+}
+function shuffleCards() {
+  activeCards = [...activeCards].sort(() => Math.random() - 0.5);
+  cardIndex = 0; renderCard(); buildDots();
+}
+function filterCards(unit) {
+  document.querySelectorAll('.unit-btn').forEach(b => {
+    b.classList.remove('bg-brand-600','text-white');
+    b.classList.add('bg-white','border','border-gray-200','text-gray-600');
+  });
+  event.target.classList.add('bg-brand-600','text-white');
+  event.target.classList.remove('bg-white','border-gray-200','text-gray-600');
+  activeCards = unit === 'all' ? [...flashcards] : flashcards.filter(c => c.unit === unit);
+  cardIndex = 0; renderCard(); buildDots();
+}
+
+function buildDots() {
+  const c = document.getElementById('dotContainer');
+  c.innerHTML = '';
+  activeCards.forEach((_,i) => {
+    const d = document.createElement('div');
+    d.className = `w-2 h-2 rounded-full transition-all ${i === cardIndex ? 'bg-brand-600 scale-125' : 'bg-gray-200'}`;
+    d.onclick = () => { cardIndex = i; renderCard(); };
+    c.appendChild(d);
+  });
+}
+function updateDots() {
+  const dots = document.getElementById('dotContainer').children;
+  for (let i = 0; i < dots.length; i++) {
+    dots[i].className = `w-2 h-2 rounded-full cursor-pointer transition-all ${i === cardIndex ? 'bg-brand-600 scale-125' : 'bg-gray-200 hover:bg-brand-300'}`;
+  }
+}
+renderCard();
+
+// ═══════════════════════════════════════════════════
+//  QUIZ
+// ═══════════════════════════════════════════════════
+function startQuiz() {
+  document.getElementById('quizIntro').classList.add('hidden');
+  document.getElementById('quizInProgress').classList.remove('hidden');
+  document.getElementById('quizResult').classList.add('hidden');
+  shuffledQuiz = [...quizData].sort(() => Math.random() - 0.5);
+  quizIndex = 0; quizScore = 0;
+  updateQuizScore();
+  renderQuestion();
+}
+function retryQuiz() {
+  document.getElementById('quizResult').classList.add('hidden');
+  startQuiz();
+}
+function renderQuestion() {
+  quizAnswered = false;
+  const q = shuffledQuiz[quizIndex];
+  document.getElementById('quizQuestion').textContent = q.q;
+  document.getElementById('quizCounter').textContent = `Question ${quizIndex+1} of ${shuffledQuiz.length}`;
+  document.getElementById('quizProgressBar').style.width = ((quizIndex+1)/shuffledQuiz.length*100) + '%';
+  document.getElementById('nextQBtn').classList.add('hidden');
+  document.getElementById('quizExplanation').classList.add('hidden');
+
+  const opts = document.getElementById('quizOptions');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-opt border-2 border-gray-100 bg-gray-50 rounded-xl p-4 text-sm font-medium text-gray-700 flex items-center gap-3';
+    div.innerHTML = `<span class="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-xs font-bold text-gray-500 flex-shrink-0">${'ABCD'[i]}</span>${opt}`;
+    div.onclick = () => answerQuestion(i, div);
+    opts.appendChild(div);
+  });
+}
+function answerQuestion(chosen, el) {
+  if (quizAnswered) return;
+  quizAnswered = true;
+  const q = shuffledQuiz[quizIndex];
+  const opts = document.getElementById('quizOptions').children;
+
+  for (let i = 0; i < opts.length; i++) {
+    opts[i].classList.add('disabled');
+    if (i === q.ans) opts[i].classList.add('correct');
+    else if (i === chosen && chosen !== q.ans) opts[i].classList.add('wrong');
+  }
+
+  if (chosen === q.ans) { quizScore++; updateQuizScore(); }
+
+  document.getElementById('explanationText').textContent = q.exp;
+  document.getElementById('quizExplanation').classList.remove('hidden');
+  document.getElementById('nextQBtn').classList.remove('hidden');
+  document.getElementById('nextQBtn').textContent = quizIndex < shuffledQuiz.length - 1 ? 'Next Question →' : 'See Results →';
+}
+function nextQuestion() {
+  quizIndex++;
+  if (quizIndex >= shuffledQuiz.length) { showResults(); return; }
+  renderQuestion();
+}
+function updateQuizScore() {
+  document.getElementById('quizScore').textContent = `Score: ${quizScore}`;
+}
+function showResults() {
+  document.getElementById('quizInProgress').classList.add('hidden');
+  document.getElementById('quizResult').classList.remove('hidden');
+  const pct = quizScore / shuffledQuiz.length;
+  document.getElementById('finalScore').textContent = `${quizScore}/${shuffledQuiz.length}`;
+  const title = pct >= 0.8 ? 'Excellent! 🎉' : pct >= 0.6 ? 'Good job! 👍' : pct >= 0.4 ? 'Keep studying! 📚' : 'More practice needed 💪';
+  const msg = pct >= 0.8 ? 'Outstanding performance — you clearly know this material well!' : pct >= 0.6 ? 'Solid understanding. Review the ones you missed and try again.' : pct >= 0.4 ? 'You\'re getting there. Go back to the flashcards to reinforce the concepts.' : 'Don\'t give up — use the flashcards and concept explorer, then retry.';
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultMsg').textContent = msg;
+  // Animate ring
+  const ring = document.getElementById('scoreRing');
+  const circumference = 283;
+  setTimeout(() => { ring.style.strokeDashoffset = circumference * (1 - pct); }, 100);
+}
+
+// ═══════════════════════════════════════════════════
+//  CONCEPTS
+// ═══════════════════════════════════════════════════
+function buildConceptFilters() {
+  const container = document.getElementById('conceptFilterBtns');
+  const types = ['all','1','2','3'];
+  const labels = { all:'All', '1':'Unit 1', '2':'Unit 2', '3':'Unit 3' };
+  container.innerHTML = '';
+  types.forEach(t => {
+    const btn = document.createElement('button');
+    btn.textContent = labels[t];
+    btn.dataset.unit = t;
+    btn.className = `text-xs font-semibold px-3 py-1.5 rounded-lg transition-all whitespace-nowrap ${t === 'all' ? 'bg-brand-600 text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-600 hover:border-brand-400'}`;
+    btn.onclick = () => {
+      container.querySelectorAll('button').forEach(b => {
+        b.className = 'text-xs font-semibold px-3 py-1.5 rounded-lg transition-all whitespace-nowrap bg-white border border-gray-200 text-gray-600 hover:border-brand-400';
+      });
+      btn.className = 'text-xs font-semibold px-3 py-1.5 rounded-lg transition-all whitespace-nowrap bg-brand-600 text-white shadow-sm';
+      filterConcepts();
+    };
+    container.appendChild(btn);
+  });
+}
+function filterConcepts() {
+  const query = document.getElementById('conceptSearch').value.toLowerCase();
+  const activeUnit = document.querySelector('#conceptFilterBtns button.bg-brand-600')?.dataset?.unit || 'all';
+  const filtered = concepts.filter(c => {
+    const matchUnit = activeUnit === 'all' || c.unit === activeUnit;
+    const matchSearch = !query || c.title.toLowerCase().includes(query) || c.body.toLowerCase().includes(query) || c.tag.toLowerCase().includes(query);
+    return matchUnit && matchSearch;
+  });
+  buildConceptsGrid(filtered);
+}
+function buildConceptsGrid(list = concepts) {
+  const grid = document.getElementById('conceptsGrid');
+  grid.innerHTML = '';
+  if (list.length === 0) {
+    grid.innerHTML = '<div class="text-center py-12 text-gray-400 text-sm">No concepts match your search.</div>';
+    return;
+  }
+  list.forEach((c, i) => {
+    const card = document.createElement('div');
+    card.className = 'concept-card bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex gap-4 items-start';
+    card.style.animationDelay = (i * 0.04) + 's';
+    card.style.opacity = 0;
+    card.style.animation = `slideUp 0.4s ${i*0.04}s ease forwards`;
+    card.innerHTML = `
+      <div class="w-10 h-10 ${c.color.split(' ').slice(0,2).join(' ')} rounded-xl flex items-center justify-center flex-shrink-0 border ${c.color.split(' ')[2]}">
+        <i class="fa-solid ${c.icon} text-base"></i>
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="text-xs font-bold ${c.color.split(' ')[1]} uppercase tracking-wider">${c.tag}</span>
+          <span class="text-xs text-gray-300">·</span>
+          <span class="text-xs text-gray-400">Unit ${c.unit}</span>
+        </div>
+        <h3 class="font-bold text-gray-900 text-base mb-1.5 leading-snug">${c.title}</h3>
+        <p class="text-gray-500 text-sm leading-relaxed">${c.body}</p>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (currentMode !== 'flashcards') return;
+  if (e.key === 'ArrowRight') nextCard();
+  if (e.key === 'ArrowLeft') prevCard();
+  if (e.key === ' ') { e.preventDefault(); flipCard(); }
+});
+</script>
+</body>
+</html>
