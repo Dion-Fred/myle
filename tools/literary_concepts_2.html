@@ -1,0 +1,656 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Literature & Drama Study Suite</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae2fd',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .perspective-1000 { perspective: 1000px; }
+        .transform-style-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        
+        /* Smooth custom scrollbar for overflow regions */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Hide scrollbar utility for navigation scroll */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-brand-50 text-brand-900 min-h-screen flex flex-col font-sans selection:bg-brand-200">
+
+    <!-- Header Banner -->
+    <header class="bg-gradient-to-r from-brand-900 via-brand-800 to-brand-700 text-white py-6 px-4 text-center shadow-md">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight flex items-center justify-center gap-2">
+                <span class="material-icons text-brand-200 text-3xl">auto_stories</span>
+                LitDrama Study Suite
+            </h1>
+            <p class="text-brand-200 text-xs md:text-sm mt-1 font-medium max-w-md mx-auto">
+                Master core literary concepts, genres, poetic devices, and classical dramatic techniques.
+            </p>
+        </div>
+    </header>
+
+    <!-- Navigation Bar (Swipe-Scrollable on Mobile) -->
+    <nav class="bg-white border-b border-brand-100 sticky top-0 z-50 shadow-sm flex overflow-x-auto justify-start md:justify-center whitespace-nowrap no-scrollbar">
+        <div class="flex px-2 md:px-0">
+            <button onclick="switchTab('flashcards')" id="btn-flashcards" class="nav-btn py-3.5 px-4 md:px-6 text-sm font-semibold flex items-center gap-1.5 transition-all text-brand-600 border-b-2 border-brand-600">
+                <span class="material-icons text-lg">style</span> Flashcards
+            </button>
+            <button onclick="switchTab('quiz')" id="btn-quiz" class="nav-btn py-3.5 px-4 md:px-6 text-sm font-semibold flex items-center gap-1.5 transition-all text-gray-500 border-b-2 border-transparent hover:text-brand-500">
+                <span class="material-icons text-lg">quiz</span> Quiz Game
+            </button>
+            <button onclick="switchTab('theory')" id="btn-theory" class="nav-btn py-3.5 px-4 md:px-6 text-sm font-semibold flex items-center gap-1.5 transition-all text-gray-500 border-b-2 border-transparent hover:text-brand-500">
+                <span class="material-icons text-lg">menu_book</span> Theory Vault
+            </button>
+            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-btn py-3.5 px-4 md:px-6 text-sm font-semibold flex items-center gap-1.5 transition-all text-gray-500 border-b-2 border-transparent hover:text-brand-500">
+                <span class="material-icons text-lg">dashboard</span> Planner & Notes
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Active Workspace Container -->
+    <main class="flex-grow container mx-auto max-w-3xl px-4 py-6">
+
+        <!-- 1. FLASHCARDS MODULE -->
+        <div id="tab-flashcards" class="tab-content block">
+            <div class="perspective-1000 w-full max-w-md mx-auto h-72 md:h-80 my-4">
+                <div id="mainCard" onclick="this.classList.toggle('[transform:rotateY(180deg)]')" class="w-full relative transform-style-3d transition-transform duration-500 cursor-pointer h-full">
+                    
+                    <!-- Card Front Face -->
+                    <div class="backface-hidden absolute inset-0 bg-white border border-brand-100 rounded-2xl p-6 shadow-md flex flex-col justify-between items-center text-center">
+                        <span id="cardTag" class="text-[10px] uppercase font-bold tracking-wider bg-brand-100 text-brand-700 px-2.5 py-1 rounded-full flex items-center gap-1">
+                            <span class="material-icons text-xs">bookmark</span> Loading...
+                        </span>
+                        <h3 id="cardQuestion" class="text-lg md:text-xl font-bold text-brand-900 leading-snug px-2">Loading Question...</h3>
+                        <div class="text-xs text-gray-400 flex items-center gap-1">
+                            <span class="material-icons text-sm">touch_app</span> Tap card to reveal answer
+                        </div>
+                    </div>
+
+                    <!-- Card Back Face -->
+                    <div class="backface-hidden rotate-y-180 absolute inset-0 bg-brand-800 text-white border border-brand-900 rounded-2xl p-6 shadow-xl flex flex-col justify-between items-center text-center overflow-hidden">
+                        <span class="text-[10px] uppercase font-bold tracking-wider bg-brand-700 text-brand-100 px-2.5 py-1 rounded-full">
+                            Core Answer Explanation
+                        </span>
+                        <p id="cardAnswer" class="text-xs md:text-sm leading-relaxed overflow-y-auto max-h-48 my-auto px-1 custom-scroll">
+                            Loading Answer...
+                        </p>
+                        <div class="text-[11px] text-brand-200">
+                            Tap again to flip back
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Card Pager Controls -->
+            <div class="flex items-center justify-between max-w-md mx-auto mt-6 bg-white p-3 rounded-xl shadow-sm border border-brand-100">
+                <button onclick="prevCard()" class="flex items-center justify-center p-2 rounded-lg hover:bg-brand-50 text-brand-600 transition-colors">
+                    <span class="material-icons text-2xl">chevron_left</span>
+                </button>
+                <span id="cardTracker" class="text-sm font-bold text-brand-800 tracking-wide bg-brand-50 px-4 py-1.5 rounded-full">1 / 10</span>
+                <button onclick="nextCard()" class="flex items-center justify-center p-2 rounded-lg hover:bg-brand-50 text-brand-600 transition-colors">
+                    <span class="material-icons text-2xl">chevron_right</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 2. QUIZ MODULE -->
+        <div id="tab-quiz" class="tab-content hidden">
+            <div class="bg-white rounded-2xl p-5 md:p-6 shadow-md border border-brand-100">
+                <!-- Progress Stats -->
+                <div class="flex items-center justify-between border-b border-brand-50 pb-3 mb-4 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                    <span id="quizProgress" class="flex items-center gap-1">
+                        <span class="material-icons text-sm text-brand-500">assignment_turned_in</span> Question 1 of 5
+                    </span>
+                    <span id="quizScore" class="bg-brand-50 text-brand-700 px-3 py-1 rounded-md">Score: 0</span>
+                </div>
+
+                <!-- Active Question -->
+                <div class="quiz-question text-base md:text-lg font-bold text-brand-900 mb-5 leading-snug" id="quizQuestion">
+                    Loading Question Content...
+                </div>
+
+                <!-- Selection List -->
+                <div class="flex flex-col gap-3" id="quizOptions"></div>
+
+                <!-- Dynamic Adaptive Feedback -->
+                <div class="quiz-feedback mt-5 p-4 rounded-xl text-sm hidden flex items-start gap-2.5" id="quizFeedback"></div>
+
+                <!-- Action Bar -->
+                <div class="mt-6 flex justify-end">
+                    <button class="bg-brand-600 text-white font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-brand-700 transition-colors shadow-sm hidden flex items-center gap-1" id="nextQuizBtn" onclick="nextQuizQuestion()">
+                        Next Question <span class="material-icons text-sm">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. THEORY COMPREHENSIVE VAULT -->
+        <div id="tab-theory" class="tab-content hidden">
+            <!-- Search Database Engine -->
+            <div class="relative mb-4">
+                <span class="material-icons absolute left-3 top-3.5 text-gray-400 text-xl">search</span>
+                <input type="text" id="theorySearch" class="w-full pl-10 pr-4 py-3 bg-white border border-brand-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium transition-shadow placeholder:text-gray-400 shadow-sm" placeholder="Search lessons (e.g. Tragedy, Diction, Oral literature)..." oninput="filterTheory()">
+            </div>
+            
+            <!-- Accordion List -->
+            <div id="theoryContainer" class="flex flex-col gap-3">
+                
+                <!-- Topic 1 -->
+                <div class="theory-item bg-white border border-brand-100 rounded-xl overflow-hidden shadow-sm">
+                    <div class="p-4 flex justify-between items-center font-bold text-brand-900 cursor-pointer hover:bg-brand-50 transition-colors gap-2 text-sm md:text-base" onclick="toggleTheory(this)">
+                        <span class="flex items-center gap-2">
+                            <span class="material-icons text-brand-500">clarify</span> 1. What is Literature & Its Functions?
+                        </span>
+                        <span class="material-icons text-gray-400 transition-transform duration-200 select-none">expand_more</span>
+                    </div>
+                    <div class="theory-answer max-h-0 overflow-hidden transition-all duration-300 bg-gray-50 border-t border-transparent">
+                        <div class="p-4 text-xs md:text-sm text-gray-700 space-y-3 leading-relaxed">
+                            <p><strong class="text-brand-800">Definition:</strong> Derived from Latin <em>litteratura</em> ("writing formed with letters"). It represents the creative use of written or spoken words to archive, analyze, and mirror human experiences, cultural matrices, and universal psychological truths.</p>
+                            <p class="font-semibold text-brand-900">Primary Societal Functions:</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Aesthetic Pleasure:</strong> Serves recreational entertainment, escaping, and evaluating linguistic arts.</li>
+                                <li><strong>Pedagogy:</strong> Works as a generational archive for histories, traditional philosophical ideas, and cultural evolutions.</li>
+                                <li><strong>Social Critique:</strong> Confronts institutional structural failures, corruption, and inequalities to spark system changes.</li>
+                                <li><strong>Empathy Building:</strong> Opens emotional pathways by forcing the reader to view realities via foreign psychological vantage points.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic 2 -->
+                <div class="theory-item bg-white border border-brand-100 rounded-xl overflow-hidden shadow-sm">
+                    <div class="p-4 flex justify-between items-center font-bold text-brand-900 cursor-pointer hover:bg-brand-50 transition-colors gap-2 text-sm md:text-base" onclick="toggleTheory(this)">
+                        <span class="flex items-center gap-2">
+                            <span class="material-icons text-brand-500">category</span> 2. The Three Genres of Literature
+                        </span>
+                        <span class="material-icons text-gray-400 transition-transform duration-200 select-none">expand_more</span>
+                    </div>
+                    <div class="theory-answer max-h-0 overflow-hidden transition-all duration-300 bg-gray-50 border-t border-transparent">
+                        <div class="p-4 text-xs md:text-sm text-gray-700 space-y-3 leading-relaxed">
+                            <p>Literature splits systematically into three fundamental structural categories:</p>
+                            <ol class="list-decimal pl-5 space-y-2">
+                                <li><strong class="text-brand-800">Prose:</strong> Plain vernacular structure mapping thoughts using continuous syntax sentences and structured paragraphs. Includes <em>Fiction</em> (imagined plots) and <em>Non-Fiction</em> (factual records, essays, biographies).</li>
+                                <li><strong class="text-brand-800">Poetry:</strong> High-density aesthetic composition arranged in lines and stanzas. Prioritizes meter, sound textures, acoustics, and intense emotional economies.</li>
+                                <li><strong class="text-brand-800">Drama:</strong> Action-oriented script matrices arranged into acts and scenes, explicitly composed to be translated visually by live performers upon a physical theater stage via dialogue frameworks.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic 3 -->
+                <div class="theory-item bg-white border border-brand-100 rounded-xl overflow-hidden shadow-sm">
+                    <div class="p-4 flex justify-between items-center font-bold text-brand-900 cursor-pointer hover:bg-brand-50 transition-colors gap-2 text-sm md:text-base" onclick="toggleTheory(this)">
+                        <span class="flex items-center gap-2">
+                            <span class="material-icons text-brand-500">view_list</span> 3. Core Structural Features Matrix
+                        </span>
+                        <span class="material-icons text-gray-400 transition-transform duration-200 select-none">expand_more</span>
+                    </div>
+                    <div class="theory-answer max-h-0 overflow-hidden transition-all duration-300 bg-gray-50 border-t border-transparent">
+                        <div class="p-4 overflow-x-auto custom-scroll">
+                            <table class="w-full text-left text-xs border-collapse min-w-[400px]">
+                                <thead>
+                                    <tr class="bg-brand-100 text-brand-900 font-bold border-b border-brand-200">
+                                        <th class="p-2.5">Genre</th>
+                                        <th class="p-2.5">Core Features & Typographical Setup</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-brand-100 text-gray-600 bg-white">
+                                    <tr>
+                                        <td class="p-2.5 font-bold text-brand-800">Prose</td>
+                                        <td class="p-2.5">Sentences/paragraphs; relies on structural narrators; highlights extended linear or multi-perspective plot arcs.</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5 font-bold text-brand-800">Poetry</td>
+                                        <td class="p-2.5">Lines/stanzas; utilizes strict rhythmic cadence/meter; heavy deployment of internal acoustics (rhyme, assonance).</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="p-2.5 font-bold text-brand-800">Drama</td>
+                                        <td class="p-2.5">Acts/scenes layouts; fully dialogue/monologue bound; embeds non-spoken stage directions governing physical scene states.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic 4 -->
+                <div class="theory-item bg-white border border-brand-100 rounded-xl overflow-hidden shadow-sm">
+                    <div class="p-4 flex justify-between items-center font-bold text-brand-900 cursor-pointer hover:bg-brand-50 transition-colors gap-2 text-sm md:text-base" onclick="toggleTheory(this)">
+                        <span class="flex items-center gap-2">
+                            <span class="material-icons text-brand-500">record_voice_over</span> 4. Definition of Oral Literature
+                        </span>
+                        <span class="material-icons text-gray-400 transition-transform duration-200 select-none">expand_more</span>
+                    </div>
+                    <div class="theory-answer max-h-0 overflow-hidden transition-all duration-300 bg-gray-50 border-t border-transparent">
+                        <div class="p-4 text-xs md:text-sm text-gray-700 space-y-2 leading-relaxed">
+                            <p><strong class="text-brand-800">Oral Literature (Orature):</strong> Any artful literary composition that remains unwritten and is instead protected, communicated, and inherited through verbal phonetic delivery across generations.</p>
+                            <p>It constitutes the ancestral foundation of global literary history. Examples encompass communal folk narratives, cultural proverbs, localized riddles, ritualistic songs, epic verse, and tribal myths.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic 5 -->
+                <div class="theory-item bg-white border border-brand-100 rounded-xl overflow-hidden shadow-sm">
+                    <div class="p-4 flex justify-between items-center font-bold text-brand-900 cursor-pointer hover:bg-brand-50 transition-colors gap-2 text-sm md:text-base" onclick="toggleTheory(this)">
+                        <span class="flex items-center gap-2">
+                            <span class="material-icons text-brand-500">palette</span> 5. Style Elements & Language Tools
+                        </span>
+                        <span class="material-icons text-gray-400 transition-transform duration-200 select-none">expand_more</span>
+                    </div>
+                    <div class="theory-answer max-h-0 overflow-hidden transition-all duration-300 bg-gray-50 border-t border-transparent">
+                        <div class="p-4 text-xs md:text-sm text-gray-700 space-y-3 leading-relaxed">
+                            <ul class="space-y-2">
+                                <li><strong>Diction:</strong> The conscious selection of vocabulary. Shapes social class status, time placement, and thematic atmosphere.</li>
+                                <li><strong>Tone & Mood:</strong> <em>Tone</em> maps the creator's alignment; <em>Mood</em> outlines the emotional response transferred to the reading audience.</li>
+                                <li><strong>Sensory Imagery:</strong> Language configurations evoking sight, sound, odor, taste, or tactile neural registers.</li>
+                                <li><strong>Figurative Language:</strong> Transcends literal descriptions. Includes <em>Similes</em>, <em>Metaphors</em>, and <em>Personification</em>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic 6 -->
+                <div class="theory-item bg-white border border-brand-100 rounded-xl overflow-hidden shadow-sm">
+                    <div class="p-4 flex justify-between items-center font-bold text-brand-900 cursor-pointer hover:bg-brand-50 transition-colors gap-2 text-sm md:text-base" onclick="toggleTheory(this)">
+                        <span class="flex items-center gap-2">
+                            <span class="material-icons text-brand-500">theater_comedy</span> 6. Drama Structures, Modes & Core Types
+                        </span>
+                        <span class="material-icons text-gray-400 transition-transform duration-200 select-none">expand_more</span>
+                    </div>
+                    <div class="theory-answer max-h-0 overflow-hidden transition-all duration-300 bg-gray-50 border-t border-transparent">
+                        <div class="p-4 text-xs md:text-sm text-gray-700 space-y-3 leading-relaxed">
+                            <p class="font-semibold text-brand-900">Canonical Sub-categories:</p>
+                            <ul class="list-disc pl-5 space-y-1">
+                                <li><strong>Tragedy:</strong> Tracks a highly ranked hero falling into complete ruin due to unavoidable errors.</li>
+                                <li><strong>Comedy:</strong> Deploys ironic critique, structural puns, and humorous scenarios to correct social errors.</li>
+                                <li><strong>Tragicomedy:</strong> A hybrid layout merging somber structures with comical relief elements.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic 7 -->
+                <div class="theory-item bg-white border border-brand-100 rounded-xl overflow-hidden shadow-sm">
+                    <div class="p-4 flex justify-between items-center font-bold text-brand-900 cursor-pointer hover:bg-brand-50 transition-colors gap-2 text-sm md:text-base" onclick="toggleTheory(this)">
+                        <span class="flex items-center gap-2">
+                            <span class="material-icons text-brand-500">music_note</span> 7. Advanced Poetic Devices Inventory
+                        </span>
+                        <span class="material-icons text-gray-400 transition-transform duration-200 select-none">expand_more</span>
+                    </div>
+                    <div class="theory-answer max-h-0 overflow-hidden transition-all duration-300 bg-gray-50 border-t border-transparent">
+                        <div class="p-4 text-xs md:text-sm text-gray-700 space-y-2 leading-relaxed">
+                            <ul class="space-y-2">
+                                <li><strong>Alliteration:</strong> Reoccurrence of initial matching consonant sounds.</li>
+                                <li><strong>Assonance:</strong> Vocal resonance achieved via matching interior vowel sounds.</li>
+                                <li><strong>Enjambment:</strong> Moving sentence structures past active line boundaries without structural punctuation, speeding up rhythm.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic 8 -->
+                <div class="theory-item bg-white border border-brand-100 rounded-xl overflow-hidden shadow-sm">
+                    <div class="p-4 flex justify-between items-center font-bold text-brand-900 cursor-pointer hover:bg-brand-50 transition-colors gap-2 text-sm md:text-base" onclick="toggleTheory(this)">
+                        <span class="flex items-center gap-2">
+                            <span class="material-icons text-brand-500">psychology</span> 8. Technical Narrative Methods
+                        </span>
+                        <span class="material-icons text-gray-400 transition-transform duration-200 select-none">expand_more</span>
+                    </div>
+                    <div class="theory-answer max-h-0 overflow-hidden transition-all duration-300 bg-gray-50 border-t border-transparent">
+                        <div class="p-4 text-xs md:text-sm text-gray-700 space-y-2 leading-relaxed">
+                            <ul class="space-y-2">
+                                <li><strong>Plot Matrix:</strong> Exposition &rarr; Rising Action &rarr; Climax &rarr; Falling Action &rarr; Resolution.</li>
+                                <li><strong>POV Parameters:</strong> First-Person ('I'), Third-Person Limited, or Third-Person Omniscient (all-knowing).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic 9 -->
+                <div class="theory-item bg-white border border-brand-100 rounded-xl overflow-hidden shadow-sm">
+                    <div class="p-4 flex justify-between items-center font-bold text-brand-900 cursor-pointer hover:bg-brand-50 transition-colors gap-2 text-sm md:text-base" onclick="toggleTheory(this)">
+                        <span class="flex items-center gap-2">
+                            <span class="material-icons text-brand-500">gavel</span> 9. Classical Elements of Tragedy
+                        </span>
+                        <span class="material-icons text-gray-400 transition-transform duration-200 select-none">expand_more</span>
+                    </div>
+                    <div class="theory-answer max-h-0 overflow-hidden transition-all duration-300 bg-gray-50 border-t border-transparent">
+                        <div class="p-4 text-xs md:text-sm text-gray-700 space-y-3 leading-relaxed">
+                            <p>Derived from Aristotle's core <em>Poetics</em>, standard tragedy uses specific structural points:</p>
+                            <ul class="list-disc pl-5 space-y-1.5">
+                                <li><strong>Hamartia:</strong> The tragic internal error in judgment or moral blindspot (frequently <em>Hubris</em>—excessive pride).</li>
+                                <li><strong>Peripeteia:</strong> The critical twist where structural plot fortune vectors reverse entirely against the hero.</li>
+                                <li><strong>Anagnorisis:</strong> The sudden internal awakening where the hero discovers truth realities too late.</li>
+                                <li><strong>Catharsis:</strong> The therapeutic emotional purge of <em>pity</em> and <em>fear</em> within an audience.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- 4. DASHBOARD & NOTE MANAGEMENT SYSTEM -->
+        <div id="tab-dashboard" class="tab-content hidden animate-fadeIn">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Targets & Benchmarks -->
+                <div class="bg-white p-5 rounded-2xl shadow-md border border-brand-100">
+                    <h2 class="text-base font-bold text-brand-900 border-b border-brand-50 pb-2.5 mb-4 flex items-center gap-1.5">
+                        <span class="material-icons text-brand-500">event_note</span> Upcoming Milestones
+                    </h2>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded-r-xl flex justify-between items-start">
+                            <div>
+                                <h4 class="text-xs font-bold text-red-900">Literature Exam (Paper 1)</h4>
+                                <p class="text-[11px] text-red-700 mt-0.5">Focus: Aristotle's Tragedy rules & Syntax analytics.</p>
+                            </div>
+                            <span class="text-[9px] bg-red-600 text-white font-black px-2 py-0.5 rounded uppercase">Urgent</span>
+                        </div>
+                        <div class="p-3 bg-brand-50 border-l-4 border-brand-500 rounded-r-xl flex justify-between items-start">
+                            <div>
+                                <h4 class="text-xs font-bold text-brand-900">Drama Script Evaluation</h4>
+                                <p class="text-[11px] text-brand-700 mt-0.5">Review Stage directions & structural dialogue styles.</p>
+                            </div>
+                            <span class="text-[9px] bg-brand-600 text-white font-black px-2 py-0.5 rounded uppercase">Core</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Memo / Scratchpad System -->
+                <div class="bg-white p-5 rounded-2xl shadow-md border border-brand-100">
+                    <h2 class="text-base font-bold text-brand-900 border-b border-brand-50 pb-2.5 mb-4 flex items-center gap-1.5">
+                        <span class="material-icons text-brand-500">edit_note</span> Scratchpad Notes
+                    </h2>
+                    <div class="space-y-2 mb-4">
+                        <input type="text" id="noteTitle" class="w-full px-3 py-2 bg-brand-50 border border-brand-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500 font-bold" placeholder="Topic Label (e.g. Mnemonic Device)">
+                        <textarea id="noteBody" rows="2" class="w-full px-3 py-2 bg-brand-50 border border-brand-100 text-xs rounded-lg focus:outline-none focus:ring-1 focus:ring-brand-500 resize-none" placeholder="Type core study summaries..."></textarea>
+                        <button onclick="addNote()" class="w-full bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold py-2 rounded-lg transition-colors flex items-center justify-center gap-1">
+                            <span class="material-icons text-sm">save</span> Archive Quick Note
+                        </button>
+                    </div>
+                    
+                    <!-- Scrollable Notes Storage Area -->
+                    <div id="savedNotesContainer" class="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scroll">
+                        <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl relative group">
+                            <h4 class="text-xs font-bold text-amber-900">Tragic Fall Step Memory</h4>
+                            <p class="text-[11px] text-amber-800 mt-0.5">Hero &rarr; Hamartia flaw &rarr; Peripeteia twist &rarr; Anagnorisis awareness &rarr; Catharsis end.</p>
+                            <button onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-red-500 text-sm font-bold opacity-70 hover:opacity-100 select-none">&times;</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Area -->
+    <footer class="bg-white border-t border-brand-100 text-center py-4 text-[11px] text-gray-400 font-medium">
+        &copy; 2026 Literature & Drama Studio Suite &bull; Mobile-Responsive Revision Engine
+    </footer>
+
+    <!-- Interactive Script System -->
+    <script>
+        // 1. Tab Navigation System
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.replace('block', 'hidden'));
+            document.getElementById(`tab-${tabId}`).classList.replace('hidden', 'block');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.replace('text-brand-600', 'text-gray-500');
+                btn.classList.replace('border-brand-600', 'border-transparent');
+            });
+            
+            const activeBtn = document.getElementById(`btn-${tabId}`);
+            activeBtn.classList.replace('text-gray-500', 'text-brand-600');
+            activeBtn.classList.replace('border-transparent', 'border-brand-600');
+        }
+
+        // 2. Accordion Interface Logic for Theory Database
+        function toggleTheory(header) {
+            const container = header.nextElementSibling;
+            const icon = header.querySelector('.material-icons:last-child');
+            
+            if (container.style.maxHeight && container.style.maxHeight !== '0px') {
+                container.style.maxHeight = '0px';
+                icon.style.transform = 'rotate(0deg)';
+                header.classList.remove('bg-brand-50');
+            } else {
+                document.querySelectorAll('.theory-answer').forEach(el => el.style.maxHeight = '0px');
+                document.querySelectorAll('.theory-item div').forEach(el => el.classList.remove('bg-brand-50'));
+                document.querySelectorAll('.theory-item .material-icons:last-child').forEach(el => el.style.transform = 'rotate(0deg)');
+                
+                container.style.maxHeight = container.scrollHeight + "px";
+                icon.style.transform = 'rotate(180deg)';
+                header.classList.add('bg-brand-50');
+            }
+        }
+
+        // Real-time keyword filter across theory modules
+        function filterTheory() {
+            const query = document.getElementById('theorySearch').value.toLowerCase();
+            document.querySelectorAll('.theory-item').forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        }
+
+        // 3. Flashcards Database Engine
+        const flashcardsData = [
+            { tag: "Core Literature", q: "What is the baseline definition of Literature?", a: "Derived from Latin 'litteratura' (letters). It is the creative execution of spoken or written language to mirror human journeys, societal settings, and emotional truths." },
+            { tag: "Functional Utility", q: "What four core purposes does literature offer?", a: "1. Aesthetic pleasure/entertainment. 2. Knowledge retention and historical preservation. 3. Social critique/reform pathways. 4. Psychological empathy development." },
+            { tag: "Sub-Genre Separation", q: "What sets Prose distinctly apart from Verse/Poetry?", a: "Prose relies on clear everyday grammar sentences arranged in standard paragraphs without strict metric loops. Poetry restricts text to specialized lines and stanzas governed by acoustic meter." },
+            { tag: "Drama Context", q: "Define Drama according to performance requirements.", a: "Literature arranged into acts and scenes, explicitly written to be transformed into an active visual/auditory stage experience by performers using dialogue and stage directions." },
+            { tag: "Orature Foundations", q: "What constitutes Oral Literature?", a: "Unwritten artistic expressions (folk accounts, cultural riddles, historic proverbs, ritual songs) passed along entirely via verbal delivery and performance memory." },
+            { tag: "Stylistic Mechanics", q: "Distinguish between Diction and Syntax.", a: "Diction is the absolute word choice configuration an author uses. Syntax dictates the mathematical arrangement and pacing setup of those words inside sentences." },
+            { tag: "Aristotle Tragedy Rules", q: "Explain the intended outcome of Tragic Catharsis.", a: "The targeted emotional purging or therapeutic cleaning of Pity and Fear within an audience after viewing unmerited tragic downfalls." },
+            { tag: "Plot Trajectory", q: "List the standard architectural milestones of narrative plot lines.", a: "Exposition &rarr; Rising Action (Conflict Entry) &rarr; Climax (Pivot Point) &rarr; Falling Action &rarr; Resolution (Denouement)." },
+            { tag: "Poetic Layouts", q: "What is Enjambment and its mechanical goal?", a: "Running a sentence past a poetic line limit without terminal punctuation marks, which accelerates rhythm speed." },
+            { tag: "Character Delivery", q: "Contrast Direct vs Indirect Characterization.", a: "Direct states characteristics outright ('He was envious'). Indirect displays character psychology implicitly via thoughts, actions, speech patterns, and observer responses." }
+        ];
+
+        let currentCardIdx = 0;
+        function updateCard() {
+            const card = flashcardsData[currentCardIdx];
+            const cardElement = document.getElementById('mainCard');
+            cardElement.classList.remove('[transform:rotateY(180deg)]');
+            
+            setTimeout(() => {
+                document.getElementById('cardTag').innerHTML = `<span class="material-icons text-xs">bookmark</span> ${card.tag}`;
+                document.getElementById('cardQuestion').textContent = card.q;
+                document.getElementById('cardAnswer').textContent = card.a;
+                document.getElementById('cardTracker').textContent = `${currentCardIdx + 1} / ${flashcardsData.length}`;
+            }, 150);
+        }
+        function nextCard() { currentCardIdx = (currentCardIdx + 1) % flashcardsData.length; updateCard(); }
+        function prevCard() { currentCardIdx = (currentCardIdx - 1 + flashcardsData.length) % flashcardsData.length; updateCard(); }
+
+        // 4. Multiple Choice Quiz Engine Framework
+        const quizData = [
+            {
+                q: "Which specific term maps the tragic error in judgment or character vulnerability that breaks a classical hero?",
+                options: ["Catharsis", "Hamartia", "Peripeteia", "Anagnorisis"],
+                answer: 1,
+                explain: "Hamartia signifies the critical blindspot or judgment blunder (often tracking as Hubris or pride) that kicks off a hero's collapse."
+            },
+            {
+                q: "What narrative lens gives an outside reporter absolute visibility into every persona's internal psychological state?",
+                options: ["First Person", "Third Person Limited", "Second Person", "Third Person Omniscient"],
+                answer: 3,
+                explain: "Third Person Omniscient acts as an all-seeing observer, detached from singular character boundaries."
+            },
+            {
+                q: "What literary element charts the emotional atmosphere explicitly generated for the reader?",
+                options: ["Tone", "Mood", "Syntax", "Diction"],
+                answer: 1,
+                explain: "Tone is the creator's raw alignment toward the subject matter; Mood is the actual atmospheric feeling established inside the reading audience."
+            },
+            {
+                q: "Which device is defined by the repetition of inner vowel sounds across nearby words without matching consonants?",
+                options: ["Alliteration", "Consonance", "Assonance", "Onomatopoeia"],
+                answer: 2,
+                explain: "Assonance echoes internal vowel vocal spaces (e.g. 'crumbled puddle mud') without using identical terminal consonants."
+            },
+            {
+                q: "Oral literature stays unique from modern standard text types because it...",
+                options: ["Avoids advanced themes", "Relies strictly on non-written verbal loops and performance preservation", "Excludes structural metaphors", "Lacks structural plots"],
+                answer: 1,
+                explain: "Oral literature relies fully on performance execution, specialized memory hooks, and acoustic delivery across generational frameworks."
+            }
+        ];
+
+        let currentQuizIdx = 0;
+        let scoreCounter = 0;
+
+        function loadQuizQuestion() {
+            const currentQuiz = quizData[currentQuizIdx];
+            document.getElementById('quizProgress').innerHTML = `<span class="material-icons text-sm text-brand-500">assignment_turned_in</span> Question ${currentQuizIdx + 1} of ${quizData.length}`;
+            document.getElementById('quizQuestion').textContent = currentQuiz.q;
+            
+            const optionsBox = document.getElementById('quizOptions');
+            optionsBox.innerHTML = '';
+            
+            currentQuiz.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full p-3.5 text-left text-xs md:text-sm font-medium border-2 border-brand-100 bg-white rounded-xl transition-all hover:border-brand-500 hover:bg-brand-50/50 focus:outline-none flex items-center justify-between group";
+                btn.innerHTML = `<span>${opt}</span> <span class="material-icons text-base text-gray-300 group-hover:text-brand-400">radio_button_unchecked</span>`;
+                btn.onclick = () => evaluationSelection(idx, btn);
+                optionsBox.appendChild(btn);
+            });
+
+            document.getElementById('quizFeedback').className = "quiz-feedback mt-5 p-4 rounded-xl text-sm hidden flex items-start gap-2.5";
+            document.getElementById('nextQuizBtn').classList.add('hidden');
+        }
+
+        function evaluationSelection(selectedIdx, clickedBtn) {
+            const currentQuiz = quizData[currentQuizIdx];
+            const items = document.querySelectorAll('#quizOptions button');
+            
+            items.forEach(btn => btn.disabled = true);
+            const fbBox = document.getElementById('quizFeedback');
+
+            if (selectedIdx === currentQuiz.answer) {
+                clickedBtn.className = "w-full p-3.5 text-left text-xs md:text-sm font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-900 rounded-xl flex items-center justify-between";
+                clickedBtn.innerHTML = `<span>${currentQuiz.options[selectedIdx]}</span> <span class="material-icons text-emerald-600">check_circle</span>`;
+                scoreCounter++;
+                document.getElementById('quizScore').textContent = `Score: ${scoreCounter}`;
+                
+                fbBox.className = "quiz-feedback mt-5 p-4 rounded-xl text-sm flex items-start gap-2.5 bg-emerald-50 text-emerald-900 border border-emerald-200";
+                fbBox.innerHTML = `<span class="material-icons text-emerald-600 mt-0.5">sentiment_satisfied_alt</span> <div><strong>Excellent!</strong> ${currentQuiz.explain}</div>`;
+            } else {
+                clickedBtn.className = "w-full p-3.5 text-left text-xs md:text-sm font-bold border-2 border-rose-500 bg-rose-50 text-rose-900 rounded-xl flex items-center justify-between";
+                clickedBtn.innerHTML = `<span>${currentQuiz.options[selectedIdx]}</span> <span class="material-icons text-rose-600">cancel</span>`;
+                
+                items[currentQuiz.answer].className = "w-full p-3.5 text-left text-xs md:text-sm font-bold border-2 border-emerald-500 bg-emerald-50 text-emerald-900 rounded-xl flex items-center justify-between";
+                items[currentQuiz.answer].innerHTML = `<span>${currentQuiz.options[currentQuiz.answer]}</span> <span class="material-icons text-emerald-600">check_circle</span>`;
+                
+                fbBox.className = "quiz-feedback mt-5 p-4 rounded-xl text-sm flex items-start gap-2.5 bg-rose-50 text-rose-900 border border-rose-200";
+                fbBox.innerHTML = `<span class="material-icons text-rose-600 mt-0.5">info</span> <div><strong>Review Notice:</strong> ${currentQuiz.explain}</div>`;
+            }
+
+            fbBox.classList.remove('hidden');
+            document.getElementById('nextQuizBtn').classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            currentQuizIdx++;
+            if (currentQuizIdx < quizData.length) {
+                loadQuizQuestion();
+            } else {
+                document.getElementById('quizQuestion').innerHTML = `<div class="text-center py-4 text-xl flex flex-col items-center gap-2 text-brand-800"><span class="material-icons text-4xl text-amber-500">emoji_events</span> Module Completed!</div>`;
+                const finalPercentage = Math.round((scoreCounter / quizData.length) * 100);
+                document.getElementById('quizOptions').innerHTML = `
+                    <div class="bg-brand-50 p-4 border border-brand-100 rounded-xl text-center">
+                        <p class="text-sm font-bold text-brand-900">Performance Metrics</p>
+                        <h2 class="text-3xl font-black text-brand-600 mt-1">${scoreCounter} / ${quizData.length}</h2>
+                        <p class="text-xs text-brand-700 font-semibold mt-1">Accuracy Grade Evaluated: ${finalPercentage}%</p>
+                    </div>
+                `;
+                document.getElementById('quizFeedback').classList.add('hidden');
+                const nextBtn = document.getElementById('nextQuizBtn');
+                nextBtn.innerHTML = `Replay Set <span class="material-icons text-sm">replay</span>`;
+                nextBtn.onclick = () => {
+                    currentQuizIdx = 0; scoreCounter = 0;
+                    document.getElementById('quizScore').textContent = "Score: 0";
+                    nextBtn.onclick = nextQuizQuestion;
+                    nextBtn.innerHTML = `Next Question <span class="material-icons text-sm">arrow_forward</span>`;
+                    loadQuizQuestion();
+                };
+            }
+        }
+
+        // 5. Notes Memory Engine Component
+        function addNote() {
+            const title = document.getElementById('noteTitle');
+            const body = document.getElementById('noteBody');
+            if(!title.value.trim() || !body.value.trim()) return;
+
+            const container = document.getElementById('savedNotesContainer');
+            const note = document.createElement('div');
+            note.className = "p-3 bg-brand-50 border border-brand-200 rounded-xl relative group transition-all";
+            note.innerHTML = `
+                <h4 class="text-xs font-bold text-brand-900">${title.value}</h4>
+                <p class="text-[11px] text-brand-800 mt-0.5">${body.value}</p>
+                <button onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-red-500 text-sm font-bold opacity-70 hover:opacity-100">&times;</button>
+            `;
+            container.prepend(note);
+            title.value = ''; body.value = '';
+        }
+
+        // Application Initialization Trigger
+        window.onload = () => {
+            updateCard();
+            loadQuizQuestion();
+        };
+    </script>
+</body>
+</html>

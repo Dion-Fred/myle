@@ -3,1069 +3,322 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Case Law Flashcards — Chieftaincy Law</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --ink: #0E0A04;
-  --parchment: #F7F2E8;
-  --gold: #B8860B;
-  --gold-light: #D4A017;
-  --rust: #8B3A2A;
-  --sage: #3D5A47;
-  --muted: #7A6E5F;
-  --line: rgba(14,10,4,0.1);
-  --card-bg: #FDFAF3;
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--parchment);
-  color: var(--ink);
-  font-family: 'Outfit', sans-serif;
-  min-height: 100vh;
-  background-image: 
-    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(184,134,11,0.06) 27px, rgba(184,134,11,0.06) 28px);
-}
-
-/* ── NAV TABS ── */
-nav {
-  background: var(--ink);
-  display: flex;
-  position: sticky; top: 0; z-index: 100;
-}
-.nav-tab {
-  flex: 1; padding: 14px 8px;
-  color: rgba(247,242,232,0.45);
-  font-size: 12px; font-weight: 600;
-  letter-spacing: 1px; text-transform: uppercase;
-  cursor: pointer; border: none; background: none;
-  border-bottom: 3px solid transparent;
-  transition: all .2s;
-  text-align: center;
-}
-.nav-tab.active { color: var(--gold-light); border-bottom-color: var(--gold-light); }
-.nav-tab:hover:not(.active) { color: rgba(247,242,232,0.7); }
-
-/* ── HEADER ── */
-.page-header {
-  padding: 28px 20px 20px;
-  text-align: center;
-  border-bottom: 1px solid var(--line);
-  position: relative;
-}
-.page-header::after {
-  content: '⚖';
-  position: absolute; right: 20px; top: 20px;
-  font-size: 36px; opacity: .08;
-}
-.page-header h1 {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(22px, 5vw, 30px);
-  font-weight: 700; line-height: 1.2;
-}
-.page-header h1 em { font-style: italic; color: var(--gold); }
-.page-header p {
-  color: var(--muted); font-size: 12px;
-  margin-top: 6px; letter-spacing: .3px;
-}
-
-/* ── SCREENS ── */
-.screen { display: none; }
-.screen.active { display: block; }
-
-/* ══════════════════════════════════
-   SCREEN 1 — BROWSE ALL CASES
-══════════════════════════════════ */
-#browse-screen { padding: 16px; max-width: 600px; margin: 0 auto; }
-
-.search-bar {
-  position: relative; margin-bottom: 16px;
-}
-.search-bar input {
-  width: 100%; padding: 12px 16px 12px 40px;
-  border: 1.5px solid var(--line); border-radius: 10px;
-  background: var(--card-bg); font-family: 'Outfit', sans-serif;
-  font-size: 14px; color: var(--ink); outline: none;
-  transition: border-color .2s;
-}
-.search-bar input:focus { border-color: var(--gold); }
-.search-bar::before {
-  content: '🔍'; position: absolute;
-  left: 12px; top: 50%; transform: translateY(-50%);
-  font-size: 14px;
-}
-
-.case-count { font-size: 11px; color: var(--muted); margin-bottom: 12px; }
-
-.case-card {
-  background: var(--card-bg);
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  margin-bottom: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(14,10,4,.04);
-  transition: box-shadow .2s;
-}
-.case-card:hover { box-shadow: 0 4px 16px rgba(14,10,4,.08); }
-
-.case-header {
-  padding: 14px 16px;
-  cursor: pointer;
-  display: flex; justify-content: space-between; align-items: flex-start;
-  gap: 12px;
-}
-.case-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 16px; font-weight: 600; line-height: 1.3;
-}
-.case-year {
-  background: var(--gold); color: #fff;
-  font-size: 10px; font-weight: 600;
-  padding: 3px 8px; border-radius: 20px;
-  white-space: nowrap; flex-shrink: 0;
-  margin-top: 2px;
-}
-.case-principle {
-  font-size: 12px; color: var(--muted); margin-top: 4px;
-  font-style: italic; line-height: 1.5;
-}
-.chevron { font-size: 14px; color: var(--muted); flex-shrink: 0; transition: transform .2s; margin-top: 2px; }
-.case-card.open .chevron { transform: rotate(180deg); }
-
-.case-body {
-  display: none;
-  padding: 0 16px 16px;
-  border-top: 1px solid var(--line);
-  background: rgba(184,134,11,.03);
-}
-.case-card.open .case-body { display: block; }
-
-.case-body h4 {
-  font-size: 10px; font-weight: 600; letter-spacing: 1.5px;
-  text-transform: uppercase; color: var(--gold);
-  margin: 12px 0 6px;
-}
-.case-body p {
-  font-size: 13px; line-height: 1.7; color: var(--ink);
-}
-.tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.tag {
-  padding: 3px 10px; border-radius: 20px;
-  font-size: 11px; font-weight: 500;
-  background: rgba(184,134,11,.12); color: var(--gold);
-}
-.tag.sage { background: rgba(61,90,71,.1); color: var(--sage); }
-.tag.rust { background: rgba(139,58,42,.1); color: var(--rust); }
-
-/* ══════════════════════════════════
-   SCREEN 2 — FLASHCARDS
-══════════════════════════════════ */
-#flash-screen { padding: 16px; max-width: 520px; margin: 0 auto; }
-
-.flash-controls {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 16px;
-}
-.flash-counter { font-size: 13px; font-weight: 600; color: var(--muted); }
-.flash-mode-toggle {
-  display: flex; gap: 4px;
-}
-.ftm-btn {
-  padding: 6px 12px; border-radius: 8px;
-  font-size: 11px; font-weight: 600; cursor: pointer;
-  border: 1.5px solid var(--line); background: var(--card-bg);
-  transition: all .15s; color: var(--muted);
-}
-.ftm-btn.active { background: var(--ink); color: var(--parchment); border-color: var(--ink); }
-
-/* The card flip */
-.flashcard-wrap {
-  perspective: 1000px;
-  height: 260px; margin-bottom: 20px;
-  cursor: pointer;
-}
-.flashcard {
-  width: 100%; height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  transition: transform .5s cubic-bezier(.4,0,.2,1);
-}
-.flashcard.flipped { transform: rotateY(180deg); }
-
-.card-face {
-  position: absolute; inset: 0;
-  border-radius: 20px;
-  backface-visibility: hidden;
-  display: flex; flex-direction: column;
-  justify-content: center; padding: 28px 24px;
-  box-shadow: 0 8px 32px rgba(14,10,4,.1), 0 2px 8px rgba(14,10,4,.06);
-}
-.card-front {
-  background: var(--ink);
-  color: var(--parchment);
-}
-.card-back {
-  background: var(--card-bg);
-  transform: rotateY(180deg);
-  border: 1px solid var(--line);
-}
-
-.card-front .case-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(18px,4vw,24px); font-weight: 700;
-  font-style: italic; line-height: 1.3;
-  margin-bottom: 12px; color: var(--gold-light);
-}
-.card-front .prompt-label {
-  font-size: 10px; letter-spacing: 2px;
-  text-transform: uppercase;
-  color: rgba(247,242,232,.4);
-  margin-bottom: 8px;
-}
-.card-front .card-question {
-  font-size: 14px; line-height: 1.65;
-  color: rgba(247,242,232,.85);
-}
-.card-tap-hint {
-  font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
-  color: rgba(247,242,232,.3); margin-top: 16px;
-  text-align: center;
-}
-.card-back .back-label {
-  font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-  color: var(--gold); margin-bottom: 10px; font-weight: 600;
-}
-.card-back .back-answer {
-  font-size: 13px; line-height: 1.75; color: var(--ink);
-  overflow-y: auto; max-height: 180px;
-}
-
-.flash-nav {
-  display: flex; gap: 10px; align-items: center;
-}
-.fn-btn {
-  flex: 1; padding: 14px;
-  border-radius: 12px; border: none;
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px; font-weight: 600;
-  cursor: pointer; transition: all .15s;
-}
-.fn-prev { background: var(--card-bg); border: 1.5px solid var(--line); color: var(--muted); }
-.fn-prev:hover { border-color: var(--gold); color: var(--gold); }
-.fn-next { background: var(--gold); color: #fff; flex: 2; }
-.fn-next:hover { background: var(--rust); }
-.fn-shuffle {
-  width: 44px; height: 44px; flex: none;
-  border-radius: 10px; border: 1.5px solid var(--line);
-  background: var(--card-bg); color: var(--muted);
-  font-size: 18px; cursor: pointer; transition: all .15s;
-  display: flex; align-items: center; justify-content: center;
-}
-.fn-shuffle:hover { background: var(--ink); color: var(--parchment); }
-
-.flash-progress {
-  display: flex; gap: 3px; margin-top: 14px; flex-wrap: wrap;
-  justify-content: center;
-}
-.fp-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--line); transition: background .3s;
-}
-.fp-dot.seen { background: var(--gold); }
-.fp-dot.current { background: var(--rust); }
-
-/* ══════════════════════════════════
-   SCREEN 3 — QUIZ
-══════════════════════════════════ */
-#quiz-screen { padding: 0; max-width: 520px; margin: 0 auto; }
-
-.qz-progress-bar {
-  padding: 14px 16px 12px;
-  border-bottom: 1px solid var(--line);
-  background: var(--parchment);
-  position: sticky; top: 46px; z-index: 10;
-}
-.qz-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 500; }
-.qz-bar { height: 4px; background: var(--line); border-radius: 4px; overflow: hidden; }
-.qz-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--rust)); border-radius: 4px; transition: width .4s; }
-
-.qz-type-badge {
-  display: inline-block; margin: 16px 16px 0;
-  padding: 4px 12px; border-radius: 20px;
-  font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase;
-  background: rgba(184,134,11,.12); color: var(--gold);
-}
-.qz-type-badge.blue { background: rgba(61,90,71,.1); color: var(--sage); }
-.qz-type-badge.red { background: rgba(139,58,42,.1); color: var(--rust); }
-
-.qz-question {
-  margin: 12px 16px 16px;
-  background: var(--card-bg);
-  border: 1px solid var(--line);
-  border-radius: 16px; padding: 20px;
-  font-size: 15px; line-height: 1.7;
-  box-shadow: 0 2px 10px rgba(14,10,4,.04);
-}
-
-.qz-options { margin: 0 16px; display: flex; flex-direction: column; gap: 9px; }
-.qz-option {
-  padding: 13px 15px;
-  border: 1.5px solid var(--line);
-  border-radius: 12px; background: var(--card-bg);
-  font-family: 'Outfit', sans-serif; font-size: 13.5px; line-height: 1.5;
-  cursor: pointer; transition: all .15s;
-  display: flex; align-items: flex-start; gap: 10px; color: var(--ink);
-  text-align: left;
-}
-.qz-option:hover:not(:disabled) { border-color: var(--gold); background: rgba(184,134,11,.04); }
-.qz-option.correct { border-color: var(--sage); background: rgba(61,90,71,.08); color: var(--sage); }
-.qz-option.wrong { border-color: var(--rust); background: rgba(139,58,42,.08); color: var(--rust); }
-.qz-option.show-correct { border-color: var(--sage); background: rgba(61,90,71,.08); color: var(--sage); }
-.opt-letter {
-  width: 24px; height: 24px; border-radius: 6px;
-  background: rgba(14,10,4,.06); display: flex; align-items: center;
-  justify-content: center; font-size: 11px; font-weight: 700;
-  flex-shrink: 0; transition: all .15s;
-}
-.qz-option.correct .opt-letter { background: var(--sage); color: #fff; }
-.qz-option.wrong .opt-letter { background: var(--rust); color: #fff; }
-.qz-option.show-correct .opt-letter { background: var(--sage); color: #fff; }
-
-.qz-reveal {
-  margin: 14px 16px 0;
-  background: rgba(184,134,11,.06);
-  border-left: 3px solid var(--gold);
-  border-radius: 0 12px 12px 0;
-  padding: 14px;
-  display: none;
-}
-.qz-reveal.show { display: block; animation: fadeUp .3s ease; }
-.qz-reveal-lbl { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; }
-.qz-reveal-txt { font-size: 13px; line-height: 1.7; }
-
-.qz-actions { display: flex; gap: 10px; margin: 14px 16px 32px; }
-.qz-skip { flex: 1; padding: 13px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--card-bg); font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s; }
-.qz-skip:hover { border-color: var(--rust); color: var(--rust); }
-.qz-next { flex: 2; padding: 13px; border-radius: 12px; border: none; background: var(--ink); color: var(--parchment); font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .15s; }
-.qz-next:hover { background: var(--gold); }
-
-/* Quiz type selector */
-#quiz-setup { padding: 20px 16px; max-width: 520px; margin: 0 auto; }
-.qt-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; margin-bottom: 14px; }
-.qt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
-.qt-card {
-  background: var(--card-bg); border: 2px solid var(--line);
-  border-radius: 14px; padding: 16px 14px; cursor: pointer;
-  transition: all .2s; text-align: center;
-}
-.qt-card:hover { border-color: var(--gold); }
-.qt-card.sel { border-color: var(--gold); background: rgba(184,134,11,.06); }
-.qt-card .qi { font-size: 26px; margin-bottom: 6px; }
-.qt-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-.qt-card p { font-size: 11px; color: var(--muted); line-height: 1.4; }
-.qt-start { width: 100%; padding: 15px; background: var(--ink); color: var(--parchment); border: none; border-radius: 14px; font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 700; cursor: pointer; transition: all .2s; letter-spacing: .3px; }
-.qt-start:hover { background: var(--gold); }
-
-/* Score screen */
-#score-screen-quiz { display: none; padding: 36px 20px; text-align: center; max-width: 480px; margin: 0 auto; }
-.sc-ring { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), var(--rust)); display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 22px; box-shadow: 0 8px 28px rgba(184,134,11,.3); }
-.sc-num { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 700; color: #fff; line-height: 1; }
-.sc-den { color: rgba(255,255,255,.65); font-size: 13px; }
-.sc-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; margin-bottom: 8px; }
-.sc-msg { color: var(--muted); font-size: 13.5px; line-height: 1.6; margin-bottom: 26px; }
-.sc-stats { display: flex; gap: 10px; margin-bottom: 24px; }
-.sc-box { flex: 1; background: var(--card-bg); border-radius: 12px; padding: 14px 10px; border: 1px solid var(--line); }
-.sc-val { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 700; }
-.sc-lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.sc-again { width: 100%; padding: 15px; background: var(--gold); color: #fff; border: none; border-radius: 14px; font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 700; cursor: pointer; margin-bottom: 10px; }
-.sc-back { width: 100%; padding: 13px; background: var(--card-bg); color: var(--muted); border: 1.5px solid var(--line); border-radius: 14px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; }
-
-@keyframes fadeUp { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
-</style>
-</head>
-<body>
-
-<nav>
-  <button class="nav-tab active" onclick="switchTab('browse',this)">📚 All Cases</button>
-  <button class="nav-tab" onclick="switchTab('flash',this)">🃏 Flashcards</button>
-  <button class="nav-tab" onclick="switchTab('quiz',this)">🎯 Quiz</button>
-</nav>
-
-<div class="page-header">
-  <h1>Olorunfemi's <em>Case Law</em> Companion</h1>
-  <p>Chieftaincy &amp; Native Law and Custom · 25 Cases</p>
-</div>
-
-<!-- ═══════════════════
-     BROWSE SCREEN
-═══════════════════ -->
-<div id="browse-screen" class="screen active">
-  <div class="search-bar">
-    <input type="text" id="search-input" placeholder="Search case name, principle, or keyword…" oninput="filterCases()">
-  </div>
-  <div class="case-count" id="case-count">Showing 25 cases</div>
-  <div id="cases-list"></div>
-</div>
-
-<!-- ═══════════════════
-     FLASHCARD SCREEN
-═══════════════════ -->
-<div id="flash-screen" class="screen">
-  <div class="flash-controls">
-    <div class="flash-counter" id="flash-counter">1 / 25</div>
-    <div class="flash-mode-toggle">
-      <button class="ftm-btn active" id="ftm-name" onclick="setFlashMode('name',this)">Name→Principle</button>
-      <button class="ftm-btn" id="ftm-principle" onclick="setFlashMode('principle',this)">Principle→Name</button>
-    </div>
-  </div>
-  <div class="flashcard-wrap" onclick="flipCard()">
-    <div class="flashcard" id="flashcard">
-      <div class="card-face card-front" id="card-front">
-        <div class="prompt-label">Case Name</div>
-        <div class="case-title" id="fc-name"></div>
-        <div class="card-question" id="fc-question"></div>
-        <div class="card-tap-hint">Tap to reveal →</div>
-      </div>
-      <div class="card-face card-back" id="card-back">
-        <div class="back-label">Key Principle / Holding</div>
-        <div class="back-answer" id="fc-answer"></div>
-      </div>
-    </div>
-  </div>
-  <div class="flash-nav">
-    <button class="fn-btn fn-prev" onclick="flashNav(-1)">← Prev</button>
-    <button class="fn-shuffle" onclick="shuffleFlash()" title="Shuffle">⇄</button>
-    <button class="fn-btn fn-next" onclick="flashNav(1)">Next →</button>
-  </div>
-  <div class="flash-progress" id="flash-progress"></div>
-</div>
-
-<!-- ═══════════════════
-     QUIZ SCREEN
-═══════════════════ -->
-<div id="quiz-screen" class="screen">
-  <!-- Setup -->
-  <div id="quiz-setup">
-    <div class="qt-title">Choose Quiz Type</div>
-    <div class="qt-grid">
-      <div class="qt-card sel" data-qtype="match-holding" onclick="selectQtype(this)">
-        <div class="qi">🔍</div>
-        <h3>Match the Holding</h3>
-        <p>Read a principle — name the case that decided it</p>
-      </div>
-      <div class="qt-card" data-qtype="match-case" onclick="selectQtype(this)">
-        <div class="qi">📜</div>
-        <h3>Match the Case</h3>
-        <p>See a case name — pick the correct legal principle</p>
-      </div>
-      <div class="qt-card" data-qtype="year" onclick="selectQtype(this)">
-        <div class="qi">📅</div>
-        <h3>Year Recall</h3>
-        <p>Which year was this case decided?</p>
-      </div>
-      <div class="qt-card" data-qtype="issue" onclick="selectQtype(this)">
-        <div class="qi">⚖️</div>
-        <h3>Issue Spotting</h3>
-        <p>What legal issue does this case primarily address?</p>
-      </div>
-    </div>
-    <button class="qt-start" onclick="beginQuiz()">Begin Quiz →</button>
-  </div>
-
-  <!-- Active quiz -->
-  <div id="quiz-active" style="display:none;">
-    <div class="qz-progress-bar">
-      <div class="qz-meta">
-        <span id="qz-counter">Q 1 / 10</span>
-        <span id="qz-score-live">Score: 0</span>
-      </div>
-      <div class="qz-bar"><div class="qz-fill" id="qz-fill" style="width:0%"></div></div>
-    </div>
-    <div class="qz-type-badge" id="qz-badge">Match the Holding</div>
-    <div class="qz-question" id="qz-question">…</div>
-    <div class="qz-options" id="qz-options"></div>
-    <div class="qz-reveal" id="qz-reveal">
-      <div class="qz-reveal-lbl">Full Context</div>
-      <div class="qz-reveal-txt" id="qz-reveal-txt"></div>
-    </div>
-    <div class="qz-actions">
-      <button class="qz-skip" onclick="qzSkip()">Skip</button>
-      <button class="qz-next" id="qz-next-btn" onclick="qzNext()">Next →</button>
-    </div>
-  </div>
-
-  <!-- Score -->
-  <div id="score-screen-quiz">
-    <div class="sc-ring">
-      <div class="sc-num" id="sc-num">0</div>
-      <div class="sc-den" id="sc-den">/ 0</div>
-    </div>
-    <div class="sc-title" id="sc-title">Well done!</div>
-    <div class="sc-msg" id="sc-msg"></div>
-    <div class="sc-stats">
-      <div class="sc-box"><div class="sc-val" style="color:var(--sage)" id="sc-correct">0</div><div class="sc-lbl">Correct</div></div>
-      <div class="sc-box"><div class="sc-val" style="color:var(--rust)" id="sc-wrong">0</div><div class="sc-lbl">Wrong</div></div>
-      <div class="sc-box"><div class="sc-val" style="color:var(--muted)" id="sc-skip">0</div><div class="sc-lbl">Skipped</div></div>
-    </div>
-    <button class="sc-again" onclick="beginQuiz()">Try Again</button>
-    <button class="sc-back" onclick="backToSetup()">← Change Quiz Type</button>
-  </div>
-</div>
-
+<title>Case Law Practice — MYLE | Chieftaincy & Native Law</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
-// ═══════════════════════════════
-//  CASE DATABASE
-// ═══════════════════════════════
-const CASES = [
-  {
-    name: "Shuaibu v Muazu",
-    year: 2014,
-    cite: "(2014) 8 NWLR Pt.1409, 207 at 284",
-    issue: "Nature of native law and custom; effect of registration",
-    tags: ["native custom", "registration", "subsidiary legislation"],
-    tagTypes: ["gold","sage","rust"],
-    principle: "Confirmed that native law and custom must be 'recognised and widely accepted by the community.' Also held that once a chieftaincy declaration is registered, it transforms from native law and custom into subsidiary legislation with the full force of law.",
-    holding: "A registered chieftaincy declaration = subsidiary legislation; oral evidence is excluded.",
-  },
-  {
-    name: "Lewis v Bankole",
-    year: 1908,
-    cite: "(1908) 1 NLR 81",
-    issue: "Features of native law and custom — flexibility",
-    tags: ["features of customary law", "flexibility", "West Africa"],
-    tagTypes: ["gold","sage","gold"],
-    principle: "Osborne CJ described West African native custom as having 'unquestionable adaptability to altered circumstances without losing its character.' Establishes the flexibility and adaptability of customary law as a core feature.",
-    holding: "Native custom is flexible — it adapts to changed circumstances without losing its essential character.",
-  },
-  {
-    name: "Kimdey v Military Governor of Gongola State",
-    year: 1988,
-    cite: "(1988) 2 NWLR (Pt.77) 445",
-    issue: "Abrogation of custom by legislation; Governor's appointment power",
-    tags: ["abrogation", "colonial chieftaincy", "Governor's power"],
-    tagTypes: ["rust","sage","gold"],
-    principle: "Karibi Whyte JSC — (1) Existing native law and custom can be altered or abrogated by valid legislation. (2) The Longuda chieftaincy was entirely a colonial government creation; therefore strict native law rules did not apply. The Governor's power to appoint under s.4(1)(2) of the Chiefs (Appointment and Deposition) Law was valid. Also comprehensively listed five features of customary law.",
-    holding: "Customary law may be abrogated by statute; colonial-created chieftaincies are not governed by pre-existing native custom.",
-  },
-  {
-    name: "Motoh v Motoh",
-    year: 2011,
-    cite: "(2011) NWLR",
-    issue: "Judicial notice of customary law by superior courts",
-    tags: ["judicial notice", "proof of custom"],
-    tagTypes: ["gold","sage"],
-    principle: "A superior court that has previously adjudicated on a rule of customary law may take judicial notice of it in subsequent proceedings without fresh oral evidence being required. Relevant to Evidence Act 2011, ss.16–17.",
-    holding: "Judicial notice by a superior court eliminates the need to reprove a rule of custom in later cases.",
-  },
-  {
-    name: "Jeje Oladele v Oba Aromolaran II",
-    year: 1996,
-    cite: "(1996) 6 NWLR Pt.453, 180",
-    issue: "Definition and purpose of a chieftaincy declaration",
-    tags: ["declaration", "definition", "uncertainty"],
-    tagTypes: ["gold","gold","rust"],
-    principle: "Defined a chieftaincy declaration as 'a legally binding written statement embodying the customary law of a particular area, setting out the method regulating nomination and selection of a candidate to fill a vacancy in that chieftaincy.' Its primary purpose is to avoid uncertainty in succession disputes.",
-    holding: "A chieftaincy declaration is a legally binding, written, registration-backed codification of succession custom.",
-  },
-  {
-    name: "Adio v A-G Oyo State",
-    year: 2000,
-    cite: "(2000) NWLR",
-    issue: "Nature of a chieftaincy declaration",
-    tags: ["declaration", "selection", "recognised chief"],
-    tagTypes: ["gold","sage","gold"],
-    principle: "Further described a chieftaincy declaration as a statement regulating the selection of a recognised chief, distinguishing the selection process (community function) from the recognition/approval process (Governor's function).",
-    holding: "Declarations regulate selection — the community selects; the Governor approves. These are distinct legal functions.",
-  },
-  {
-    name: "Obi Ikezue v Ogidi Union",
-    year: 2017,
-    cite: "CA/E/246/2013 (Court of Appeal)",
-    issue: "Community constitution; exclusivity of ruling house claims",
-    tags: ["community constitution", "ruling house", "exclusivity"],
-    tagTypes: ["sage","rust","gold"],
-    principle: "Court of Appeal gave judicial backing to the Ogidi Autonomous Community Constitution over the exclusive claims of a single family to the stool. Confirmed that where a community constitution validly governs succession, no single family can monopolise the throne.",
-    holding: "A valid community constitution overrides a family's exclusive claim to a chieftaincy stool.",
-  },
-  {
-    name: "Olanrewaju v Oyesomi",
-    year: 2014,
-    cite: "(2014) NWLR",
-    issue: "Who makes declarations; exclusivity once registered",
-    tags: ["executive function", "declaration-making", "exclusivity"],
-    tagTypes: ["gold","rust","sage"],
-    principle: "Clarified two key points: (1) The responsibility for making chieftaincy declarations lies with the executive arm of government (not courts or legislature). (2) Once a declaration is registered, it excludes and supersedes all other customary usages on that chieftaincy.",
-    holding: "Declaration-making is an executive function; a registered declaration conclusively excludes prior oral custom.",
-  },
-  {
-    name: "Daramola v Governor of Osun State",
-    year: 2003,
-    cite: "(2003) NWLR",
-    issue: "Separation of powers in making declarations",
-    tags: ["usurpation of power", "Executive Council", "declaration-making"],
-    tagTypes: ["rust","gold","sage"],
-    principle: "Held it was an unconstitutional usurpation of power for a State Executive Council to exercise the power of making chieftaincy declarations — that power is reserved exclusively for the competent committee/body designated by the relevant chieftaincy legislation.",
-    holding: "An Executive Council cannot arrogate to itself the declaration-making power — only the statutorily designated body may act.",
-  },
-  {
-    name: "Imogiemhe v Alokwe",
-    year: 1995,
-    cite: "(1995) 7 NWLR (Pt.409) 581",
-    issue: "Effect of non-registration of a chieftaincy declaration",
-    tags: ["non-registration", "null and void", "Bendel State Edict"],
-    tagTypes: ["rust","rust","gold"],
-    principle: "Under the Traditional Rulers and Chiefs Edict of Bendel State, s.6 required registration within a specified period. Failure to register within that period rendered the declaration null and void / inapplicable. Registration is therefore a mandatory condition for validity.",
-    holding: "Non-registration within the statutory period = declaration is null and void.",
-  },
-  {
-    name: "Adeosun v Governor of Ekiti State",
-    year: 2012,
-    cite: "(2012) NWLR",
-    issue: "Registration of declarations — mandatory requirement",
-    tags: ["registration", "Ekiti State", "validity"],
-    tagTypes: ["gold","sage","gold"],
-    principle: "Cited alongside Imogiemhe v Alokwe to reinforce that registration of a chieftaincy declaration is a mandatory condition for its legal validity and enforceability. An unregistered declaration cannot be relied upon in court.",
-    holding: "Registration is mandatory for a declaration's validity — without it, the declaration is legally ineffective.",
-  },
-  {
-    name: "Alomaja v Adewale",
-    year: 2004,
-    cite: "(2004) 15 NWLR (Pt.897) 564",
-    issue: "Re-registration requirement; lapse of earlier declarations",
-    tags: ["re-registration", "Ondo State Edict", "lapsed declarations"],
-    tagTypes: ["rust","gold","rust"],
-    principle: "Declarations not re-registered as required by the Ondo State Chiefs Edict 1984, s.24(2) ceased to have legal effect. A new re-registration obligation was imposed by statute; failure to comply rendered prior declarations ineffective even if originally valid.",
-    holding: "Declarations must be re-registered when statute requires it — failure to re-register causes them to lapse.",
-  },
-  {
-    name: "Danesi v Yerima",
-    year: 2003,
-    cite: "(2003) NWLR",
-    issue: "Registered declaration prevails over inconsistent custom",
-    tags: ["inconsistency", "registered declaration", "prevails"],
-    tagTypes: ["sage","gold","sage"],
-    principle: "Confirmed that a registered chieftaincy declaration prevails over any customary usage or rule that is inconsistent with it. The codified declaration is the final and authoritative statement of the customary law for that chieftaincy.",
-    holding: "Registered declaration > inconsistent oral custom. The declaration is the supreme source on its chieftaincy.",
-  },
-  {
-    name: "Kopek Construction Ltd v Ekisola",
-    year: 2010,
-    cite: "(2010) NWLR",
-    issue: "Inconsistency test for validity of customary law",
-    tags: ["inconsistency test", "validity of customary law", "courts"],
-    tagTypes: ["gold","rust","sage"],
-    principle: "Applied the Incompatibility/Inconsistency Test — a rule of customary law is invalid if it is incompatible with, or repugnant to, a written law in force. Relevant to assessing whether customary rules on chieftaincy survive legislative intervention.",
-    holding: "Customary law that conflicts with written legislation is invalid under the Incompatibility Test.",
-  },
-  {
-    name: "Ojemen v Momodu",
-    year: 2001,
-    cite: "(2001) NWLR",
-    issue: "Proof of customary law by witnesses",
-    tags: ["proof of custom", "oral evidence", "witnesses"],
-    tagTypes: ["gold","sage","gold"],
-    principle: "Held that where a rule of customary law has not been judicially noticed by a superior court, it may be proved by calling witnesses who are members of the community and likely to know the custom — chiefs, elders, or respected community members.",
-    holding: "Unnoticed custom is proved by oral testimony from knowledgeable community members.",
-  },
-  {
-    name: "Ogunyemi v Soneye",
-    year: 2018,
-    cite: "(2018) NWLR",
-    issue: "Conclusive effect of registered declaration",
-    tags: ["conclusive evidence", "registered declaration", "amendment"],
-    tagTypes: ["gold","gold","sage"],
-    principle: "Reaffirmed that a registered chieftaincy declaration is conclusive evidence of the applicable customary law for that chieftaincy and prevails until it is formally amended through the proper statutory process. No oral evidence can contradict it.",
-    holding: "A registered declaration is conclusive — it stands until amended by proper statutory procedure.",
-  },
-  {
-    name: "Adekeye v Adesina",
-    year: 2010,
-    cite: "(2010) NWLR",
-    issue: "Exclusivity of registered declarations for selection",
-    tags: ["exclusivity", "selection", "registered declaration"],
-    tagTypes: ["rust","sage","gold"],
-    principle: "Supported the principle that once registered, the chieftaincy declaration becomes the exclusive regulatory instrument for the selection/appointment process. No person may be appointed outside its provisions.",
-    holding: "The registered declaration is the exclusive source of the selection process — deviations from it are invalid.",
-  },
-  {
-    name: "Musendiku v Liadi",
-    year: 2011,
-    cite: "(2011) NWLR",
-    issue: "Exclusivity of registered chieftaincy declarations",
-    tags: ["exclusivity", "chieftaincy declaration", "oral testimony excluded"],
-    tagTypes: ["gold","gold","rust"],
-    principle: "Further confirms the exclusivity principle: a registered chieftaincy declaration binds all parties and excludes all competing oral versions of customary succession rules. Courts are bound to apply the declaration as written.",
-    holding: "A court must apply the registered declaration as written — it is exclusive and cannot be displaced by oral evidence.",
-  },
-  {
-    name: "Oyefolu v Durosinmi",
-    year: 2001,
-    cite: "(2001) NWLR",
-    issue: "Registered declaration obviates need for oral evidence of custom",
-    tags: ["oral evidence", "declaration", "obviated"],
-    tagTypes: ["rust","gold","sage"],
-    principle: "Held that a registered chieftaincy declaration obviates the need for any oral evidence regarding tradition and custom in relation to that chieftaincy. The declaration is self-sufficient — parties cannot adduce oral evidence to supplement or contradict it.",
-    holding: "Registration = oral evidence of custom is unnecessary and inadmissible to contradict the declaration.",
-  },
-  {
-    name: "Fasade v Babalola",
-    year: 2003,
-    cite: "(2003) 11 NWLR (Pt.830) 26",
-    issue: "Court bound by written declaration; error of taking oral evidence",
-    tags: ["court duty", "written declaration", "oral evidence inadmissible"],
-    tagTypes: ["sage","gold","rust"],
-    principle: "Per Uwaifo JSC: 'The court is bound to be content with the evidence provided in the chieftaincy declaration.' The trial judge erred by admitting oral evidence of custom outside the declaration. The Court of Appeal had a duty to return the court to the declaration.",
-    holding: "Courts must apply the declaration as written — oral contradictory evidence is an error of law to admit.",
-  },
-  {
-    name: "Okuleye v Adesanya",
-    year: 2006,
-    cite: "(2006) NWLR",
-    issue: "Purpose of a registered declaration — certainty in law",
-    tags: ["certainty", "purpose", "registered declaration"],
-    tagTypes: ["gold","sage","gold"],
-    principle: "Emphasised that the primary purpose of a registered chieftaincy declaration is to ensure certainty in the law governing that chieftaincy — eliminating the uncertainty of competing oral versions and providing a clear, documented succession procedure.",
-    holding: "The purpose of a declaration is to create legal certainty in chieftaincy succession.",
-  },
-  {
-    name: "Mafimisebi v Ehuwa",
-    year: 2007,
-    cite: "(2007) NWLR",
-    issue: "Court substituting oral evidence for declaration (criticised)",
-    tags: ["criticised", "oral evidence preferred", "judicial legislation"],
-    tagTypes: ["rust","rust","rust"],
-    principle: "While the case nominally supports use of registered declarations, it was CRITICISED by scholars for: (1) allowing the court to prefer oral evidence over a registered declaration — defeating the purpose of registration; (2) effectively having the court 'promulgate' a new declaration, which is an executive/legislative function, not judicial.",
-    holding: "⚠️ CRITICISED — the court improperly substituted oral evidence for the declaration, amounting to judicial legislation.",
-  },
-  {
-    name: "Ogoke v Nduka",
-    year: 2020,
-    cite: "(2020) 4 NWLR (Pt.1715) 509 (Court of Appeal)",
-    issue: "Community participation in chieftaincy selection",
-    tags: ["community participation", "no Eze without community", "Governor's role"],
-    tagTypes: ["sage","gold","rust"],
-    principle: "(Obiter) 'No traditional ruler shall be selected without the effective participation of the community members in the selection process. The selection of a traditional ruler is for the community; recognition is for the Governor.' Grounds the democratic legitimacy requirement for chieftaincy appointments.",
-    holding: "Community participation is mandatory in selection; no Eze can be appointed without it (obiter).",
-  },
-  {
-    name: "Danmole v Dawodun",
-    year: 1956,
-    cite: "(1956) 1 FSC 101",
-    issue: "Idi-igi and Ori-Ojori succession principles",
-    tags: ["Idi-igi", "Ori-Ojori", "Yoruba succession"],
-    tagTypes: ["gold","sage","rust"],
-    principle: "Discussed two Yoruba customary succession principles: (1) Idi-igi — each branch/lineage of the ruling house takes turns at the throne (strict rotation per branch); (2) Ori-Ojori — rotation among the various branches without strict order. Illustrates how participation principles operate in customary succession.",
-    holding: "Idi-igi (strict rotation by branch) and Ori-Ojori (general rotation) are valid and distinct succession customs.",
-  },
-  {
-    name: "Adefulu v Oyesile",
-    year: 1989,
-    cite: "(1989) 5 NWLR (Pt.122) 377",
-    issue: "Effect of codification — custom becomes the recognised procedure",
-    tags: ["codification", "recognised procedure", "Uwais JSC"],
-    tagTypes: ["gold","sage","gold"],
-    principle: "Per Uwais JSC (as he then was): 'Once native law and custom is codified per the Chiefs Law, it becomes the recognised procedure or customary law for making the appointment.' Codification through a declaration transforms oral practice into definitive written law binding on all parties.",
-    holding: "Codification per the Chiefs Law = the declaration IS the procedure. No deviation is permissible.",
-  },
-];
-
-// ═══════════════════════════════
-//  TAB NAVIGATION
-// ═══════════════════════════════
-function switchTab(id, btn) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById(id+'-screen').classList.add('active');
-  btn.classList.add('active');
-  if (id === 'flash') renderFlashcard();
-}
-
-// ═══════════════════════════════
-//  BROWSE SCREEN
-// ═══════════════════════════════
-function buildBrowse(cases) {
-  const list = document.getElementById('cases-list');
-  list.innerHTML = '';
-  document.getElementById('case-count').textContent = `Showing ${cases.length} case${cases.length !== 1 ? 's' : ''}`;
-  cases.forEach((c, i) => {
-    const card = document.createElement('div');
-    card.className = 'case-card';
-    card.innerHTML = `
-      <div class="case-header" onclick="toggleCase(this)">
-        <div>
-          <div class="case-name">${c.name}</div>
-          <div class="case-principle">${c.issue}</div>
-        </div>
-        <div style="display:flex;gap:6px;align-items:flex-start">
-          <div class="case-year">${c.year}</div>
-          <div class="chevron">▼</div>
-        </div>
-      </div>
-      <div class="case-body">
-        <h4>Citation</h4><p>${c.cite}</p>
-        <h4>Key Principle</h4><p>${c.principle}</p>
-        <h4>Holding (Exam Summary)</h4><p>${c.holding}</p>
-        <div class="tag-row">${c.tags.map((t,ti)=>`<span class="tag ${c.tagTypes[ti]==='sage'?'sage':c.tagTypes[ti]==='rust'?'rust':''}">${t}</span>`).join('')}</div>
-      </div>`;
-    list.appendChild(card);
-  });
-}
-
-function toggleCase(header) {
-  const card = header.parentElement;
-  card.classList.toggle('open');
-}
-
-function filterCases() {
-  const q = document.getElementById('search-input').value.toLowerCase();
-  const filtered = CASES.filter(c =>
-    c.name.toLowerCase().includes(q) ||
-    c.principle.toLowerCase().includes(q) ||
-    c.issue.toLowerCase().includes(q) ||
-    c.holding.toLowerCase().includes(q) ||
-    c.tags.some(t => t.toLowerCase().includes(q)) ||
-    String(c.year).includes(q)
-  );
-  buildBrowse(filtered);
-}
-
-buildBrowse(CASES);
-
-// ═══════════════════════════════
-//  FLASHCARD SCREEN
-// ═══════════════════════════════
-let flashDeck = [...CASES];
-let flashIdx = 0;
-let flashFlipped = false;
-let flashMode = 'name'; // 'name' or 'principle'
-let seenCards = new Set();
-
-function setFlashMode(m, btn) {
-  flashMode = m;
-  document.querySelectorAll('.ftm-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  flashFlipped = false;
-  document.getElementById('flashcard').classList.remove('flipped');
-  renderFlashcard();
-}
-
-function renderFlashcard() {
-  const c = flashDeck[flashIdx];
-  flashFlipped = false;
-  document.getElementById('flashcard').classList.remove('flipped');
-  document.getElementById('flash-counter').textContent = `${flashIdx+1} / ${flashDeck.length}`;
-  seenCards.add(flashIdx);
-
-  if (flashMode === 'name') {
-    document.getElementById('fc-name').textContent = c.name + ' (' + c.year + ')';
-    document.getElementById('fc-question').textContent = 'What is the key legal principle / holding of this case?';
-    document.getElementById('fc-answer').textContent = c.holding + '\n\n' + c.principle;
-  } else {
-    document.getElementById('fc-name').textContent = 'Which Case?';
-    document.getElementById('fc-question').textContent = c.holding;
-    document.getElementById('fc-answer').textContent = c.name + ' (' + c.year + ')\n' + c.cite;
-  }
-  renderFlashDots();
-}
-
-function renderFlashDots() {
-  const wrap = document.getElementById('flash-progress');
-  wrap.innerHTML = '';
-  flashDeck.forEach((_, i) => {
-    const d = document.createElement('div');
-    d.className = 'fp-dot' + (i === flashIdx ? ' current' : (seenCards.has(i) ? ' seen' : ''));
-    wrap.appendChild(d);
-  });
-}
-
-function flipCard() {
-  flashFlipped = !flashFlipped;
-  document.getElementById('flashcard').classList.toggle('flipped', flashFlipped);
-}
-
-function flashNav(dir) {
-  flashIdx = (flashIdx + dir + flashDeck.length) % flashDeck.length;
-  renderFlashcard();
-}
-
-function shuffleFlash() {
-  flashDeck = [...CASES].sort(() => Math.random() - 0.5);
-  flashIdx = 0;
-  seenCards.clear();
-  renderFlashcard();
-}
-
-// ═══════════════════════════════
-//  QUIZ SCREEN
-// ═══════════════════════════════
-let quizType = 'match-holding';
-let quizQuestions = [];
-let qIdx = 0;
-let qScore = 0;
-let qWrong = 0;
-let qSkipped = 0;
-let qAnswered = false;
-let qWaitNext = false;
-
-function selectQtype(el) {
-  document.querySelectorAll('.qt-card').forEach(c => c.classList.remove('sel'));
-  el.classList.add('sel');
-  quizType = el.dataset.qtype;
-}
-
-function beginQuiz() {
-  document.getElementById('quiz-setup').style.display = 'none';
-  document.getElementById('score-screen-quiz').style.display = 'none';
-  document.getElementById('quiz-active').style.display = 'block';
-  quizQuestions = buildQuizQuestions(quizType);
-  qIdx = 0; qScore = 0; qWrong = 0; qSkipped = 0;
-  renderQzQuestion();
-}
-
-function buildQuizQuestions(type) {
-  const shuffled = [...CASES].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, Math.min(15, shuffled.length)).map(c => {
-    if (type === 'match-holding') {
-      // Show principle → pick case name
-      const distractors = CASES.filter(x => x.name !== c.name).sort(() => Math.random() - 0.5).slice(0, 3);
-      const options = [c, ...distractors].sort(() => Math.random() - 0.5);
-      const correctIdx = options.findIndex(o => o.name === c.name);
-      return {
-        badge: 'Match the Holding',
-        badgeClass: '',
-        question: `Which case established this principle?\n\n"${c.holding}"`,
-        options: options.map(o => o.name + ' (' + o.year + ')'),
-        correct: correctIdx,
-        reveal: c.principle + '\n\n📌 ' + c.cite,
-      };
-    } else if (type === 'match-case') {
-      // Show case name → pick correct principle
-      const distractors = CASES.filter(x => x.name !== c.name).sort(() => Math.random() - 0.5).slice(0, 3);
-      const allOpts = [c, ...distractors].sort(() => Math.random() - 0.5);
-      const correctIdx = allOpts.findIndex(o => o.name === c.name);
-      return {
-        badge: 'Match the Case',
-        badgeClass: 'blue',
-        question: `${c.name} (${c.year})\n\nWhich of these best describes what this case decided?`,
-        options: allOpts.map(o => o.holding),
-        correct: correctIdx,
-        reveal: c.principle + '\n\n📌 ' + c.cite,
-      };
-    } else if (type === 'year') {
-      const wrongYears = [c.year - 5, c.year + 7, c.year - 12].map(y => String(y));
-      const allOpts = [String(c.year), ...wrongYears].sort(() => Math.random() - 0.5);
-      const correctIdx = allOpts.findIndex(y => y === String(c.year));
-      return {
-        badge: 'Year Recall',
-        badgeClass: 'red',
-        question: `In which year was ${c.name} decided?`,
-        options: allOpts,
-        correct: correctIdx,
-        reveal: c.holding + '\n\n📌 ' + c.cite,
-      };
-    } else { // issue
-      const distractors = CASES.filter(x => x.name !== c.name).sort(() => Math.random() - 0.5).slice(0, 3);
-      const allOpts = [c, ...distractors].sort(() => Math.random() - 0.5);
-      const correctIdx = allOpts.findIndex(o => o.name === c.name);
-      return {
-        badge: 'Issue Spotting',
-        badgeClass: '',
-        question: `Which case primarily addresses this legal issue?\n\n"${c.issue}"`,
-        options: allOpts.map(o => o.name + ' (' + o.year + ')'),
-        correct: correctIdx,
-        reveal: c.holding + '\n\n📌 ' + c.cite,
-      };
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Poppins','sans-serif'], display: ['Playfair Display','serif'] },
+      colors: {
+        brand: { 50:'#eef2ff',100:'#e0e7ff',200:'#c7d2fe',300:'#a5b4fc',400:'#818cf8',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3',900:'#312e81' }
+      }
     }
-  });
-}
-
-function renderQzQuestion() {
-  qAnswered = false; qWaitNext = false;
-  const q = quizQuestions[qIdx];
-  const total = quizQuestions.length;
-  document.getElementById('qz-counter').textContent = `Q ${qIdx+1} / ${total}`;
-  document.getElementById('qz-score-live').textContent = `Score: ${qScore}`;
-  document.getElementById('qz-fill').style.width = `${(qIdx/total)*100}%`;
-
-  const badge = document.getElementById('qz-badge');
-  badge.textContent = q.badge;
-  badge.className = 'qz-type-badge' + (q.badgeClass ? ' '+q.badgeClass : '');
-
-  document.getElementById('qz-question').textContent = q.question;
-  document.getElementById('qz-reveal').classList.remove('show');
-  document.getElementById('qz-reveal-txt').textContent = q.reveal;
-  document.getElementById('qz-next-btn').textContent = qIdx < quizQuestions.length - 1 ? 'Next →' : 'See Results';
-
-  const optDiv = document.getElementById('qz-options');
-  optDiv.innerHTML = '';
-  const letters = ['A','B','C','D'];
-  q.options.forEach((opt, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'qz-option';
-    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
-    btn.onclick = () => handleQzAnswer(i, btn);
-    optDiv.appendChild(btn);
-  });
-}
-
-function handleQzAnswer(idx, btn) {
-  if (qAnswered) return;
-  qAnswered = true;
-  const q = quizQuestions[qIdx];
-  const allBtns = document.querySelectorAll('.qz-option');
-  allBtns.forEach(b => b.disabled = true);
-  if (idx === q.correct) {
-    btn.classList.add('correct');
-    qScore++;
-  } else {
-    btn.classList.add('wrong');
-    allBtns[q.correct].classList.add('show-correct');
-    qWrong++;
   }
-  document.getElementById('qz-score-live').textContent = `Score: ${qScore}`;
-  document.getElementById('qz-reveal').classList.add('show');
-  qWaitNext = true;
-}
-
-function qzSkip() {
-  qSkipped++;
-  qIdx++;
-  if (qIdx >= quizQuestions.length) showQzScore();
-  else renderQzQuestion();
-}
-
-function qzNext() {
-  if (!qWaitNext && !qAnswered) { qSkipped++; }
-  qIdx++;
-  if (qIdx >= quizQuestions.length) showQzScore();
-  else renderQzQuestion();
-}
-
-function showQzScore() {
-  document.getElementById('quiz-active').style.display = 'none';
-  document.getElementById('score-screen-quiz').style.display = 'block';
-  const total = quizQuestions.length;
-  const pct = Math.round((qScore/total)*100);
-  document.getElementById('sc-num').textContent = qScore;
-  document.getElementById('sc-den').textContent = `/ ${total}`;
-  document.getElementById('sc-correct').textContent = qScore;
-  document.getElementById('sc-wrong').textContent = qWrong;
-  document.getElementById('sc-skip').textContent = qSkipped;
-  const [title, msg] = pct >= 80 ? ['Excellent!','You have strong command of these cases. Exam ready!']
-    : pct >= 60 ? ['Good Effort','Solid base. Review the ones you missed.']
-    : pct >= 40 ? ['Keep Studying','More revision needed — focus on weaker cases.']
-    : ['More Practice Needed','Return to the flashcards, then retry.'];
-  document.getElementById('sc-title').textContent = title;
-  document.getElementById('sc-msg').textContent = msg;
-}
-
-function backToSetup() {
-  document.getElementById('score-screen-quiz').style.display = 'none';
-  document.getElementById('quiz-setup').style.display = 'block';
 }
 </script>
-</body>
-</html>
+<style>
+* { font-family: 'Poppins', sans-serif; }
+.font-display { font-family: 'Playfair Display', serif; }
+
+/* Card flip */
+.flip-card { perspective: 1200px; cursor: pointer; }
+.flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.65s cubic-bezier(0.4,0.2,0.2,1); transform-style: preserve-3d; }
+.flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+.flip-front, .flip-back { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 1rem; }
+.flip-back { transform: rotateY(180deg); }
+
+/* Progress bar */
+.progress-fill { transition: width 0.4s ease; }
+
+/* Smooth tab */
+.tab-btn { transition: all 0.2s ease; }
+.tab-btn.active { background: #4f46e5; color: white; box-shadow: 0 4px 14px rgba(79,70,229,0.35); }
+
+/* Quiz option */
+.quiz-opt { transition: all 0.2s ease; cursor: pointer; }
+.quiz-opt:hover:not(.disabled) { border-color: #4f46e5; background: #eef2ff; }
+.quiz-opt.correct { background: #dcfce7; border-color: #16a34a; color: #15803d; }
+.quiz-opt.wrong { background: #fee2e2; border-color: #dc2626; color: #dc2626; }
+.quiz-opt.disabled { cursor: default; }
+
+/* Animations */
+@keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+@keyframes popIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+@keyframes bounceIn { 0% { opacity:0; transform:scale(0.7); } 60% { transform:scale(1.05); } 100% { opacity:1; transform:scale(1); } }
+.anim-slide { animation: slideUp 0.4s ease forwards; }
+.anim-pop { animation: popIn 0.35s ease forwards; }
+.anim-bounce { animation: bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+
+/* Nav blur */
+.nav-blur { backdrop-filter: blur(16px); background: rgba(255,255,255,0.93); }
+
+/* Mesh bg */
+.mesh-bg {
+  background-color: #f8fafc;
+  background-image: radial-gradient(at 20% 10%, hsla(240,100%,96%,1) 0px, transparent 50%),
+    radial-gradient(at 80% 5%, hsla(270,100%,96%,1) 0px, transparent 40%),
+    radial-gradient(at 5% 60%, hsla(150,60%,96%,1) 0px, transparent 50%);
+  min-height: 100vh;
+}
+
+/* Popup overlay */
+.popup-overlay { background: rgba(0,0,0,0.45); backdrop-filter: blur(4px); }
+.wa-green { background: #25D366; }
+
+/* Result ring */
+.score-ring { stroke-dasharray: 283; stroke-dashoffset: 283; transition: stroke-dashoffset 1.2s ease; }
+
+/* Browse case card */
+.case-card { transition: all 0.2s; border-left: 4px solid transparent; }
+.case-card:hover { border-left-color: #4f46e5; transform: translateX(4px); }
+</style>
+</head>
+<body class="mesh-bg text-gray-800">
+
+<!-- ═══════════════════════════════════════
+     WHATSAPP COMMUNITY POPUP
+═══════════════════════════════════════ -->
+<div id="waPopup" class="fixed inset-0 z-50 hidden items-center justify-center p-4 popup-overlay" style="display:none">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" style="animation: bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards">
+    <div class="wa-green p-5 text-white text-center relative">
+      <button onclick="closeWaPopup()" class="absolute top-3 right-4 text-white/70 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+      <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+      </div>
+      <h3 class="text-xl font-bold">Join the MYLE Community</h3>
+      <p class="text-white/85 text-sm mt-1">Connect with fellow UNEC Law students</p>
+    </div>
+    <div class="p-6 space-y-3">
+      <p class="text-gray-500 text-sm text-center">Get notified when new study tools are added. Don't miss an update!</p>
+      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
+         class="flex items-center gap-3 w-full wa-green text-white font-semibold rounded-xl px-5 py-3.5 hover:opacity-90 transition-all hover:scale-[1.02]">
+        <i class="fa-brands fa-whatsapp text-xl"></i>
+        <div class="text-left"><div class="text-sm font-bold">Join the WhatsApp Group</div><div class="text-xs text-white/80">Chat with fellow law students</div></div>
+        <i class="fa-solid fa-arrow-right ml-auto"></i>
+      </a>
+      <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank"
+         class="flex items-center gap-3 w-full border-2 border-[#25D366] text-[#25D366] font-semibold rounded-xl px-5 py-3.5 hover:bg-[#25D366] hover:text-white transition-all hover:scale-[1.02]">
+        <i class="fa-solid fa-bullhorn text-xl"></i>
+        <div class="text-left"><div class="text-sm font-bold">Follow the Channel</div><div class="text-xs opacity-70">Announcements & updates</div></div>
+        <i class="fa-solid fa-arrow-right ml-auto"></i>
+      </a>
+      <button onclick="closeWaPopup()" class="w-full text-gray-400 text-xs py-2 hover:text-gray-600 transition-colors">
+        Maybe later — continue studying
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NAVIGATION
+═══════════════════════════════════════ -->
+<nav class="nav-blur border-b border-gray-100 sticky top-0 z-40">
+  <div class="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="../dashboard.html" class="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center shadow-md flex-shrink-0 hover:bg-brand-700 transition-colors" title="Back to Dashboard">
+        <span class="text-white font-bold text-xs">M</span>
+      </a>
+      <div>
+        <span class="text-sm font-bold text-gray-900">Case Law Practice</span>
+        <span class="hidden sm:inline text-xs text-gray-400 ml-2">· Chieftaincy & Native Law</span>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="hidden sm:flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+        <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> PUL 101 · 25 Cases
+      </span>
+      <button onclick="openWaPopup()" class="flex items-center gap-1.5 text-xs text-[#25D366] font-semibold border border-[#25D366] px-3 py-1.5 rounded-full hover:bg-[#25D366] hover:text-white transition-all">
+        <i class="fa-brands fa-whatsapp"></i>
+        <span class="hidden sm:inline">Community</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     HERO HEADER (identical gradient to literary_concepts)
+═══════════════════════════════════════ -->
+<div class="bg-gradient-to-br from-brand-600 via-brand-700 to-violet-700 text-white relative overflow-hidden">
+  <div class="absolute inset-0 pointer-events-none">
+    <div class="absolute -top-12 -right-12 w-64 h-64 bg-white/5 rounded-full"></div>
+    <div class="absolute bottom-0 left-1/4 w-40 h-40 bg-white/5 rounded-full"></div>
+    <div class="absolute top-1/2 right-1/3 w-24 h-24 bg-white/5 rounded-full"></div>
+  </div>
+  <div class="max-w-6xl mx-auto px-4 py-8 relative z-10">
+    <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <span class="text-xs font-semibold text-brand-200 uppercase tracking-widest bg-white/10 px-3 py-1 rounded-full">
+            <i class="fa-solid fa-gavel mr-1"></i>Chieftaincy & Native Law
+          </span>
+        </div>
+        <h1 class="font-display text-3xl sm:text-4xl font-bold leading-tight mb-1">Case Law Practice</h1>
+        <p class="text-brand-200 text-sm">Flashcards · Quiz · Browse all landmark cases</p>
+      </div>
+      <div class="flex gap-3 flex-shrink-0">
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 text-center border border-white/20">
+          <div class="text-xl font-extrabold">25</div><div class="text-brand-200 text-xs">Cases</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2.5 text-center border border-white/20">
+          <div class="text-xl font-extrabold">4</div><div class="text-brand-200 text-xs">Quiz Modes</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode tabs (Browse, Flashcards, Quiz) -->
+    <div class="flex gap-2 mt-6 bg-white/10 p-1 rounded-xl w-fit backdrop-blur-sm border border-white/20">
+      <button onclick="setMode('browse')" id="tab-browse" class="tab-btn active flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold">
+        <i class="fa-solid fa-book-open"></i> Browse
+      </button>
+      <button onclick="setMode('flashcards')" id="tab-flashcards" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white/70 hover:text-white">
+        <i class="fa-solid fa-cards-blank"></i> Flashcards
+      </button>
+      <button onclick="setMode('quiz')" id="tab-quiz" class="tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white/70 hover:text-white">
+        <i class="fa-solid fa-circle-question"></i> Quiz
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MAIN CONTENT
+═══════════════════════════════════════ -->
+<main class="max-w-6xl mx-auto px-4 py-8">
+
+  <!-- ════ BROWSE MODE (all cases with search & expandable details) ════ -->
+  <div id="mode-browse" class="anim-slide">
+    <div class="relative mb-6">
+      <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+      <input type="text" id="browseSearch" placeholder="Search by case name, year, principle, issue..." class="w-full pl-9 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-brand-500 shadow-sm">
+    </div>
+    <div id="casesListContainer" class="space-y-3"></div>
+  </div>
+
+  <!-- ════ FLASHCARDS MODE (identical style to literary_concepts) ════ -->
+  <div id="mode-flashcards" class="hidden anim-slide">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Mode:</span>
+        <div class="flex gap-1.5">
+          <button onclick="setFlashMode('name')" class="flash-mode-btn active bg-brand-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg">Case → Principle</button>
+          <button onclick="setFlashMode('principle')" class="flash-mode-btn text-xs font-semibold px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-gray-600">Principle → Case</button>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="shuffleFlashDeck()" class="flex items-center gap-1.5 text-xs font-semibold text-gray-500 border border-gray-200 px-3 py-1.5 rounded-lg bg-white hover:border-brand-400 hover:text-brand-600">
+          <i class="fa-solid fa-shuffle"></i> Shuffle
+        </button>
+        <span class="text-xs text-gray-400" id="flashCounter">Card 1 of 25</span>
+      </div>
+    </div>
+    <div class="w-full bg-gray-100 rounded-full h-1.5 mb-6">
+      <div class="progress-fill bg-brand-500 h-1.5 rounded-full" id="flashProgress" style="width:4%"></div>
+    </div>
+    <div class="flip-card w-full mb-6" style="height: 320px;" id="flipCard" onclick="flipFlashcard()">
+      <div class="flip-card-inner w-full h-full">
+        <div class="flip-front bg-white border-2 border-brand-100 shadow-xl flex flex-col items-center justify-center p-8 gap-4">
+          <div class="w-10 h-10 bg-brand-50 rounded-xl flex items-center justify-center mb-2">
+            <i class="fa-solid fa-scale-balanced text-brand-600 text-lg"></i>
+          </div>
+          <span class="text-xs font-bold text-brand-400 uppercase tracking-widest" id="flashFrontLabel">Case Name</span>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900 text-center leading-snug" id="flashFront">Loading...</p>
+          <p class="text-xs text-gray-400 mt-4 flex items-center gap-1.5"><i class="fa-solid fa-hand-pointer"></i> Tap to reveal holding</p>
+        </div>
+        <div class="flip-back bg-brand-600 flex flex-col items-center justify-center p-8 gap-4">
+          <i class="fa-solid fa-lightbulb text-yellow-300 text-2xl mb-2"></i>
+          <p class="text-lg sm:text-xl font-semibold text-white text-center leading-relaxed" id="flashBack">—</p>
+          <p class="text-xs text-brand-200 mt-2"><i class="fa-solid fa-hand-pointer"></i> Tap to flip back</p>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center justify-center gap-4">
+      <button onclick="prevFlash()" class="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 font-semibold px-5 py-3 rounded-xl hover:border-brand-400 transition-all">← Previous</button>
+      <button onclick="flipFlashcard()" class="flex items-center gap-2 bg-brand-50 border border-brand-200 text-brand-700 font-semibold px-5 py-3 rounded-xl hover:bg-brand-100">Flip</button>
+      <button onclick="nextFlash()" class="flex items-center gap-2 bg-brand-600 text-white font-semibold px-5 py-3 rounded-xl hover:bg-brand-700">Next →</button>
+    </div>
+    <div class="flex justify-center mt-6 gap-1 flex-wrap max-w-sm mx-auto" id="flashDots"></div>
+  </div>
+
+  <!-- ════ QUIZ MODE (multi‑type, same styling as literary_concepts) ════ -->
+  <div id="mode-quiz" class="hidden anim-slide">
+    <div id="quizSetup" class="text-center py-8">
+      <div class="w-20 h-20 bg-brand-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+        <i class="fa-solid fa-circle-question text-brand-600 text-4xl"></i>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-3">Test Your Case Law Knowledge</h2>
+      <p class="text-gray-500 mb-8 max-w-md mx-auto">Select a quiz format — each set includes 10–15 randomly selected cases.</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-8">
+        <div onclick="selectQuizType('match-holding')" data-type="match-holding" class="quiz-type-card bg-white border-2 border-slate-200 rounded-xl p-5 cursor-pointer hover:border-brand-400 transition-all text-center">
+          <i class="fa-solid fa-gavel text-2xl text-brand-500 mb-2"></i>
+          <h3 class="font-bold">Match the Holding</h3>
+          <p class="text-xs text-gray-500 mt-1">Read a principle → name the case</p>
+        </div>
+        <div onclick="selectQuizType('match-case')" data-type="match-case" class="quiz-type-card bg-white border-2 border-slate-200 rounded-xl p-5 cursor-pointer hover:border-brand-400 transition-all text-center">
+          <i class="fa-solid fa-balance-scale text-2xl text-violet-500 mb-2"></i>
+          <h3 class="font-bold">Match the Case</h3>
+          <p class="text-xs text-gray-500 mt-1">Case name → correct holding</p>
+        </div>
+        <div onclick="selectQuizType('year')" data-type="year" class="quiz-type-card bg-white border-2 border-slate-200 rounded-xl p-5 cursor-pointer hover:border-brand-400 transition-all text-center">
+          <i class="fa-solid fa-calendar-alt text-2xl text-emerald-500 mb-2"></i>
+          <h3 class="font-bold">Year Recall</h3>
+          <p class="text-xs text-gray-500 mt-1">Which year was the case decided?</p>
+        </div>
+        <div onclick="selectQuizType('issue')" data-type="issue" class="quiz-type-card bg-white border-2 border-slate-200 rounded-xl p-5 cursor-pointer hover:border-brand-400 transition-all text-center">
+          <i class="fa-solid fa-search text-2xl text-amber-500 mb-2"></i>
+          <h3 class="font-bold">Issue Spotting</h3>
+          <p class="text-xs text-gray-500 mt-1">Identify the case from its legal issue</p>
+        </div>
+      </div>
+      <button onclick="startQuiz()" class="inline-flex items-center gap-3 bg-brand-600 hover:bg-brand-700 text-white font-bold text-base px-8 py-3.5 rounded-xl shadow-lg transition-all">Start Quiz <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+    <div id="quizActive" class="hidden">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-sm font-semibold text-gray-500" id="quizCounter">Question 1 of 10</span>
+        <span class="text-sm font-semibold text-brand-600 bg-brand-50 px-3 py-1 rounded-full" id="quizScore">Score: 0</span>
+      </div>
+      <div class="w-full bg-gray-100 rounded-full h-2 mb-6">
+        <div class="progress-fill bg-brand-500 h-2 rounded-full" id="quizProgressBar" style="width: 10%"></div>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-md p-6 sm:p-8 mb-5 anim-pop">
+        <div class="flex items-start gap-3 mb-6">
+          <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-circle-question text-white text-sm"></i>
+          </div>
+          <p class="text-lg font-semibold text-gray-900 leading-snug" id="quizQuestion">Loading...</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="quizOptions"></div>
+      </div>
+      <div id="quizExplanation" class="hidden bg-amber-50 border border-amber-200 rounded-xl p-4 mb-5 text-sm text-amber-800 leading-relaxed">
+        <i class="fa-solid fa-circle-info mr-2 text-amber-500"></i><span id="explanationText"></span>
+      </div>
+      <button onclick="nextQuizQuestion()" id="nextQuizBtn" class="hidden w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">Next Question →</button>
+    </div>
+
+    <div id="quizResult" class="hidden text-center py-8 anim-bounce">
+      <div class="relative w-36 h-36 mx-auto mb-6">
+        <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#e0e7ff" stroke-width="8"/>
+          <circle cx="50" cy="50" r="45" fill="none" stroke="#4f46e5" stroke-width="8" stroke-linecap="round" class="score-ring" id="resultRing"/>
+        </svg>
+        <div class="absolute inset-0 flex flex-col items-center justify-center">
+          <span class="text-3xl font-extrabold text-brand-600" id="finalScore">0/0</span>
+          <span class="text-xs text-gray-400">Score</span>
+        </div>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2" id="resultTitle">Well done!</h2>
+      <p class="text-gray-500 mb-8 max-w-sm mx-auto" id="resultMsg">Review the cases you missed, then try again.</p>
+      <button onclick="resetQuiz()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-md inline-flex items-center gap-2 mx-auto"><i class="fa-solid fa-rotate-right"></i> Try Again</button>
+    </div>
+  </div>
+</main>
+
+<!-- ════ FOOTER ════ -->
+<footer class="bg-gray-900 text-gray-400 py-8 mt-12">
+  <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2.5">
+      <div class="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center"><span class="text-white font-bold text-xs">M</span></div>
+      <span class="text-sm font
