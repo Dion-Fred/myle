@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — MYLE</title>
-<meta name="description" content="Your MYLE study dashboard — flashcards, quizzes and case law for UNEC 100L Law.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%234F46E5'/><text y='23' x='5' font-size='20' font-family='sans-serif' font-weight='700' fill='white'>M</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -13,404 +11,289 @@
 tailwind.config = {
   theme: {
     extend: {
-      fontFamily: { sans: ['Poppins','sans-serif'] },
-      animation: {
-        'fade-up':  'fadeUp 0.5s ease forwards',
-        'fade-in':  'fadeIn 0.4s ease forwards',
-        'bounce-in':'bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards',
-      },
-      keyframes: {
-        fadeUp:   {'0%':{opacity:'0',transform:'translateY(20px)'},'100%':{opacity:'1',transform:'translateY(0)'}},
-        fadeIn:   {'0%':{opacity:'0'},'100%':{opacity:'1'}},
-        bounceIn: {'0%':{opacity:'0',transform:'scale(0.85)'},'100%':{opacity:'1',transform:'scale(1)'}},
-      }
+      fontFamily: { sans: ['Poppins','sans-serif'] }
     }
   }
 }
 </script>
 <style>
   * { font-family: 'Poppins', sans-serif; }
-  .nav-blur { backdrop-filter: blur(16px); background: rgba(255,255,255,0.92); }
-  .mesh-bg {
-    background-color: #f8fafc;
-    background-image: radial-gradient(at 40% 20%, hsla(240,100%,97%,1) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, hsla(270,100%,97%,1) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, hsla(150,100%,97%,1) 0px, transparent 50%);
-  }
-  .card-hover { transition: transform 0.25s ease, box-shadow 0.25s ease; }
-  .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(79,70,229,0.13); }
-  .wa-green { background:#25D366; }
-  .wa-green:hover { background:#20ba5a; }
-  .type-badge { font-size: 0.65rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-  .filter-active { background:#4f46e5; color:white; border-color:#4f46e5; }
-  .tool-card-enter { opacity:0; transform:translateY(16px); animation: fadeUp 0.45s ease forwards; }
-  .popup-overlay { background: rgba(0,0,0,0.45); backdrop-filter: blur(4px); }
+  .filter-active { background-color: #4f46e5 !important; color: white !important; border-color: #4f46e5 !important; }
 </style>
 </head>
-<body class="mesh-bg text-gray-800 min-h-screen">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-<!-- ════ WHATSAPP POPUP ════ -->
-<div id="waPopup" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 popup-overlay" style="display:none!important">
-  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-bounce-in">
-    <div class="wa-green p-5 text-white text-center relative">
-      <button onclick="closePopup()" class="absolute top-3 right-4 text-white/70 hover:text-white text-xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
-      <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-3">
-        <i class="fa-brands fa-whatsapp text-3xl"></i>
+<!-- ════ WHATSAPP POPUP (Safe Modal Architecture) ════ -->
+<div id="waPopup" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transition-all">
+    <div class="bg-[#25D366] p-5 text-white text-center relative">
+      <button id="closePopupTop" class="absolute top-3 right-4 text-white/80 hover:text-white text-xl"><i class="fa-solid fa-xmark"></i></button>
+      <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
+        <i class="fa-brands fa-whatsapp text-2xl"></i>
       </div>
-      <h3 class="text-xl font-bold">Join the MYLE Community</h3>
-      <p class="text-white/85 text-sm mt-1">Connect with your fellow classmates</p>
+      <h3 class="text-lg font-bold">Join the MYLE Community</h3>
     </div>
-    <div class="p-6 space-y-3">
-      <p class="text-gray-500 text-sm text-center leading-relaxed">Get notified when new study tools drop and never miss an update.</p>
-      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
-         class="flex items-center gap-3 w-full wa-green text-white font-semibold rounded-xl px-5 py-3.5 transition-all hover:scale-[1.02]">
+    <div class="p-6 space-y-3 bg-white">
+      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank" class="flex items-center gap-3 w-full bg-[#25D366] text-white font-semibold rounded-xl px-4 py-3 hover:opacity-90">
         <i class="fa-brands fa-whatsapp text-xl"></i>
-        <div class="text-left"><div class="text-sm font-bold">Join the WhatsApp Group</div><div class="text-xs text-white/80">Chat with fellow law students</div></div>
-        <i class="fa-solid fa-arrow-right ml-auto"></i>
+        <span class="text-sm">Join the WhatsApp Group</span>
       </a>
-      <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank"
-         class="flex items-center gap-3 w-full border-2 border-[#25D366] text-[#25D366] font-semibold rounded-xl px-5 py-3.5 transition-all hover:bg-[#25D366] hover:text-white hover:scale-[1.02]">
-        <i class="fa-solid fa-bullhorn text-xl"></i>
-        <div class="text-left"><div class="text-sm font-bold">Follow the Channel</div><div class="text-xs opacity-70">Announcements & updates</div></div>
-        <i class="fa-solid fa-arrow-right ml-auto"></i>
-      </a>
-      <button onclick="closePopup()" class="w-full text-gray-400 text-xs py-2 hover:text-gray-600 transition-colors">Maybe later — continue studying</button>
+      <button id="closePopupBtn" class="w-full text-slate-400 text-xs py-2 hover:text-slate-600">Maybe later</button>
     </div>
   </div>
 </div>
 
 <!-- ════ NAV ════ -->
-<nav class="nav-blur border-b border-gray-100 sticky top-0 z-40">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-    <a href="index.html" class="flex items-center gap-2.5">
-      <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-md">
+<nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+  <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
         <span class="text-white font-bold text-sm">M</span>
       </div>
-      <span class="text-xl font-bold text-gray-900">MY<span class="text-indigo-600">LE</span></span>
+      <span class="text-xl font-bold text-slate-900">MY<span class="text-indigo-600">LE</span></span>
     </a>
-    <div class="hidden md:flex items-center gap-6">
-      <span class="flex items-center gap-1.5 text-xs text-emerald-600 font-semibold bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
-        <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> Free Access
-      </span>
-      <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
-         class="flex items-center gap-1.5 text-sm text-[#25D366] hover:text-[#20ba5a] font-semibold transition-colors">
-        <i class="fa-brands fa-whatsapp text-base"></i> Community
-      </a>
-    </div>
-    <a href="index.html" class="flex items-center gap-2 text-sm text-gray-500 hover:text-indigo-600 font-medium transition-colors">
-      <i class="fa-solid fa-house text-xs"></i>
-      <span class="hidden sm:inline">Home</span>
-    </a>
+    <a href="index.html" class="text-sm text-slate-500 hover:text-indigo-600"><i class="fa-solid fa-house mr-1"></i>Home</a>
   </div>
 </nav>
 
-<!-- ════ PAGE HEADER ════ -->
-<div class="bg-gradient-to-br from-indigo-600 to-violet-700 text-white py-10 px-4 sm:px-6 relative overflow-hidden">
-  <div class="absolute -top-10 -right-10 w-48 h-48 bg-white/5 rounded-full pointer-events-none"></div>
-  <div class="absolute bottom-0 left-1/4 w-32 h-32 bg-white/5 rounded-full pointer-events-none"></div>
-  <div class="max-w-6xl mx-auto relative z-10">
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
-        <p class="text-indigo-200 text-xs font-semibold uppercase tracking-widest mb-1">
-          <i class="fa-solid fa-graduation-cap mr-1"></i> UNEC · 100L Law · 2026
-        </p>
-        <h1 class="text-3xl sm:text-4xl font-extrabold">Study Dashboard</h1>
-        <p class="text-indigo-200 text-sm mt-1">Pick a tool below and start studying — no account needed.</p>
+<!-- ════ HEADER ════ -->
+<div class="bg-gradient-to-r from-indigo-600 to-violet-700 text-white py-10 px-4">
+  <div class="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+    <div>
+      <p class="text-indigo-200 text-xs font-semibold uppercase tracking-wider mb-1">UNEC · 100L Law · 2026</p>
+      <h1 class="text-3xl font-extrabold">Study Dashboard</h1>
+    </div>
+    <div class="flex items-center gap-4 bg-black/10 rounded-xl p-4 border border-white/10">
+      <div class="text-center px-2">
+        <div class="text-2xl font-bold" id="toolCount">0</div>
+        <div class="text-indigo-200 text-xs">Tools</div>
       </div>
-      <div class="flex items-center gap-3 bg-white/10 rounded-2xl p-4 backdrop-blur-sm border border-white/20">
-        <div class="text-center px-3">
-          <div class="text-2xl font-extrabold" id="toolCount">—</div>
-          <div class="text-indigo-200 text-xs">Tools</div>
-        </div>
-        <div class="w-px h-10 bg-white/20"></div>
-        <div class="text-center px-3">
-          <div class="text-2xl font-extrabold">100%</div>
-          <div class="text-indigo-200 text-xs">Free</div>
-        </div>
-        <div class="w-px h-10 bg-white/20"></div>
-        <div class="text-center px-3">
-          <div class="text-2xl font-extrabold">PUL</div>
-          <div class="text-indigo-200 text-xs">101</div>
-        </div>
+      <div class="w-px h-8 bg-white/20"></div>
+      <div class="text-center px-2">
+        <div class="text-2xl font-bold">100%</div>
+        <div class="text-indigo-200 text-xs">Free</div>
       </div>
     </div>
   </div>
 </div>
 
 <!-- ════ MAIN CONTENT ════ -->
-<main class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+<main class="max-w-6xl mx-auto px-4 py-8 flex-1 w-full">
 
-  <!-- Search + Filters -->
-  <div class="flex flex-col sm:flex-row gap-3 mb-8">
+  <!-- Search & Filter Layout Container -->
+  <div class="flex flex-col md:flex-row gap-4 mb-6">
     <div class="relative flex-1">
-      <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-      <input id="searchInput" type="text" placeholder="Search tools..." oninput="renderTools()"
-        class="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all shadow-sm">
+      <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+      <input id="searchInput" type="text" placeholder="Search tools..." class="w-full pl-9 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-indigo-500 shadow-sm">
     </div>
-    <div class="flex gap-2 flex-wrap" id="filterBar"></div>
+    <div class="flex gap-2 flex-wrap items-center" id="filterBar"></div>
   </div>
 
-  <!-- Results count -->
-  <div class="flex items-center justify-between mb-5">
-    <p class="text-sm text-gray-500" id="resultsLabel">Loading tools…</p>
-    <div class="flex items-center gap-2">
-      <button onclick="setView('grid')" id="viewGrid" class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-indigo-400 hover:text-indigo-600 transition-all bg-white">
-        <i class="fa-solid fa-grid-2 text-sm"></i>
-      </button>
-      <button onclick="setView('list')" id="viewList" class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-400 hover:border-indigo-400 hover:text-indigo-600 transition-all bg-white">
-        <i class="fa-solid fa-list text-sm"></i>
-      </button>
+  <!-- Stats Header Row -->
+  <div class="flex items-center justify-between mb-4 border-b border-slate-200 pb-3">
+    <p class="text-sm font-medium text-slate-500" id="resultsLabel">Initializing framework...</p>
+    <div class="flex items-center gap-1.5 bg-white p-1 rounded-lg border border-slate-200 shadow-sm">
+      <button id="viewGrid" class="w-8 h-8 flex items-center justify-center rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200"><i class="fa-solid fa-table-cells-large text-xs"></i></button>
+      <button id="viewList" class="w-8 h-8 flex items-center justify-center rounded-md text-slate-400 hover:text-indigo-600"><i class="fa-solid fa-list text-xs"></i></button>
     </div>
   </div>
 
-  <!-- Tools Grid -->
-  <div id="toolsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16"></div>
+  <!-- Main Rendering target area -->
+  <div id="toolsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10 min-h-[100px]"></div>
 
-  <!-- Empty state -->
-  <div id="emptyState" class="hidden text-center py-20">
-    <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-      <i class="fa-solid fa-magnifying-glass text-indigo-400 text-2xl"></i>
-    </div>
-    <h3 class="text-lg font-bold text-gray-800 mb-2">No tools found</h3>
-    <p class="text-gray-500 text-sm">Try a different search or filter.</p>
+  <!-- Empty fallback state notice container -->
+  <div id="emptyState" class="hidden text-center py-12 bg-white rounded-2xl border border-slate-200 p-6 mb-10 shadow-sm">
+    <i class="fa-solid fa-folder-open text-slate-300 text-3xl mb-2"></i>
+    <h3 class="text-base font-bold text-slate-700">No matching tools found</h3>
   </div>
 
-  <!-- WhatsApp strip -->
-  <div class="rounded-2xl overflow-hidden shadow-md border border-green-100">
-    <div class="bg-gradient-to-r from-[#25D366] to-[#128C7E] p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6">
-      <div class="flex-shrink-0 w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center">
-        <i class="fa-brands fa-whatsapp text-white text-3xl"></i>
-      </div>
-      <div class="text-white text-center sm:text-left flex-1">
-        <h3 class="font-bold text-lg">Don't miss new study tools</h3>
-        <p class="text-white/80 text-sm mt-0.5">Join the MYLE community to get notified when new flashcards and quizzes are added.</p>
-      </div>
-      <div class="flex flex-col sm:flex-row gap-3 flex-shrink-0">
-        <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
-           class="flex items-center gap-2 bg-white text-[#25D366] font-bold text-sm px-5 py-2.5 rounded-xl hover:scale-105 transition-all shadow-md">
-          <i class="fa-brands fa-whatsapp"></i> Join Group
-        </a>
-        <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank"
-           class="flex items-center gap-2 border-2 border-white text-white font-bold text-sm px-5 py-2.5 rounded-xl hover:bg-white hover:text-[#25D366] transition-all">
-          <i class="fa-solid fa-bullhorn"></i> Channel
-        </a>
-      </div>
+  <!-- Bottom Inline Marketing Strip -->
+  <div class="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-md">
+    <div>
+      <h3 class="font-bold text-base">Don't miss updates!</h3>
+      <p class="text-emerald-100 text-xs mt-0.5">Get instant resource alerts direct inside our law community group chat.</p>
     </div>
+    <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank" class="bg-white text-emerald-600 font-bold text-xs px-4 py-2.5 rounded-lg shadow hover:bg-emerald-50 whitespace-nowrap"><i class="fa-brands fa-whatsapp mr-1"></i>Join Channel Chat</a>
   </div>
 </main>
 
 <!-- ════ FOOTER ════ -->
-<footer class="bg-gray-900 text-gray-400 py-10">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6">
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-6 mb-6">
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-          <span class="text-white font-bold text-sm">M</span>
-        </div>
-        <span class="text-lg font-bold text-white">MY<span class="text-indigo-400">LE</span></span>
-      </div>
-      <div class="flex items-center gap-4">
-        <a href="https://chat.whatsapp.com/EGrdpOs0XGOBZhoU6JneK5" target="_blank"
-           class="flex items-center gap-2 text-[#25D366] hover:text-[#20ba5a] text-sm font-semibold transition-colors">
-          <i class="fa-brands fa-whatsapp text-base"></i> WhatsApp Group
-        </a>
-        <a href="https://whatsapp.com/channel/0029Vb89HYY5K3zW069YCD26" target="_blank"
-           class="flex items-center gap-2 text-[#25D366] hover:text-[#20ba5a] text-sm font-semibold transition-colors">
-          <i class="fa-solid fa-bullhorn text-base"></i> Channel
-        </a>
-      </div>
-    </div>
-    <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-      <p>© 2026 MYLE · University of Nigeria, Enugu Campus · 100L Law</p>
-      <p class="flex items-center gap-1.5">Built with <i class="fa-solid fa-heart text-rose-500"></i> and Claude</p>
-    </div>
+<footer class="bg-slate-900 text-slate-400 py-6 mt-auto text-xs border-t border-slate-800">
+  <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+    <p>© 2026 MYLE · University of Nigeria, Enugu Campus · 100L Law</p>
+    <p>System Online</p>
   </div>
 </footer>
 
+<!-- ════ CORE LOGIC CONTROLLER ════ -->
 <script>
-// ════════════════════════════════════════
-//  TOOLS REGISTRY — add new tools here
-//  Just add a new object to this array
-// ════════════════════════════════════════
-const tools = [
-  {
-    id: 'pul101-flashcards',
-    title: 'PUL 101 Flashcards',
-    subtitle: 'Key legal concepts and definitions',
-    course: 'PUL 101',
-    type: 'flashcards',
-    file: 'tools/pul101_flashcards.html',
-    count: 24,
-    countLabel: 'cards',
-    added: '2026-06-01',
-  },
-  {
-    id: 'case-law-chieftaincy',
-    title: 'Case Law Practice',
-    subtitle: 'Chieftaincy law — rationes decidendi',
-    course: 'PUL 101',
-    type: 'case-law',
-    file: 'tools/case_law_practice.html',
-    count: 12,
-    countLabel: 'cases',
-    added: '2026-06-01',
-  },
-  // ── ADD NEW TOOLS BELOW ──────────────────
-  // {
-  //   id: 'unique-id',
-  //   title: 'Tool Title',
-  //   subtitle: 'Short description',
-  //   course: 'PUL 101',
-  //   type: 'quiz',          // flashcards | quiz | case-law | notes
-  //   file: 'tools/filename.html',
-  //   count: 20,
-  //   countLabel: 'questions',
-  //   added: '2026-06-XX',
-  // },
-];
+  // Complete failproof offline static layout structure array
+  let tools = [
+    { id: 'literary-concepts', title: 'Literary Concepts', subtitle: 'Units 1–3 · Concept of Literature, Oral Forms & Genres', course: 'LIT 100L', type: 'flashcards', file: 'tools/literary_concepts.html', count: 40, countLabel: 'cards' },
+    { id: 'pul101-flashcards', title: 'PUL 101 Flashcards', subtitle: 'Legal Concepts', course: 'PUL 101', type: 'flashcards', file: 'tools/pul101_flashcards.html', count: 24, countLabel: 'cards' },
+    { id: 'case-law-chieftaincy', title: 'Case Law Practice', subtitle: 'Chieftaincy Law', course: 'PUL 101', type: 'case-law', file: 'tools/case_law_practice.html', count: 12, countLabel: 'cases' }
+  ];
 
-const typeConfig = {
-  'flashcards': { icon: 'fa-solid fa-cards-blank',      label: 'Flashcards', bg: 'bg-indigo-50',  text: 'text-indigo-600',  border: 'border-indigo-200',  badge: 'bg-indigo-100 text-indigo-700' },
-  'quiz':       { icon: 'fa-solid fa-circle-question',  label: 'Quiz',       bg: 'bg-violet-50',  text: 'text-violet-600',  border: 'border-violet-200',  badge: 'bg-violet-100 text-violet-700' },
-  'case-law':   { icon: 'fa-solid fa-scale-balanced',   label: 'Case Law',   bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200', badge: 'bg-emerald-100 text-emerald-700' },
-  'notes':      { icon: 'fa-solid fa-file-lines',       label: 'Notes',      bg: 'bg-amber-50',   text: 'text-amber-600',   border: 'border-amber-200',   badge: 'bg-amber-100 text-amber-700' },
-};
+  const typeConfig = {
+    'flashcards': { icon: 'fa-solid fa-layer-group',      label: 'Flashcards', bg: 'bg-indigo-50',  text: 'text-indigo-600',  badge: 'bg-indigo-100 text-indigo-800' },
+    'quiz':       { icon: 'fa-solid fa-circle-question',  label: 'Quiz',       bg: 'bg-violet-50',  text: 'text-violet-600',  badge: 'bg-violet-100 text-violet-800' },
+    'case-law':   { icon: 'fa-solid fa-scale-balanced',   label: 'Case Law',   bg: 'bg-emerald-50', text: 'text-emerald-600', badge: 'bg-emerald-100 text-emerald-800' },
+    'notes':      { icon: 'fa-solid fa-file-lines',       label: 'Notes',      bg: 'bg-amber-50',   text: 'text-amber-600',   badge: 'bg-amber-100 text-amber-800' }
+  };
 
-// ── State ──
-let activeFilter = 'all';
-let currentView  = 'grid';
+  let activeFilter = 'all';
+  let currentView  = 'grid';
+  let isLoading    = true;
 
-// ── Init ──
-document.getElementById('toolCount').textContent = tools.length;
-buildFilterBar();
-renderTools();
-
-// ── WhatsApp popup ──
-function closePopup() {
-  document.getElementById('waPopup').style.display = 'none';
-  sessionStorage.setItem('myle-wa-seen', '1');
-}
-window.addEventListener('load', () => {
-  if (!sessionStorage.getItem('myle-wa-seen')) {
-    setTimeout(() => {
-      const el = document.getElementById('waPopup');
-      el.style.removeProperty('display');
-      el.style.display = 'flex';
-    }, 2000);
+  function renderFilters() {
+    const bar = document.getElementById('filterBar');
+    if (!bar) return;
+    const uniqueTypes = ['all', ...new Set(tools.map(t => t.type))];
+    bar.innerHTML = '';
+    
+    uniqueTypes.forEach(type => {
+      const btn = document.createElement('button');
+      btn.textContent = type === 'all' ? 'All Tools' : (typeConfig[type]?.label || type);
+      btn.className = `px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
+        type === activeFilter ? 'filter-active' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+      }`;
+      btn.onclick = () => {
+        if (!isLoading) {
+          activeFilter = type;
+          renderFilters();
+          renderCards();
+        }
+      };
+      bar.appendChild(btn);
+    });
   }
-});
 
-// ── View toggle ──
-function setView(v) {
-  currentView = v;
-  document.getElementById('viewGrid').classList.toggle('border-indigo-400', v === 'grid');
-  document.getElementById('viewGrid').classList.toggle('text-indigo-600', v === 'grid');
-  document.getElementById('viewList').classList.toggle('border-indigo-400', v === 'list');
-  document.getElementById('viewList').classList.toggle('text-indigo-600', v === 'list');
-  renderTools();
-}
+  function renderCards() {
+    const grid = document.getElementById('toolsGrid');
+    const label = document.getElementById('resultsLabel');
+    const empty = document.getElementById('emptyState');
+    if (!grid) return;
 
-// ── Filter bar ──
-function buildFilterBar() {
-  const bar = document.getElementById('filterBar');
-  const types = ['all', ...new Set(tools.map(t => t.type))];
-  bar.innerHTML = '';
-  types.forEach(type => {
-    const btn = document.createElement('button');
-    const cfg = typeConfig[type];
-    const label = type === 'all' ? 'All Tools' : cfg?.label || type;
-    btn.textContent = label;
-    btn.dataset.type = type;
-    btn.className = `px-4 py-2.5 text-xs font-semibold rounded-xl border transition-all whitespace-nowrap ${
-      type === activeFilter ? 'filter-active border-indigo-600' : 'bg-white border-gray-200 text-gray-600 hover:border-indigo-300 hover:text-indigo-600'
-    }`;
-    btn.onclick = () => { activeFilter = type; buildFilterBar(); renderTools(); };
-    bar.appendChild(btn);
-  });
-}
-
-// ── Render tools ──
-function renderTools() {
-  const query = document.getElementById('searchInput').value.toLowerCase().trim();
-  const filtered = tools.filter(t => {
-    const matchType   = activeFilter === 'all' || t.type === activeFilter;
-    const matchSearch = !query || t.title.toLowerCase().includes(query) ||
-      t.subtitle.toLowerCase().includes(query) || t.course.toLowerCase().includes(query);
-    return matchType && matchSearch;
-  });
-
-  const grid  = document.getElementById('toolsGrid');
-  const empty = document.getElementById('emptyState');
-  const label = document.getElementById('resultsLabel');
-
-  label.textContent = `${filtered.length} tool${filtered.length !== 1 ? 's' : ''} available`;
-  grid.className = currentView === 'grid'
-    ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-16'
-    : 'flex flex-col gap-3 mb-16';
-
-  if (filtered.length === 0) {
-    grid.innerHTML = '';
-    empty.classList.remove('hidden');
-    return;
-  }
-  empty.classList.add('hidden');
-  grid.innerHTML = '';
-
-  filtered.forEach((tool, i) => {
-    const cfg = typeConfig[tool.type] || typeConfig['notes'];
-    const el  = document.createElement('a');
-    el.href   = tool.file;
-    el.target = '_blank';
-    el.rel    = 'noopener noreferrer';
-    el.style.animationDelay = (i * 0.07) + 's';
-
-    if (currentView === 'grid') {
-      el.className = 'tool-card-enter bg-white rounded-2xl border border-gray-100 p-6 flex flex-col gap-4 card-hover shadow-sm cursor-pointer no-underline group';
-      el.innerHTML = `
-        <div class="flex items-start justify-between">
-          <div class="w-12 h-12 ${cfg.bg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-            <i class="${cfg.icon} ${cfg.text} text-xl"></i>
-          </div>
-          <span class="type-badge ${cfg.badge} px-2.5 py-1 rounded-lg">${cfg.label}</span>
-        </div>
-        <div class="flex-1">
-          <h3 class="font-bold text-gray-900 text-base leading-snug mb-1">${tool.title}</h3>
-          <p class="text-gray-500 text-sm leading-relaxed">${tool.subtitle}</p>
-        </div>
-        <div class="flex items-center justify-between pt-2 border-t border-gray-50">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">${tool.course}</span>
-            ${tool.count ? `<span class="text-xs text-gray-400"><i class="fa-solid fa-layer-group mr-1"></i>${tool.count} ${tool.countLabel}</span>` : ''}
-          </div>
-          <span class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white group-hover:bg-indigo-700 transition-colors shadow-sm">
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </span>
-        </div>
+    if (isLoading) {
+      if (label) label.textContent = "Loading tools...";
+      grid.innerHTML = `
+        <div class="bg-white border border-slate-200 p-6 rounded-xl animate-pulse h-32"></div>
+        <div class="bg-white border border-slate-200 p-6 rounded-xl animate-pulse h-32 hidden sm:block"></div>
+        <div class="bg-white border border-slate-200 p-6 rounded-xl animate-pulse h-32 hidden lg:block"></div>
       `;
-    } else {
-      el.className = 'tool-card-enter bg-white rounded-xl border border-gray-100 px-5 py-4 flex items-center gap-5 card-hover shadow-sm cursor-pointer no-underline group';
-      el.innerHTML = `
-        <div class="w-10 h-10 ${cfg.bg} rounded-xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-          <i class="${cfg.icon} ${cfg.text} text-lg"></i>
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2 mb-0.5">
-            <h3 class="font-bold text-gray-900 text-sm truncate">${tool.title}</h3>
-            <span class="type-badge ${cfg.badge} px-2 py-0.5 rounded-md flex-shrink-0">${cfg.label}</span>
-          </div>
-          <p class="text-gray-500 text-xs truncate">${tool.subtitle}</p>
-        </div>
-        <div class="flex items-center gap-3 flex-shrink-0">
-          <span class="hidden sm:inline text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg border border-indigo-100">${tool.course}</span>
-          <span class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white group-hover:bg-indigo-700 transition-colors">
-            <i class="fa-solid fa-arrow-right text-xs"></i>
-          </span>
-        </div>
-      `;
+      return;
     }
-    grid.appendChild(el);
+
+    const query = document.getElementById('searchInput')?.value.toLowerCase().trim() || '';
+    const filtered = tools.filter(t => {
+      const matchType = activeFilter === 'all' || t.type === activeFilter;
+      const matchSearch = !query || t.title.toLowerCase().includes(query) || t.subtitle.toLowerCase().includes(query) || t.course.toLowerCase().includes(query);
+      return matchType && matchSearch;
+    });
+
+    if (label) label.textContent = `${filtered.length} tool${filtered.length !== 1 ? 's' : ''} available`;
+    
+    grid.className = currentView === 'grid' 
+      ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10' 
+      : 'flex flex-col gap-3 mb-10';
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '';
+      if (empty) empty.classList.remove('hidden');
+      return;
+    }
+    if (empty) empty.classList.add('hidden');
+
+    grid.innerHTML = '';
+    filtered.forEach(tool => {
+      const cfg = typeConfig[tool.type] || typeConfig['notes'];
+      const card = document.createElement('a');
+      card.href = tool.file;
+      card.className = currentView === 'grid'
+        ? 'block bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:border-indigo-300 transition-all group no-underline'
+        : 'flex items-center gap-4 bg-white rounded-xl border border-slate-200 p-4 shadow-sm hover:border-indigo-300 transition-all group no-underline w-full';
+
+      if (currentView === 'grid') {
+        card.innerHTML = `
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 ${cfg.bg} text-indigo-600 rounded-lg flex items-center justify-center"><i class="${cfg.icon} ${cfg.text} text-lg"></i></div>
+            <span class="text-[10px] font-bold uppercase tracking-wider ${cfg.badge} px-2 py-0.5 rounded">${cfg.label}</span>
+          </div>
+          <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-indigo-600 transition-colors">${tool.title}</h3>
+          <p class="text-slate-500 text-xs mb-4 line-clamp-2">${tool.subtitle}</p>
+          <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
+            <span class="font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">${tool.course}</span>
+            <span class="text-slate-400 font-medium"><i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i></span>
+          </div>
+        `;
+      } else {
+        card.innerHTML = `
+          <div class="w-10 h-10 ${cfg.bg} rounded-lg flex items-center justify-center flex-shrink-0"><i class="${cfg.icon} ${cfg.text} text-lg"></i></div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <h3 class="font-bold text-slate-900 text-sm truncate group-hover:text-indigo-600 transition-colors">${tool.title}</h3>
+              <span class="text-[9px] font-bold uppercase ${cfg.badge} px-1.5 py-0.5 rounded flex-shrink-0">${cfg.label}</span>
+            </div>
+            <p class="text-slate-500 text-xs truncate">${tool.subtitle}</p>
+          </div>
+          <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 hidden sm:inline">${tool.course}</span>
+        `;
+      }
+      grid.appendChild(card);
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const viewGrid = document.getElementById('viewGrid');
+    const viewList = document.getElementById('viewList');
+    const search = document.getElementById('searchInput');
+
+    if (viewGrid && viewList) {
+      viewGrid.onclick = () => {
+        currentView = 'grid';
+        viewGrid.className = "w-8 h-8 flex items-center justify-center rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200";
+        viewList.className = "w-8 h-8 flex items-center justify-center rounded-md text-slate-400 hover:text-indigo-600";
+        renderCards();
+      };
+      viewList.onclick = () => {
+        currentView = 'list';
+        viewList.className = "w-8 h-8 flex items-center justify-center rounded-md bg-indigo-50 text-indigo-600 border border-indigo-200";
+        viewGrid.className = "w-8 h-8 flex items-center justify-center rounded-md text-slate-400 hover:text-indigo-600";
+        renderCards();
+      };
+    }
+
+    if (search) search.oninput = () => renderCards();
+
+    // Safely update fallback counters
+    const counter = document.getElementById('toolCount');
+    if (counter) counter.textContent = tools.length;
+
+    renderFilters();
+    renderCards();
+
+    // Simulated skeleton load window wrapper
+    setTimeout(() => {
+      isLoading = false;
+      renderCards();
+    }, 800);
+
+    // ── WhatsApp Popup Modal Rules ──
+    const popup = document.getElementById('waPopup');
+    function closePopup() {
+      if (popup) { popup.classList.replace('flex', 'hidden'); }
+      sessionStorage.setItem('myle-popup-seen', '1');
+    }
+    
+    if (document.getElementById('closePopupTop')) document.getElementById('closePopupTop').onclick = closePopup;
+    if (document.getElementById('closePopupBtn')) document.getElementById('closePopupBtn').onclick = closePopup;
+
+    if (!sessionStorage.getItem('myle-popup-seen')) {
+      setTimeout(() => {
+        if (popup) { popup.classList.replace('hidden', 'flex'); }
+      }, 2000);
+    }
   });
-}
 </script>
 </body>
 </html>
